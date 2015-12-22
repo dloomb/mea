@@ -4,7 +4,6 @@ import android.app.Activity;
 import android.net.Uri;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -12,34 +11,31 @@ import android.widget.AdapterView;
 import android.widget.GridView;
 
 import com.meamobile.photokit.core.Collection;
-import com.meamobile.photokit.user_interface.ExplorerGridViewAdapter;
 
 import com.meamobile.photokit.R;
 
 
 public class ExplorerFragment extends Fragment {
 
-    private static final String ARG_PARAM1 = "param1";
-    private static final String ARG_PARAM2 = "param2";
-
-    private String mParam1;
-    private String mParam2;
+    private static final String ARG_COLLECTION = "collection";
 
     private Collection mCollection;
 
     private GridView mGridView;
     private OnFragmentInteractionListener mListener;
 
+    public NavigationFragment NavigationFragment;
+
     public ExplorerFragment() {
         // Required empty public constructor
     }
 
 
-    public static ExplorerFragment newInstance(String param1, String param2) {
+    public static ExplorerFragment newInstance(Collection collection)
+    {
         ExplorerFragment fragment = new ExplorerFragment();
         Bundle args = new Bundle();
-        args.putString(ARG_PARAM1, param1);
-        args.putString(ARG_PARAM2, param2);
+        args.putParcelable(ARG_COLLECTION, collection);
         fragment.setArguments(args);
         return fragment;
     }
@@ -48,16 +44,15 @@ public class ExplorerFragment extends Fragment {
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         if (getArguments() != null) {
-            mParam1 = getArguments().getString(ARG_PARAM1);
-            mParam2 = getArguments().getString(ARG_PARAM2);
+            mCollection = (Collection) getArguments().getParcelable(ARG_COLLECTION);
         }
-
 
         if (mCollection == null)
         {
             mCollection = Collection.RootCollection();
         }
 
+        mCollection.loadContents();
     }
 
     @Override
@@ -65,14 +60,7 @@ public class ExplorerFragment extends Fragment {
                              Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.fragment_explorer, container, false);
 
-        mGridView = (GridView) view.findViewById(R.id.gridview);
-        mGridView.setAdapter(new ExplorerGridViewAdapter(getActivity(), mCollection));
-        mGridView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
-            @Override
-            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-
-            }
-        });
+        initializeGridView(view);
 
         return view;
     }
@@ -97,5 +85,39 @@ public class ExplorerFragment extends Fragment {
 
     public interface OnFragmentInteractionListener {
         void onFragmentInteraction(Uri uri);
+    }
+
+
+
+    //--------------------------
+    // GridView
+    //--------------------------
+
+    protected void initializeGridView(View view)
+    {
+        mGridView = (GridView) view.findViewById(R.id.gridview);
+        mGridView.setAdapter(new ExplorerGridViewAdapter(getActivity(), mCollection));
+        mGridView.setOnItemClickListener(getOnItemClickListener());
+    }
+
+    protected AdapterView.OnItemClickListener getOnItemClickListener()
+    {
+        final ExplorerFragment self = this;
+        return new AdapterView.OnItemClickListener() {
+            @Override
+            public void onItemClick(AdapterView<?> parent, View view, int position, long id)
+            {
+                Collection selected = mCollection.collectionAtIndex(position);
+
+                ExplorerFragment fragment = ExplorerFragment.newInstance(selected);
+                getFragmentManager().beginTransaction()
+                        .setCustomAnimations(R.anim.abc_fade_in, R.anim.abc_fade_out)
+                        .show(fragment)
+                        .commit();
+
+
+//                self.NavigationFragment.pushFragment(fragment);
+            }
+        };
     }
 }

@@ -6,17 +6,23 @@
     tools:context="com.meamobile.printicular.MainActivity">
 
 
-    <fragment
-        android:layout_width="wrap_content"
+    <!--<fragment-->
+        <!--android:layout_width="wrap_content"-->
+        <!--android:layout_height="match_parent"-->
+
+        <!--android:name="com.meamobile.photokit.user_interface.NavigationFragment"-->
+        <!--android:id="@+id/navigationFragment"-->
+        <!--tools:layout="@layout/fragment_navigation" />-->
+
+    <RelativeLayout
+        android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:layout_alignParentTop="true"
         android:layout_marginTop="5dp"
         android:layout_marginRight="5dp"
         android:layout_marginBottom="195dp"
         android:layout_marginLeft="5dp"
-        android:name="com.meamobile.printicular.NavigationFragment"
-        android:id="@+id/navigationFragment"
-        tools:layout="@layout/fragment_navigation" />
+        android:id="@+id/fragmentContainer"/>
 
 
     <RelativeLayout

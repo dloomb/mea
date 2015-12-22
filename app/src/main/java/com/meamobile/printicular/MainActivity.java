@@ -7,6 +7,9 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.widget.Button;
 
+import com.meamobile.photokit.core.Collection;
+import com.meamobile.photokit.user_interface.ExplorerFragment;
+
 public class MainActivity extends ActionBarActivity {
 
     @Override
@@ -16,6 +19,14 @@ public class MainActivity extends ActionBarActivity {
 
         Button nextButton = (Button) findViewById(R.id.nextButton);
         nextButton.getBackground().setColorFilter(0xFFF20017, PorterDuff.Mode.MULTIPLY);
+
+
+
+        getSupportFragmentManager().beginTransaction()
+//                .setCustomAnimations(R.anim.abc_slide_in_top, R.anim.abc_slide_out_bottom)
+                .replace(R.id.fragmentContainer, ExplorerFragment.newInstance(Collection.RootCollection()))
+                .addToBackStack(null)
+                .commit();
     }
 
     @Override
