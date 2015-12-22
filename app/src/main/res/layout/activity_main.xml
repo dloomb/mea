@@ -1,0 +1,58 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:context="com.meamobile.printicular.MainActivity">
+
+
+    <fragment
+        android:layout_width="wrap_content"
+        android:layout_height="match_parent"
+        android:layout_alignParentTop="true"
+        android:layout_marginTop="5dp"
+        android:layout_marginRight="5dp"
+        android:layout_marginBottom="195dp"
+        android:layout_marginLeft="5dp"
+        android:name="com.meamobile.printicular.NavigationFragment"
+        android:id="@+id/navigationFragment"
+        tools:layout="@layout/fragment_navigation" />
+
+
+    <RelativeLayout
+        android:id="@+id/bottomLayout"
+        android:layout_alignParentBottom="true"
+        android:layout_width="match_parent"
+        android:layout_height="190dp">
+
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="40dp"
+            android:text="Cart"
+            android:textSize="18dp"
+            android:padding="8dp"
+            android:background="#ddd"
+            android:id="@+id/cartTextView"/>
+
+        <fragment
+            android:layout_width="match_parent"
+            android:layout_height="100dp"
+            android:name="com.meamobile.printicular.cart.CartFragment"
+            android:id="@+id/cartFragment"
+            android:layout_marginTop="5dp"
+            android:layout_below="@id/cartTextView"
+            tools:layout="@layout/fragment_cart" />
+
+        <Button
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:id="@+id/nextButton"
+            android:layout_below="@id/cartFragment"
+            android:layout_centerHorizontal="true"
+            android:textColor="#FFF"
+            android:text="next"
+            android:textAllCaps="false"/>
+
+    </RelativeLayout>
+
+</RelativeLayout>
