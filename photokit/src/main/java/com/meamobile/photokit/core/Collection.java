@@ -86,6 +86,19 @@ public class Collection implements Parcelable
     //            Assets
     //---------------------------------
 
+    public void addAsset(Asset asset) {
+        mAssets.add(asset);
+    }
+
+    public Asset assetAtIndex(int index)
+    {
+        if (index >= 0 && index < mAssets.size())
+        {
+            return mAssets.get(index);
+        }
+        return null;
+    }
+
     public int numberOfAssets()
     {
         return mAssets.size();

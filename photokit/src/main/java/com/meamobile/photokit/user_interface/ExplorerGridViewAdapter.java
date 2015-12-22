@@ -9,6 +9,7 @@ import android.view.ViewGroup;
 import android.widget.ImageView;
 
 import com.meamobile.photokit.R;
+import com.meamobile.photokit.core.Asset;
 import com.meamobile.photokit.core.Collection;
 
 
@@ -43,13 +44,23 @@ public class ExplorerGridViewAdapter extends BaseAdapter {
             itemView = (View) convertView;
         }
 
-        Collection collection = mCollection.collectionAtIndex(position);
-
         ImageView mainImageView = (ImageView)itemView.findViewById(R.id.imageView);
-        mainImageView.setImageResource(collection.Source.ImageResourceId);
-
         ImageView selectionImageView = (ImageView)itemView.findViewById(R.id.selectionIndicatorImageView);
-        selectionImageView.setVisibility(View.INVISIBLE);
+
+        if (position < mCollection.numberOfCollections())
+        {
+            Collection collection = mCollection.collectionAtIndex(position);
+
+            mainImageView.setImageResource(collection.Source.ImageResourceId);
+            selectionImageView.setVisibility(View.INVISIBLE);
+        }
+        else
+        {
+            Asset asset = mCollection.assetAtIndex(position - mCollection.numberOfCollections());
+
+            mainImageView.setBackgroundColor(0xFF00FF00);
+        }
+
 
         return itemView;
     }

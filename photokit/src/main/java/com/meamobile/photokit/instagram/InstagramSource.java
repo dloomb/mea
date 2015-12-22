@@ -25,6 +25,7 @@ import org.json.JSONObject;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 
 public class InstagramSource extends Source
 {
@@ -108,19 +109,19 @@ public class InstagramSource extends Source
 
         new JSONHttpClient().post("https://api.instagram.com/oauth/access_token", params, new JSONHttpClient.JSONHttpClientCallback() {
             @Override
-            public void success(JSONObject response)
+            public void success(Map<String, Object> response)
             {
-                try
-                {
-                    if (response.has("access_token"))
-                    {
-                        String token = response.getString("access_token");
+//                try
+//                {
+//                    if (response.has("access_token"))
+//                    {
+                        String token = (String) response.get("access_token");// response.getString("access_token");
                         saveAccessToken(token);
                         mActivationCallback.success();
-                    }
-                } catch (JSONException e) {
-                    e.printStackTrace();
-                }
+//                    }
+//                } catch (JSONException e) {
+//                    e.printStackTrace();
+//                }
             }
 
             @Override

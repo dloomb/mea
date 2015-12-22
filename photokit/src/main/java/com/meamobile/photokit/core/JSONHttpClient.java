@@ -3,6 +3,9 @@ package com.meamobile.photokit.core;
 
 import android.util.Log;
 
+import com.google.gson.Gson;
+import com.google.gson.reflect.TypeToken;
+
 import org.apache.http.HttpRequest;
 import org.apache.http.HttpResponse;
 import org.apache.http.NameValuePair;
@@ -17,12 +20,13 @@ import java.io.BufferedReader;
 import java.io.InputStreamReader;
 import java.io.UnsupportedEncodingException;
 import java.util.List;
+import java.util.Map;
 
 public class JSONHttpClient
 {
     public interface JSONHttpClientCallback
     {
-        public void success(JSONObject response);
+        public void success(Map<String, Object> response);
         public void error(String error);
     }
 
@@ -47,12 +51,7 @@ public class JSONHttpClient
                 {
                     HttpResponse response = client.execute(_request);
                     BufferedReader reader = new BufferedReader(new InputStreamReader(response.getEntity().getContent(), "UTF-8"));
-                    StringBuilder builder = new StringBuilder();
-                    for (String line = null; (line = reader.readLine()) != null;) {
-                        builder.append(line).append("\n");
-                    }
-
-                    JSONObject object = new JSONObject(builder.toString());
+                    Map<String, Object> object = new Gson().fromJson(reader, new TypeToken<Map<String, Object>>(){}.getType());
                     _callback.success(object);
                 }
                 catch (Exception e)

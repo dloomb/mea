@@ -99,8 +99,34 @@ public class ExplorerFragment extends Fragment {
     protected void initializeGridView(View view)
     {
         mGridView = (GridView) view.findViewById(R.id.gridview);
-        mGridView.setAdapter(new ExplorerGridViewAdapter(getActivity(), mCollection));
+        final ExplorerGridViewAdapter adapter = new ExplorerGridViewAdapter(getActivity(), mCollection);
+        mGridView.setAdapter(adapter);
         mGridView.setOnItemClickListener(getOnItemClickListener());
+
+        new Thread(new Runnable() {
+            @Override
+            public void run()
+            {
+                try {
+                    while (true)
+                    {
+                        Thread.sleep(1000, 0);
+
+                        getActivity().runOnUiThread(new Runnable() {
+                            @Override
+                            public void run() {
+                                adapter.notifyDataSetChanged();
+                            }
+                        });
+                    }
+
+
+                } catch (InterruptedException e) {
+                    e.printStackTrace();
+                }
+            }
+        }).start();
+
     }
 
     protected AdapterView.OnItemClickListener getOnItemClickListener()
