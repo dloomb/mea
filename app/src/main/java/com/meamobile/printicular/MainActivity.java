@@ -8,6 +8,7 @@ import android.view.MenuItem;
 import android.widget.Button;
 
 import com.meamobile.photokit.core.Collection;
+import com.meamobile.photokit.core.UserDefaults;
 import com.meamobile.photokit.user_interface.ExplorerFragment;
 
 public class MainActivity extends ActionBarActivity {
@@ -17,14 +18,19 @@ public class MainActivity extends ActionBarActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
+        //Setup UserDefaults Singleton
+        UserDefaults.getInstance().setContext(this);
+
+
         Button nextButton = (Button) findViewById(R.id.nextButton);
         nextButton.getBackground().setColorFilter(0xFFF20017, PorterDuff.Mode.MULTIPLY);
 
 
-
+        ExplorerFragment fragment = ExplorerFragment.newInstance(Collection.RootCollection());
+        fragment.ContainerId = R.id.fragmentContainer;
         getSupportFragmentManager().beginTransaction()
 //                .setCustomAnimations(R.anim.abc_slide_in_top, R.anim.abc_slide_out_bottom)
-                .replace(R.id.fragmentContainer, ExplorerFragment.newInstance(Collection.RootCollection()))
+                .replace(fragment.ContainerId, fragment)
                 .addToBackStack(null)
                 .commit();
     }

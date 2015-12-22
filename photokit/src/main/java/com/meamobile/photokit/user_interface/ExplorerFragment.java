@@ -9,10 +9,12 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.GridView;
+import android.widget.Toast;
 
 import com.meamobile.photokit.core.Collection;
 
 import com.meamobile.photokit.R;
+import com.meamobile.photokit.core.Source;
 
 
 public class ExplorerFragment extends Fragment {
@@ -25,6 +27,7 @@ public class ExplorerFragment extends Fragment {
     private OnFragmentInteractionListener mListener;
 
     public NavigationFragment NavigationFragment;
+    public int ContainerId;
 
     public ExplorerFragment() {
         // Required empty public constructor
@@ -90,7 +93,7 @@ public class ExplorerFragment extends Fragment {
 
 
     //--------------------------
-    // GridView
+    //        GridView
     //--------------------------
 
     protected void initializeGridView(View view)
@@ -102,22 +105,67 @@ public class ExplorerFragment extends Fragment {
 
     protected AdapterView.OnItemClickListener getOnItemClickListener()
     {
-        final ExplorerFragment self = this;
         return new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> parent, View view, int position, long id)
             {
-                Collection selected = mCollection.collectionAtIndex(position);
-
-                ExplorerFragment fragment = ExplorerFragment.newInstance(selected);
-                getFragmentManager().beginTransaction()
-                        .setCustomAnimations(R.anim.abc_fade_in, R.anim.abc_fade_out)
-                        .show(fragment)
-                        .commit();
-
-
-//                self.NavigationFragment.pushFragment(fragment);
+                int collectionsCount = mCollection.numberOfCollections();
+                if (position < collectionsCount)
+                {
+                    didSelectCollectionAtIndex(position);
+                }
+                else
+                {
+                    didSelectAssetAtIndex(position - collectionsCount);
+                }
             }
         };
     }
+
+
+
+    //--------------------------
+    //        Selection
+    //--------------------------
+
+    protected void pushNewExplorerFragementWithCollection(Collection collection)
+    {
+        ExplorerFragment fragment = ExplorerFragment.newInstance(collection);
+        fragment.ContainerId = this.ContainerId;
+        getFragmentManager().beginTransaction()
+                .setCustomAnimations(R.animator.slide_in_right, R.animator.slide_out_left)
+                .replace(this.ContainerId, fragment)
+                .commit();
+    }
+
+    protected void didSelectCollectionAtIndex(int index)
+    {
+        final Collection selected = mCollection.collectionAtIndex(index);
+
+        if (selected.Source.isActive())
+        {
+            pushNewExplorerFragementWithCollection(selected);
+        }
+        else
+        {
+            selected.Source.activateSource(getActivity(), new Source.SourceActivationCallback() {
+                @Override
+                public void success() {
+                    pushNewExplorerFragementWithCollection(selected);
+                }
+
+                @Override
+                public void error(String error) {
+                    Toast.makeText(getActivity(), error, Toast.LENGTH_SHORT);
+                }
+            });
+        }
+
+    }
+
+    protected void didSelectAssetAtIndex(int index)
+    {
+
+    }
+
 }
