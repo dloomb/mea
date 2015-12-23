@@ -75,6 +75,7 @@ public class InstagramSource extends Source
         final String redirectUrl = "ig" + CLIENT_ID + "://authorize";
 
         AuthenticatorDialog dialog = new AuthenticatorDialog(context);
+//        dialog.setTitle("Login to Instagram");
         dialog.setAuthenticationUrl("https://api.instagram.com/oauth/authorize?client_id=" + CLIENT_ID + "&response_type=code&redirect_uri=" + redirectUrl);
         dialog.setRedirectUrl(redirectUrl, getAuthenticatorDialogCallback(redirectUrl));
         dialog.show();

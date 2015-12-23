@@ -1,7 +1,118 @@
 package com.meamobile.photokit.core;
 
-/**
- * Created by daniel on 22/12/15.
- */
-public class CachingImageManager {
+
+import android.content.Context;
+import android.graphics.Bitmap;
+import android.graphics.drawable.Drawable;
+import android.os.storage.StorageManager;
+import android.util.Log;
+
+import com.squareup.picasso.Callback;
+import com.squareup.picasso.Picasso;
+import com.squareup.picasso.Target;
+
+import org.apache.http.client.HttpClient;
+import org.apache.http.util.ByteArrayBuffer;
+
+import java.io.BufferedInputStream;
+import java.io.File;
+import java.io.FileOutputStream;
+import java.io.InputStream;
+import java.net.MalformedURLException;
+import java.net.URL;
+import java.net.URLConnection;
+
+public class CachingImageManager
+{
+    public interface CachingImageManagerRequestCallback
+    {
+        void success(File path);
+        void error(String error);
+    }
+
+    private Context mContext;
+
+    public CachingImageManager(Context context)
+    {
+        mContext = context;
+    }
+
+    public void requestThumbnailForAsset(Asset asset, CachingImageManagerRequestCallback callback)
+    {
+        File file = new File(mContext.getCacheDir(), asset.assetIdentifer() + "-thumbnail");
+        if (file.exists())
+        {
+            callback.success(file);
+            return;
+        }
+
+        switch (asset.getType())
+        {
+            case Remote:
+                downloadImageFromUrl(((RemoteAsset)asset).ThumbnailUrlString, file, callback);
+                break;
+        }
+
+
+    }
+
+    public void requestFullResolutionForAsset(Asset asset, CachingImageManagerRequestCallback callback)
+    {
+        File file = new File(mContext.getCacheDir(), asset.assetIdentifer() + "-fullresolution");
+        if (file.exists())
+        {
+            callback.success(file);
+            return;
+        }
+
+        switch (asset.getType())
+        {
+            case Remote:
+                downloadImageFromUrl(((RemoteAsset)asset).FullResolutionUrlString, file, callback);
+                break;
+        }
+    }
+
+    protected void downloadImageFromUrl(String urlString, File output, CachingImageManagerRequestCallback callback)
+    {
+        final String _urlString = urlString;
+        final File _output = output;
+        final CachingImageManagerRequestCallback _callback = callback;
+
+        new Thread(new Runnable() {
+            @Override
+            public void run() {
+                long startTime = System.currentTimeMillis();
+                Log.d("ImageManager", "download begining");
+                Log.d("ImageManager", "download url:" + _urlString);
+                Log.d("ImageManager", "downloaded file name:" + _output.getAbsolutePath());
+
+                URL url = null;
+                try {
+                    url = new URL(_urlString);
+                    URLConnection ucon = url.openConnection();
+                    InputStream is = ucon.getInputStream();
+                    BufferedInputStream bis = new BufferedInputStream(is);
+
+                    ByteArrayBuffer baf = new ByteArrayBuffer(50);
+                    int current = 0;
+                    while ((current = bis.read()) != -1) {
+                        baf.append((byte) current);
+                    }
+
+                    FileOutputStream fos = new FileOutputStream(_output);
+                    fos.write(baf.toByteArray());
+                    fos.close();
+                    Log.d("ImageManager", "download ready in"
+                            + ((System.currentTimeMillis() - startTime) / 1000)
+                            + " sec");
+                    _callback.success(_output);
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }
+            }
+        }).start();
+
+
+    }
 }

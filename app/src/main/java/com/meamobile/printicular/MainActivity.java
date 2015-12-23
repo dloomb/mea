@@ -2,16 +2,24 @@ package com.meamobile.printicular;
 
 import android.graphics.PorterDuff;
 import android.os.Bundle;
+import android.support.v4.app.Fragment;
+import android.support.v4.app.FragmentManager;
 import android.support.v7.app.ActionBarActivity;
+import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.widget.Button;
+import android.widget.Toast;
 
 import com.meamobile.photokit.core.Collection;
 import com.meamobile.photokit.core.UserDefaults;
 import com.meamobile.photokit.user_interface.ExplorerFragment;
 
+import java.util.List;
+
 public class MainActivity extends ActionBarActivity {
+
+    private long lastBackTap = 0;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -21,6 +29,7 @@ public class MainActivity extends ActionBarActivity {
         //Setup UserDefaults Singleton
         UserDefaults.getInstance().setContext(this);
 
+        setTitle("Select a Source");
 
         Button nextButton = (Button) findViewById(R.id.nextButton);
         nextButton.getBackground().setColorFilter(0xFFF20017, PorterDuff.Mode.MULTIPLY);
@@ -29,9 +38,8 @@ public class MainActivity extends ActionBarActivity {
         ExplorerFragment fragment = ExplorerFragment.newInstance(Collection.RootCollection());
         fragment.ContainerId = R.id.fragmentContainer;
         getSupportFragmentManager().beginTransaction()
-//                .setCustomAnimations(R.anim.abc_slide_in_top, R.anim.abc_slide_out_bottom)
                 .replace(fragment.ContainerId, fragment)
-                .addToBackStack(null)
+                .addToBackStack("tag")
                 .commit();
     }
 
@@ -50,5 +58,49 @@ public class MainActivity extends ActionBarActivity {
         }
 
         return super.onOptionsItemSelected(item);
+    }
+
+
+    //--------------------------
+    //        Button Input
+    //--------------------------
+
+
+    @Override
+    public void onBackPressed()
+    {
+        Log.d("!!", "Back");
+        FragmentManager fragmentManager = getSupportFragmentManager();
+
+        //Pop Stack
+        if (fragmentManager.getBackStackEntryCount() > 1)
+        {
+            List<Fragment> fragments = fragmentManager.getFragments();
+            Fragment current = fragments.get(fragments.size() - 1);
+
+            if (current instanceof ExplorerFragment)
+            {
+                fragmentManager.popBackStack();
+
+//                ExplorerFragment explorerFragment = (ExplorerFragment) current;
+//                explorerFragment.onFragmentWillAppear();
+            }
+        }
+        //Exit App
+        else
+        {
+            long now = System.currentTimeMillis();
+            long diff = now - lastBackTap;
+
+            if (diff < 2000)
+            {
+                moveTaskToBack(true);
+            }
+            else
+            {
+                Toast.makeText(this, "Tap again to exit", Toast.LENGTH_SHORT).show();
+                lastBackTap = now;
+            }
+        }
     }
 }

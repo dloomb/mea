@@ -7,6 +7,9 @@ import com.meamobile.photokit.instagram.InstagramCollection;
 import android.os.Parcel;
 import android.os.Parcelable;
 import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 
 public class Collection implements Parcelable
@@ -26,8 +29,16 @@ public class Collection implements Parcelable
         public int value;
     }
 
+    public interface CollectionObserver
+    {
+        public void collectionDidAddAsset(Collection collection, Asset added);
+        public void collectionDidAddCollection(Collection collection, Collection added);
+        public void collectionRefresh(Collection collection);
+    }
+
     private ArrayList<Collection> mCollections;
     private ArrayList<Asset> mAssets;
+    private CollectionObserver mObserver;
 
     public Source Source;
     public String Title;
@@ -52,6 +63,11 @@ public class Collection implements Parcelable
     public CollectionType type()
     {
         return null;
+    }
+
+    public void setCollectionObserver(CollectionObserver observer)
+    {
+        mObserver = observer;
     }
 
     public int numberOfAll()
@@ -88,6 +104,7 @@ public class Collection implements Parcelable
 
     public void addAsset(Asset asset) {
         mAssets.add(asset);
+        mObserver.collectionDidAddAsset(this, asset);
     }
 
     public Asset assetAtIndex(int index)
@@ -125,7 +142,14 @@ public class Collection implements Parcelable
     @Override
     public void writeToParcel(Parcel dest, int flags)
     {
-        String s = (new Gson()).toJson(this);
+        Map<String, Object> data = new HashMap<String, Object>();
+        data.put("assets", mAssets);
+        data.put("collections", mCollections);
+        data.put("title", Title);
+        data.put("source", Source);
+        data.put("thumbnail_path", ThumbnailPath);
+
+        String s = (new Gson()).toJson(data);
         dest.writeString(s);
     }
 
@@ -141,12 +165,12 @@ public class Collection implements Parcelable
 
     private Collection(Parcel in)
     {
-        Collection col = (new Gson()).fromJson(in.readString(), Collection.class);
-        mAssets = col.mAssets;
-        mCollections = col.mCollections;
-        Title = col.Title;
-        Source = col.Source;
-        ThumbnailPath = col.ThumbnailPath;
+        Map<String, Object> data = (new Gson()).fromJson(in.readString(), Map.class);
+        mAssets = (ArrayList<Asset>) data.get("assets");
+        mCollections = (ArrayList<Collection>) data.get("collections");
+        Title = (String) data.get("title");
+        Source = (com.meamobile.photokit.core.Source) data.get("source");
+        ThumbnailPath = (String) data.get("thumbnail_path");
     }
 
 }

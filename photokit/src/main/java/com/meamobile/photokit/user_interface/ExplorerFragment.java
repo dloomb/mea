@@ -26,7 +26,6 @@ public class ExplorerFragment extends Fragment {
     private GridView mGridView;
     private OnFragmentInteractionListener mListener;
 
-    public NavigationFragment NavigationFragment;
     public int ContainerId;
 
     public ExplorerFragment() {
@@ -90,7 +89,13 @@ public class ExplorerFragment extends Fragment {
         void onFragmentInteraction(Uri uri);
     }
 
-
+    public void onFragmentWillAppear()
+    {
+        if (mCollection != null && mCollection.Source != null)
+        {
+            getActivity().setTitle(mCollection.Source.Title);
+        }
+    }
 
     //--------------------------
     //        GridView
@@ -98,35 +103,12 @@ public class ExplorerFragment extends Fragment {
 
     protected void initializeGridView(View view)
     {
+        ExplorerGridViewAdapter adapter = new ExplorerGridViewAdapter(getActivity(), mCollection);
+        mCollection.setCollectionObserver(adapter);
+
         mGridView = (GridView) view.findViewById(R.id.gridview);
-        final ExplorerGridViewAdapter adapter = new ExplorerGridViewAdapter(getActivity(), mCollection);
         mGridView.setAdapter(adapter);
         mGridView.setOnItemClickListener(getOnItemClickListener());
-
-        new Thread(new Runnable() {
-            @Override
-            public void run()
-            {
-                try {
-                    while (true)
-                    {
-                        Thread.sleep(1000, 0);
-
-                        getActivity().runOnUiThread(new Runnable() {
-                            @Override
-                            public void run() {
-                                adapter.notifyDataSetChanged();
-                            }
-                        });
-                    }
-
-
-                } catch (InterruptedException e) {
-                    e.printStackTrace();
-                }
-            }
-        }).start();
-
     }
 
     protected AdapterView.OnItemClickListener getOnItemClickListener()
@@ -159,9 +141,15 @@ public class ExplorerFragment extends Fragment {
         ExplorerFragment fragment = ExplorerFragment.newInstance(collection);
         fragment.ContainerId = this.ContainerId;
         getFragmentManager().beginTransaction()
-                .setCustomAnimations(R.animator.slide_in_right, R.animator.slide_out_left)
+                .setCustomAnimations(R.animator.slide_in_right, R.animator.slide_out_left, R.animator.slide_in_left, R.animator.slide_out_right)
                 .replace(this.ContainerId, fragment)
+                .addToBackStack("tag")
                 .commit();
+
+        if (collection != null && collection.Source != null)
+        {
+            getActivity().setTitle(collection.Source.Title);
+        }
     }
 
     protected void didSelectCollectionAtIndex(int index)
@@ -193,5 +181,8 @@ public class ExplorerFragment extends Fragment {
     {
 
     }
+
+
+
 
 }
