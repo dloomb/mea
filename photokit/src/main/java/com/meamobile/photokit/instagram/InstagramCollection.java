@@ -1,5 +1,6 @@
 package com.meamobile.photokit.instagram;
 
+import android.annotation.SuppressLint;
 import android.util.Log;
 
 import com.google.gson.Gson;
@@ -21,6 +22,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+@SuppressLint("ParcelCreator")
 public class InstagramCollection extends Collection
 {
     static private String LOG = "Collection.Instagram";
@@ -30,6 +32,7 @@ public class InstagramCollection extends Collection
         InstagramCollection collection = new InstagramCollection();
 
         collection.Source = new InstagramSource();
+        collection.Title = collection.Source.Title;
 
         return collection;
     }

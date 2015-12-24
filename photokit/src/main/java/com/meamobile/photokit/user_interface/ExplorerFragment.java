@@ -4,6 +4,7 @@ import android.app.Activity;
 import android.net.Uri;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
+import android.util.DisplayMetrics;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -19,14 +20,20 @@ import com.meamobile.photokit.core.Source;
 
 public class ExplorerFragment extends Fragment {
 
+    public interface ExplorerFragmentNavigator
+    {
+        public void pushExplorerWithCollection(Collection collection);
+        public void setNavigationTitle(String title);
+        public void setDisplaysBackButton(Boolean shouldDisplay);
+    }
+
     private static final String ARG_COLLECTION = "collection";
 
     private Collection mCollection;
 
     private GridView mGridView;
     private OnFragmentInteractionListener mListener;
-
-    public int ContainerId;
+    private ExplorerFragmentNavigator mNavigator;
 
     public ExplorerFragment() {
         // Required empty public constructor
@@ -47,11 +54,6 @@ public class ExplorerFragment extends Fragment {
         super.onCreate(savedInstanceState);
         if (getArguments() != null) {
             mCollection = (Collection) getArguments().getParcelable(ARG_COLLECTION);
-        }
-
-        if (mCollection == null)
-        {
-            mCollection = Collection.RootCollection();
         }
 
         mCollection.loadContents();
@@ -76,6 +78,13 @@ public class ExplorerFragment extends Fragment {
     @Override
     public void onAttach(Activity activity) {
         super.onAttach(activity);
+
+        if (activity instanceof ExplorerFragmentNavigator) {
+            mNavigator = (ExplorerFragmentNavigator)activity;
+        }
+        else {
+            throw new RuntimeException("Cannot attach a ExplorerFragment to a Activity that doesn't implement ExplorerFragmentNavigator");
+        }
     }
 
     @Override
@@ -91,9 +100,14 @@ public class ExplorerFragment extends Fragment {
 
     public void onFragmentWillAppear()
     {
-        if (mCollection != null && mCollection.Source != null)
-        {
-            getActivity().setTitle(mCollection.Source.Title);
+        if (mCollection != null && mNavigator != null) {
+            if (mCollection.Title != null) {
+                mNavigator.setDisplaysBackButton(true);
+                mNavigator.setNavigationTitle(mCollection.Title);
+            } else {
+                mNavigator.setDisplaysBackButton(false);
+                mNavigator.setNavigationTitle("Select a Source");
+            }
         }
     }
 
@@ -109,6 +123,24 @@ public class ExplorerFragment extends Fragment {
         mGridView = (GridView) view.findViewById(R.id.gridview);
         mGridView.setAdapter(adapter);
         mGridView.setOnItemClickListener(getOnItemClickListener());
+
+        //Larger Screens means more columns
+        DisplayMetrics metrics = new DisplayMetrics();
+        getActivity().getWindowManager().getDefaultDisplay().getMetrics(metrics);
+        int w = (int)(metrics.widthPixels / metrics.density);
+        if (w < 400)
+        {
+            mGridView.setNumColumns(3);
+        }
+        else if (w < 500)
+        {
+            mGridView.setNumColumns(4);
+        }
+        else
+        {
+            mGridView.setNumColumns(5);
+        }
+
     }
 
     protected AdapterView.OnItemClickListener getOnItemClickListener()
@@ -136,36 +168,20 @@ public class ExplorerFragment extends Fragment {
     //        Selection
     //--------------------------
 
-    protected void pushNewExplorerFragementWithCollection(Collection collection)
-    {
-        ExplorerFragment fragment = ExplorerFragment.newInstance(collection);
-        fragment.ContainerId = this.ContainerId;
-        getFragmentManager().beginTransaction()
-                .setCustomAnimations(R.animator.slide_in_right, R.animator.slide_out_left, R.animator.slide_in_left, R.animator.slide_out_right)
-                .replace(this.ContainerId, fragment)
-                .addToBackStack("tag")
-                .commit();
-
-        if (collection != null && collection.Source != null)
-        {
-            getActivity().setTitle(collection.Source.Title);
-        }
-    }
-
     protected void didSelectCollectionAtIndex(int index)
     {
         final Collection selected = mCollection.collectionAtIndex(index);
 
         if (selected.Source.isActive())
         {
-            pushNewExplorerFragementWithCollection(selected);
+            mNavigator.pushExplorerWithCollection(selected);
         }
         else
         {
             selected.Source.activateSource(getActivity(), new Source.SourceActivationCallback() {
                 @Override
                 public void success() {
-                    pushNewExplorerFragementWithCollection(selected);
+                    mNavigator.pushExplorerWithCollection(selected);
                 }
 
                 @Override

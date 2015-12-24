@@ -35,11 +35,16 @@ public class ExplorerGridViewAdapter extends BaseAdapter implements Collection.C
     }
 
     public Object getItem(int position) {
-        return null;
+        if (position < mCollection.numberOfCollections()) {
+            return mCollection.collectionAtIndex(position);
+        }
+        else {
+            return mCollection.assetAtIndex(position - mCollection.numberOfCollections());
+        }
     }
 
     public long getItemId(int position) {
-        return 0;
+        return position;
     }
 
 
@@ -113,7 +118,12 @@ public class ExplorerGridViewAdapter extends BaseAdapter implements Collection.C
 
     @Override
     public void collectionDidAddCollection(Collection collection, Collection added) {
-
+        mActivity.runOnUiThread(new Runnable() {
+            @Override
+            public void run() {
+                notifyDataSetChanged();
+            }
+        });
     }
 
     @Override

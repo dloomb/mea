@@ -1,5 +1,6 @@
 package com.meamobile.printicular;
 
+import android.content.Intent;
 import android.graphics.PorterDuff;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
@@ -11,15 +12,19 @@ import android.view.MenuItem;
 import android.widget.Button;
 import android.widget.Toast;
 
+import com.facebook.CallbackManager;
+import com.facebook.FacebookSdk;
 import com.meamobile.photokit.core.Collection;
 import com.meamobile.photokit.core.UserDefaults;
 import com.meamobile.photokit.user_interface.ExplorerFragment;
+import com.meamobile.photokit.user_interface.ExplorerFragment.ExplorerFragmentNavigator;
 
 import java.util.List;
 
-public class MainActivity extends ActionBarActivity {
+public class MainActivity extends ActionBarActivity implements ExplorerFragmentNavigator {
 
     private long lastBackTap = 0;
+    private CallbackManager mFacebookCallbackManager;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -29,19 +34,15 @@ public class MainActivity extends ActionBarActivity {
         //Setup UserDefaults Singleton
         UserDefaults.getInstance().setContext(this);
 
-        setTitle("Select a Source");
-
         Button nextButton = (Button) findViewById(R.id.nextButton);
         nextButton.getBackground().setColorFilter(0xFFF20017, PorterDuff.Mode.MULTIPLY);
 
+        FacebookSdk.sdkInitialize(getApplicationContext());
+        mFacebookCallbackManager = CallbackManager.Factory.create();
 
-        ExplorerFragment fragment = ExplorerFragment.newInstance(Collection.RootCollection());
-        fragment.ContainerId = R.id.fragmentContainer;
-        getSupportFragmentManager().beginTransaction()
-                .replace(fragment.ContainerId, fragment)
-                .addToBackStack("tag")
-                .commit();
+        pushRootExplorer();
     }
+
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
@@ -57,36 +58,69 @@ public class MainActivity extends ActionBarActivity {
             return true;
         }
 
+        if (id == android.R.id.home) {
+            popExplorerFragment();
+            return true;
+        }
+
         return super.onOptionsItemSelected(item);
     }
 
+    @Override
+    protected void onActivityResult(final int requestCode, final int resultCode, final Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+        mFacebookCallbackManager.onActivityResult(requestCode, resultCode, data);
+    }
 
-    //--------------------------
-    //        Button Input
-    //--------------------------
 
+    ///-----------------------------------------------------------
+    /// @name Hardware Button Input
+    ///-----------------------------------------------------------
 
     @Override
     public void onBackPressed()
     {
         Log.d("!!", "Back");
+        popExplorerFragment();
+    }
+
+
+
+    ///-----------------------------------------------------------
+    /// @name Explorer Fragment Navigation
+    ///-----------------------------------------------------------
+
+    protected Fragment getCurrentFragment()
+    {
         FragmentManager fragmentManager = getSupportFragmentManager();
+        if (fragmentManager.getBackStackEntryCount() == 0) {
+            return null;
+        }
+        String tag = fragmentManager.getBackStackEntryAt(fragmentManager.getBackStackEntryCount() - 1).getName();
+        return fragmentManager.findFragmentByTag(tag);
+    }
 
-        //Pop Stack
-        if (fragmentManager.getBackStackEntryCount() > 1)
+    protected void popExplorerFragment()
+    {
+        Fragment fragment = getCurrentFragment();
+
+        if (fragment instanceof ExplorerFragment)
         {
-            List<Fragment> fragments = fragmentManager.getFragments();
-            Fragment current = fragments.get(fragments.size() - 1);
+            FragmentManager manager = getSupportFragmentManager();
+            manager.popBackStack();
+            manager.executePendingTransactions();
 
-            if (current instanceof ExplorerFragment)
+            ExplorerFragment frag = (ExplorerFragment) getCurrentFragment();
+            if (frag != null)
             {
-                fragmentManager.popBackStack();
-
-//                ExplorerFragment explorerFragment = (ExplorerFragment) current;
-//                explorerFragment.onFragmentWillAppear();
+                frag.onFragmentWillAppear();
+            }
+            else
+            {
+                setTitle("Select a Source");
+                setDisplaysBackButton(false);
             }
         }
-        //Exit App
         else
         {
             long now = System.currentTimeMillis();
@@ -102,5 +136,41 @@ public class MainActivity extends ActionBarActivity {
                 lastBackTap = now;
             }
         }
+    }
+
+    protected void pushRootExplorer()
+    {
+        ExplorerFragment fragment = ExplorerFragment.newInstance(Collection.RootCollection());
+        getSupportFragmentManager().beginTransaction()
+                .replace(R.id.fragmentContainer, fragment)
+                .commit();
+
+        getSupportFragmentManager().executePendingTransactions();
+        fragment.onFragmentWillAppear();
+    }
+
+
+    @Override
+    public void pushExplorerWithCollection(Collection collection) {
+        ExplorerFragment fragment = ExplorerFragment.newInstance(collection);
+        getSupportFragmentManager().beginTransaction()
+                .setCustomAnimations(R.animator.slide_in_right, R.animator.slide_out_left, R.animator.slide_in_left, R.animator.slide_out_right)
+                .replace(R.id.fragmentContainer, fragment, collection.collectionIdentifier())
+                .addToBackStack(collection.collectionIdentifier())
+                .commit();
+
+        getSupportFragmentManager().executePendingTransactions();
+
+        fragment.onFragmentWillAppear();
+    }
+
+    @Override
+    public void setNavigationTitle(String title) {
+        setTitle(title);
+    }
+
+    @Override
+    public void setDisplaysBackButton(Boolean shouldDisplay) {
+        getSupportActionBar().setDisplayHomeAsUpEnabled(shouldDisplay);
     }
 }

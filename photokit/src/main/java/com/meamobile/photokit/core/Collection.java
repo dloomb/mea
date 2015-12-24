@@ -3,7 +3,10 @@ package com.meamobile.photokit.core;
 
 
 import com.google.gson.Gson;
+import com.meamobile.photokit.facebook.FacebookCollection;
 import com.meamobile.photokit.instagram.InstagramCollection;
+import com.meamobile.photokit.local.LocalCollection;
+
 import android.os.Parcel;
 import android.os.Parcelable;
 import java.util.ArrayList;
@@ -18,7 +21,7 @@ public class Collection implements Parcelable
     {
         Instagram(1),
         Facebook(2),
-        Dropbox(2),
+        Dropbox(4),
         All(Integer.MAX_VALUE);
 
         CollectionType(int val)
@@ -54,8 +57,14 @@ public class Collection implements Parcelable
     {
         Collection collection = new Collection();
 
+        LocalCollection local = LocalCollection.RootCollection();
+        collection.addCollection(local);
+
         InstagramCollection instagram = InstagramCollection.RootCollection();
         collection.addCollection(instagram);
+
+        FacebookCollection facebook = FacebookCollection.RootCollection();
+        collection.addCollection(facebook);
 
         return collection;
     }
@@ -63,6 +72,10 @@ public class Collection implements Parcelable
     public CollectionType type()
     {
         return null;
+    }
+
+    public String collectionIdentifier () {
+        return getClass().getName() + Title;
     }
 
     public void setCollectionObserver(CollectionObserver observer)
@@ -82,6 +95,10 @@ public class Collection implements Parcelable
     public void addCollection(Collection collection)
     {
         mCollections.add(collection);
+        if (mObserver != null)
+        {
+            mObserver.collectionDidAddCollection(this, collection);
+        }
     }
 
     public int numberOfCollections()
@@ -129,9 +146,9 @@ public class Collection implements Parcelable
     public void loadContents(){};
 
 
-    //---------------------------------
-    //          Parcelable
-    //---------------------------------
+    ///-----------------------------------------------------------
+    /// @name Parcelable
+    ///-----------------------------------------------------------
 
 
     @Override
@@ -143,11 +160,11 @@ public class Collection implements Parcelable
     public void writeToParcel(Parcel dest, int flags)
     {
         Map<String, Object> data = new HashMap<String, Object>();
-        data.put("assets", mAssets);
-        data.put("collections", mCollections);
-        data.put("title", Title);
-        data.put("source", Source);
-        data.put("thumbnail_path", ThumbnailPath);
+//        data.put("assets", mAssets);
+//        data.put("collections", mCollections);
+//        data.put("title", Title);
+//        data.put("source", Source);
+//        data.put("thumbnail_path", ThumbnailPath);
 
         String s = (new Gson()).toJson(data);
         dest.writeString(s);
