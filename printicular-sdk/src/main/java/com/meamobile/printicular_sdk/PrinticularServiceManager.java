@@ -7,6 +7,8 @@ import android.util.Log;
 
 import com.meamobile.printicular_sdk.models.AccessToken;
 
+import java.util.Calendar;
+import java.util.Date;
 import java.util.Map;
 
 public class PrinticularServiceManager
@@ -46,20 +48,7 @@ public class PrinticularServiceManager
         mContext = context;
         mEnvironment = environment;
 
-        validateAccessToken(new AccessTokenCallback()
-        {
-            @Override
-            public void success()
-            {
-                Log.d(LOG_KEY, "OAuth Success");
-            }
-
-            @Override
-            public void error(String reason)
-            {
-                Log.e(LOG_KEY, "OAuth Failure");
-            }
-        });
+        validateAccessToken(null);
     }
 
     public void validateAccessToken(final AccessTokenCallback callback)
@@ -76,7 +65,6 @@ public class PrinticularServiceManager
             }
         }
 
-
         if (mAccessToken != null && mAccessToken.hasExpired() == false)
         {
             callback.success();
@@ -86,6 +74,10 @@ public class PrinticularServiceManager
         final APIClient client = new APIClient(getBaseUrlForEnvironment());
 
         final Bundle params = new Bundle();
+        params.putString("grant_type", "client_credentials");
+        params.putString("client_id", "UN0Re26fy7V0Rc368QW7");
+        params.putString("client_secret", "deKAAuZJTi74eUjMVjaTFMoWfvH43jxluR3CQifB");
+        params.putString("scope", "warehouse-stationery");
 
         mCurrentRequestAttempts = 0;
         APIClient.APIClientCallback internalCallback;
@@ -96,7 +88,9 @@ public class PrinticularServiceManager
             {
                 if (response.get("error") == null)
                 {
-
+                    Log.d(LOG_KEY, "OAuth Success");
+                    setAccessTokenFromResponse(response);
+                    if(callback != null) callback.success();
                 }
                 else
                 {
@@ -110,19 +104,32 @@ public class PrinticularServiceManager
                 mCurrentRequestAttempts++;
                 if (mCurrentRequestAttempts > 5)
                 {
-                    callback.error("failed");
-                    Log.e(LOG_KEY, "OAuth Failed, retrying...");
+                    Log.e(LOG_KEY, "OAuth Failed!");
+                    if(callback != null) callback.error("failed");
                     return;
                 }
 
-                client.get("oauth/access_token?grant_type=client_credentials&client_id=c9U2YsPDlis9gwPl&client_secret=AqHvqcPT11uRi8nSBt301SYNRtjlJb8h", params, this);
+                Log.e(LOG_KEY, "OAuth Failed, retrying...");
+                client.post("oauth/access_token", params, this);
             }
         };
-        // TODO: 28/12/15 Its a POST you dummy! 
-        client.get("oauth/access_token?grant_type=client_credentials&client_id=UN0Re26fy7V0Rc368QW7&client_secret=deKAAuZJTi74eUjMVjaTFMoWfvH43jxluR3CQifB&scope=warehouse-stationery", params, internalCallback);
+        client.post("oauth/access_token", params, internalCallback);
     }
 
 
+    private void setAccessTokenFromResponse(Map<String, Object> response)
+    {
+        Calendar calendar = Calendar.getInstance(); // gets a calendar using the default time zone and locale.
+        calendar.add(Calendar.SECOND, ((Number) response.get("expires_in")).intValue());
+
+        mAccessToken = new AccessToken((String)response.get("access_token"), null, calendar.getTime());
+
+        try {
+            mAccessToken.storeToken(mContext);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
 
     private String getBaseUrlForEnvironment()
     {

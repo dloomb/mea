@@ -15,11 +15,13 @@ import org.apache.http.client.methods.HttpPost;
 import org.apache.http.client.methods.HttpUriRequest;
 import org.apache.http.entity.StringEntity;
 import org.apache.http.impl.client.DefaultHttpClient;
+import org.apache.http.message.BasicNameValuePair;
 import org.apache.http.params.HttpParams;
 
 import java.io.BufferedReader;
 import java.io.InputStreamReader;
 import java.io.UnsupportedEncodingException;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
@@ -77,12 +79,18 @@ public class APIClient
 
     public void post(String url, Bundle parameters, APIClientCallback callback)
     {
-        HttpPost post = new HttpPost(url);
+        HttpPost post = new HttpPost(mBaseUrl + url);
         if(parameters != null)
         {
             try
             {
-                post.setEntity(new StringEntity(parameters.toString()));
+                List<NameValuePair> params = new ArrayList<NameValuePair>();
+                for(String key : parameters.keySet()){
+                    Object value = parameters.get(key);
+                    params.add(new BasicNameValuePair(key, (String) value));
+                }
+
+                post.setEntity(new UrlEncodedFormEntity(params));
             }
             catch (UnsupportedEncodingException e)
             {
@@ -92,9 +100,6 @@ public class APIClient
         }
 
         request(post, callback);
-
-
-
     }
 
     public void get(String url, Bundle parameters, APIClientCallback callback)
