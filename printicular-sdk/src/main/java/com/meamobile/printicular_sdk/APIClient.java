@@ -1,0 +1,107 @@
+package com.meamobile.printicular_sdk;
+
+
+import android.os.Bundle;
+
+import com.google.gson.Gson;
+import com.google.gson.reflect.TypeToken;
+
+import org.apache.http.HttpEntity;
+import org.apache.http.HttpResponse;
+import org.apache.http.NameValuePair;
+import org.apache.http.client.entity.UrlEncodedFormEntity;
+import org.apache.http.client.methods.HttpGet;
+import org.apache.http.client.methods.HttpPost;
+import org.apache.http.client.methods.HttpUriRequest;
+import org.apache.http.entity.StringEntity;
+import org.apache.http.impl.client.DefaultHttpClient;
+import org.apache.http.params.HttpParams;
+
+import java.io.BufferedReader;
+import java.io.InputStreamReader;
+import java.io.UnsupportedEncodingException;
+import java.util.List;
+import java.util.Map;
+
+public class APIClient
+{
+    public interface APIClientCallback
+    {
+        void success(Map<String, Object> response);
+        void error(String reason);
+    }
+
+    private String mBaseUrl;
+
+    public APIClient(String baseUrl)
+    {
+        mBaseUrl = baseUrl;
+    }
+
+    {
+
+    }
+
+    public interface JSONHttpClientCallback
+    {
+        public void success(Map<String, Object> response);
+        public void error(String error);
+    }
+
+    protected void request(final HttpUriRequest request, APIClientCallback callback)
+    {
+        final HttpUriRequest _request = request;
+        final APIClientCallback _callback = callback;
+
+        new Thread(new Runnable() {
+
+            @Override
+            public void run()
+            {
+                DefaultHttpClient client = new DefaultHttpClient();
+                try
+                {
+                    HttpResponse response = client.execute(_request);
+                    BufferedReader reader = new BufferedReader(new InputStreamReader(response.getEntity().getContent(), "UTF-8"));
+                    Map<String, Object> object = new Gson().fromJson(reader, new TypeToken<Map<String, Object>>(){}.getType());
+                    _callback.success(object);
+                }
+                catch (Exception e)
+                {
+                    _callback.error(e.getLocalizedMessage());
+                }
+            }
+
+        }).start();
+    }
+
+    public void post(String url, Bundle parameters, APIClientCallback callback)
+    {
+        HttpPost post = new HttpPost(url);
+        if(parameters != null)
+        {
+            try
+            {
+                post.setEntity(new StringEntity(parameters.toString()));
+            }
+            catch (UnsupportedEncodingException e)
+            {
+                callback.error("Error parsing json parameters");
+                return;
+            }
+        }
+
+        request(post, callback);
+
+
+
+    }
+
+    public void get(String url, Bundle parameters, APIClientCallback callback)
+    {
+        HttpGet get = new HttpGet(mBaseUrl + url);
+        request(get, callback);
+    }
+
+
+}

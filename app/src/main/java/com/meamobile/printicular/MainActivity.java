@@ -18,8 +18,9 @@ import com.meamobile.photokit.core.Collection;
 import com.meamobile.photokit.core.UserDefaults;
 import com.meamobile.photokit.user_interface.ExplorerFragment;
 import com.meamobile.photokit.user_interface.ExplorerFragment.ExplorerFragmentNavigator;
-
-import java.util.List;
+import com.meamobile.printicular_sdk.PrinticularServiceManager;
+import com.meamobile.printicular_sdk.PrinticularServiceManager.PrinticularEnvironment;
+import com.meamobile.printicular_sdk.models.AccessToken;
 
 public class MainActivity extends ActionBarActivity implements ExplorerFragmentNavigator {
 
@@ -33,6 +34,11 @@ public class MainActivity extends ActionBarActivity implements ExplorerFragmentN
 
         //Setup UserDefaults Singleton
         UserDefaults.getInstance().setContext(this);
+
+        new AccessToken("", null, null).deleteToken(this);
+
+        PrinticularServiceManager.getInstance()
+                .initialize(this, PrinticularEnvironment.STAGING);
 
         Button nextButton = (Button) findViewById(R.id.nextButton);
         nextButton.getBackground().setColorFilter(0xFFF20017, PorterDuff.Mode.MULTIPLY);
