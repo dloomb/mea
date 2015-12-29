@@ -12,6 +12,7 @@ import android.widget.AdapterView;
 import android.widget.GridView;
 import android.widget.Toast;
 
+import com.meamobile.photokit.core.Asset;
 import com.meamobile.photokit.core.Collection;
 
 import com.meamobile.photokit.R;
@@ -20,11 +21,14 @@ import com.meamobile.photokit.core.Source;
 
 public class ExplorerFragment extends Fragment {
 
-    public interface ExplorerFragmentNavigator
+    public interface ExplorerFragmentDelegate
     {
         public void pushExplorerWithCollection(Collection collection);
         public void setNavigationTitle(String title);
         public void setDisplaysBackButton(Boolean shouldDisplay);
+
+        public void onAssetSelect(Asset asset, int index);
+        public boolean isAssetSelected(Asset asset, int index);
     }
 
     private static final String ARG_COLLECTION = "collection";
@@ -33,7 +37,7 @@ public class ExplorerFragment extends Fragment {
 
     private GridView mGridView;
     private OnFragmentInteractionListener mListener;
-    private ExplorerFragmentNavigator mNavigator;
+    private ExplorerFragmentDelegate mDelegate;
 
     public ExplorerFragment() {
         // Required empty public constructor
@@ -79,8 +83,8 @@ public class ExplorerFragment extends Fragment {
     public void onAttach(Activity activity) {
         super.onAttach(activity);
 
-        if (activity instanceof ExplorerFragmentNavigator) {
-            mNavigator = (ExplorerFragmentNavigator)activity;
+        if (activity instanceof ExplorerFragmentDelegate) {
+            mDelegate = (ExplorerFragmentDelegate)activity;
         }
         else {
             throw new RuntimeException("Cannot attach a ExplorerFragment to a Activity that doesn't implement ExplorerFragmentNavigator");
@@ -100,13 +104,13 @@ public class ExplorerFragment extends Fragment {
 
     public void onFragmentWillAppear()
     {
-        if (mCollection != null && mNavigator != null) {
+        if (mCollection != null && mDelegate != null) {
             if (mCollection.Title != null) {
-                mNavigator.setDisplaysBackButton(true);
-                mNavigator.setNavigationTitle(mCollection.Title);
+                mDelegate.setDisplaysBackButton(true);
+                mDelegate.setNavigationTitle(mCollection.Title);
             } else {
-                mNavigator.setDisplaysBackButton(false);
-                mNavigator.setNavigationTitle("Select a Source");
+                mDelegate.setDisplaysBackButton(false);
+                mDelegate.setNavigationTitle("Select a Source");
             }
         }
     }
@@ -117,7 +121,7 @@ public class ExplorerFragment extends Fragment {
 
     protected void initializeGridView(View view)
     {
-        ExplorerGridViewAdapter adapter = new ExplorerGridViewAdapter(getActivity(), mCollection);
+        ExplorerGridViewAdapter adapter = new ExplorerGridViewAdapter(getActivity(), mCollection, mDelegate);
         mCollection.setCollectionObserver(adapter);
 
         mGridView = (GridView) view.findViewById(R.id.gridview);
@@ -156,7 +160,7 @@ public class ExplorerFragment extends Fragment {
                 }
                 else
                 {
-                    didSelectAssetAtIndex(position - collectionsCount);
+                    didSelectAssetAtIndex(position - collectionsCount, view);
                 }
             }
         };
@@ -174,14 +178,14 @@ public class ExplorerFragment extends Fragment {
 
         if (selected.Source.isActive())
         {
-            mNavigator.pushExplorerWithCollection(selected);
+            mDelegate.pushExplorerWithCollection(selected);
         }
         else
         {
             selected.Source.activateSource(getActivity(), new Source.SourceActivationCallback() {
                 @Override
                 public void success() {
-                    mNavigator.pushExplorerWithCollection(selected);
+                    mDelegate.pushExplorerWithCollection(selected);
                 }
 
                 @Override
@@ -193,9 +197,17 @@ public class ExplorerFragment extends Fragment {
 
     }
 
-    protected void didSelectAssetAtIndex(int index)
+    protected void didSelectAssetAtIndex(int index, View v)
     {
+        Asset selected = mCollection.assetAtIndex(index);
+        mDelegate.onAssetSelect(selected, index);
 
+        boolean isSelected = mDelegate.isAssetSelected(selected, index);
+        View selectionView = v.findViewById(R.id.selectionIndicatorImageView);
+        if (selectionView != null)
+        {
+            selectionView.setVisibility(isSelected ? View.VISIBLE : View.INVISIBLE);
+        }
     }
 
 

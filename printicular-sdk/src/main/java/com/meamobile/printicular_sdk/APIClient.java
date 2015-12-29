@@ -5,6 +5,7 @@ import android.os.Bundle;
 
 import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
+import com.meamobile.printicular_sdk.models.AccessToken;
 
 import org.apache.http.HttpEntity;
 import org.apache.http.HttpResponse;
@@ -77,9 +78,10 @@ public class APIClient
         }).start();
     }
 
-    public void post(String url, Bundle parameters, APIClientCallback callback)
+    public void post(String url, Bundle parameters, APIClientCallback callback, AccessToken accessToken)
     {
         HttpPost post = new HttpPost(mBaseUrl + url);
+
         if(parameters != null)
         {
             try
@@ -99,12 +101,23 @@ public class APIClient
             }
         }
 
+        if (accessToken != null)
+        {
+            post.addHeader("Authorization", "Bearer " + accessToken.toString());
+        }
+
         request(post, callback);
     }
 
-    public void get(String url, Bundle parameters, APIClientCallback callback)
+    public void get(String url, Bundle parameters, APIClientCallback callback, AccessToken accessToken)
     {
         HttpGet get = new HttpGet(mBaseUrl + url);
+
+        if (accessToken != null)
+        {
+            get.addHeader("Authorization", "Bearer " + accessToken.toString());
+        }
+
         request(get, callback);
     }
 

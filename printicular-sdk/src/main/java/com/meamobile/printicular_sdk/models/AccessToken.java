@@ -13,6 +13,7 @@ import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.InputStreamReader;
 import java.text.SimpleDateFormat;
+import java.util.Calendar;
 import java.util.Date;
 
 public class AccessToken
@@ -31,6 +32,12 @@ public class AccessToken
     }
 
     private AccessToken() {}
+
+    @Override
+    public String toString()
+    {
+        return mToken;
+    }
 
     public static AccessToken loadToken(Context context) throws Exception
     {
@@ -79,8 +86,10 @@ public class AccessToken
 
     public boolean hasExpired()
     {
-        Date now = new Date();
-        return mExpiryDate.before(now);
+        Calendar calendar = Calendar.getInstance();
+        calendar.add(Calendar.SECOND, -86400);
+        Date dayago = calendar.getTime();
+        return mExpiryDate.before(dayago);
     }
 
 

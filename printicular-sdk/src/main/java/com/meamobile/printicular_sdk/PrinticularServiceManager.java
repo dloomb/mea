@@ -6,9 +6,13 @@ import android.os.Bundle;
 import android.util.Log;
 
 import com.meamobile.printicular_sdk.models.AccessToken;
+import com.meamobile.printicular_sdk.APIClient.APIClientCallback;
+import com.meamobile.printicular_sdk.models.*;
 
+import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
+import java.util.List;
 import java.util.Map;
 
 public class PrinticularServiceManager
@@ -20,19 +24,16 @@ public class PrinticularServiceManager
         PRODUCTION
     }
 
-    public interface AccessTokenCallback
-    {
-        void success();
-        void error(String reason);
-    }
-
     private static PrinticularServiceManager mInstance = null;
     private static String LOG_KEY = "MEA.PrinticularServiceManager";
 
     private Context mContext;
     private PrinticularEnvironment mEnvironment;
-    private AccessToken mAccessToken;
     private long mCurrentRequestAttempts;
+    private AccessToken mAccessToken;
+    private Map<Long, PrintService> mPrintServices;
+    private Date mPrintServicesTimeStamp;
+
 
     public static PrinticularServiceManager getInstance()
     {
@@ -48,11 +49,35 @@ public class PrinticularServiceManager
         mContext = context;
         mEnvironment = environment;
 
-        validateAccessToken(null);
+        validateAccessToken(new AccessTokenCallback()
+        {
+            @Override
+            public void success()
+            {
+                refreshPrintServices(null);
+            }
+
+            @Override
+            public void error(String reason) {}
+        });
     }
 
-    public void validateAccessToken(final AccessTokenCallback callback)
+
+
+    ///-----------------------------------------------------------
+    /// @name OAuth
+    ///-----------------------------------------------------------
+
+    public interface AccessTokenCallback
     {
+        void success();
+        void error(String reason);
+    }
+
+    public void validateAccessToken(AccessTokenCallback callback)
+    {
+        final AccessTokenCallback _callback = callback;
+
         if (mAccessToken == null)
         {
             try
@@ -67,7 +92,8 @@ public class PrinticularServiceManager
 
         if (mAccessToken != null && mAccessToken.hasExpired() == false)
         {
-            callback.success();
+            Log.d(LOG_KEY, "OAuth Success, Reusing token.");
+            if(callback != null) _callback.success();
             return;
         }
 
@@ -80,8 +106,8 @@ public class PrinticularServiceManager
         params.putString("scope", "warehouse-stationery");
 
         mCurrentRequestAttempts = 0;
-        APIClient.APIClientCallback internalCallback;
-        internalCallback = new APIClient.APIClientCallback()
+        APIClientCallback internalCallback;
+        internalCallback = new APIClientCallback()
         {
             @Override
             public void success(Map<String, Object> response)
@@ -90,7 +116,7 @@ public class PrinticularServiceManager
                 {
                     Log.d(LOG_KEY, "OAuth Success");
                     setAccessTokenFromResponse(response);
-                    if(callback != null) callback.success();
+                    if(_callback != null) _callback.success();
                 }
                 else
                 {
@@ -105,21 +131,87 @@ public class PrinticularServiceManager
                 if (mCurrentRequestAttempts > 5)
                 {
                     Log.e(LOG_KEY, "OAuth Failed!");
-                    if(callback != null) callback.error("failed");
+                    if(_callback != null) _callback.error("failed");
                     return;
                 }
 
                 Log.e(LOG_KEY, "OAuth Failed, retrying...");
-                client.post("oauth/access_token", params, this);
+                client.post("oauth/access_token", params, this, null);
             }
         };
-        client.post("oauth/access_token", params, internalCallback);
+        client.post("oauth/access_token", params, internalCallback, null);
     }
 
 
+
+
+    ///-----------------------------------------------------------
+    /// @name PrintService
+    ///-----------------------------------------------------------
+
+    public interface RefreshPrintServiceCallback
+    {
+        void success(Map<Long, PrintService> services);
+        void error(String reason);
+    }
+
+    public void refreshPrintServices(final RefreshPrintServiceCallback callback)
+    {
+        //If we already have an Array of PrintServices and they are recent, return them.
+        if (mPrintServices != null && mPrintServicesTimeStamp != null && mPrintServicesTimeStamp.after(new Date()))
+        {
+            Log.d(LOG_KEY, "PrintService Refresh Success, Reusing.");
+            if (callback != null) callback.success(mPrintServices);
+        }
+
+        final RefreshPrintServiceCallback _callback = callback;
+
+        final APIClient client = new APIClient(getBaseUrlForEnvironment());
+        mCurrentRequestAttempts = 0;
+        APIClientCallback internalCallback;
+
+        internalCallback = new APIClientCallback()
+        {
+            @Override
+            public void success(Map<String, Object> response)
+            {
+                Log.d(LOG_KEY, "PrintService Refresh Success.");
+                setPrintServicesFromResponse(response);
+                if (_callback != null) _callback.success(mPrintServices);
+            }
+
+            @Override
+            public void error(String reason)
+            {
+                mCurrentRequestAttempts++;
+                if (mCurrentRequestAttempts > 5)
+                {
+                    mPrintServices = null;
+                    mPrintServicesTimeStamp = null;
+                    Log.e(LOG_KEY, "PrintService Refresh Failed: " + reason);
+                    if(_callback != null) _callback.error("failed");
+                    return;
+                }
+
+                Log.e(LOG_KEY, "PrintService Refresh Failed, retrying...");
+                client.get("printServices?include=products.prices", null, this, mAccessToken);
+            }
+        };
+
+        client.get("printServices?include=products.prices", null, internalCallback, mAccessToken);
+    }
+
+
+
+
+
+    ///-----------------------------------------------------------
+    /// @name Private Helpers
+    ///-----------------------------------------------------------
+
     private void setAccessTokenFromResponse(Map<String, Object> response)
     {
-        Calendar calendar = Calendar.getInstance(); // gets a calendar using the default time zone and locale.
+        Calendar calendar = Calendar.getInstance();
         calendar.add(Calendar.SECOND, ((Number) response.get("expires_in")).intValue());
 
         mAccessToken = new AccessToken((String)response.get("access_token"), null, calendar.getTime());
@@ -130,6 +222,14 @@ public class PrinticularServiceManager
             e.printStackTrace();
         }
     }
+
+    private void setPrintServicesFromResponse(Map<String, Object> response)
+    {
+        Map objects = (Map) Model.hydrate(response);
+        mPrintServices = (Map) objects.get("print_services");
+        mPrintServicesTimeStamp = new Date();
+    }
+
 
     private String getBaseUrlForEnvironment()
     {
@@ -143,5 +243,10 @@ public class PrinticularServiceManager
                 return "https://stagingapi.printicular.com/api/1.0/";
         }
     }
+
+
+
+
+
 
 }

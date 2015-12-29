@@ -28,6 +28,7 @@ public class CartFragment extends Fragment {
     private String mParam2;
 
     private GridView mGridView;
+    private CartGridViewAdapter mGridAdapter;
 
     private OnFragmentInteractionListener mListener;
 
@@ -88,13 +89,21 @@ public class CartFragment extends Fragment {
 
 
     //--------------------------
-    // GridView
+    //         GridView
     //--------------------------
+
+    public void onDataChanged(int index)
+    {
+        mGridAdapter.notifyDataSetChanged();
+        mGridView.smoothScrollToPosition(index);
+    }
 
     protected void initializeGridView(View view)
     {
+        mGridAdapter = new CartGridViewAdapter(getActivity());
+
         mGridView = (GridView) view.findViewById(R.id.gridview);
-        mGridView.setAdapter(new CartGridViewAdapter(getActivity()));
+        mGridView.setAdapter(mGridAdapter);
         mGridView.setOnItemClickListener(getOnItemClickListener());
 
         view.post(new Runnable() {

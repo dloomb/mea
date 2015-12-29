@@ -6,14 +6,6 @@
     tools:context="com.meamobile.printicular.MainActivity">
 
 
-    <!--<fragment-->
-        <!--android:layout_width="wrap_content"-->
-        <!--android:layout_height="match_parent"-->
-
-        <!--android:name="com.meamobile.photokit.user_interface.NavigationFragment"-->
-        <!--android:id="@+id/navigationFragment"-->
-        <!--tools:layout="@layout/fragment_navigation" />-->
-
     <RelativeLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent"
@@ -58,6 +50,35 @@
             android:textColor="#FFF"
             android:text="next"
             android:textAllCaps="false"/>
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_below="@id/cartFragment"
+            android:id="@+id/buttonContainer">
+
+
+            <Button
+                android:layout_width="match_parent"
+                android:layout_weight="1.5"
+                android:layout_height="wrap_content"
+                android:id="@+id/deliveryButton"
+                android:layout_centerHorizontal="true"
+                android:textColor="#FFF"
+                android:text="deliver"
+                android:textAllCaps="false"/>
+
+            <Button
+                android:layout_width="match_parent"
+                android:layout_weight="1"
+                android:layout_height="wrap_content"
+                android:id="@+id/pickupButton"
+                android:layout_centerHorizontal="true"
+                android:textColor="#FFF"
+                android:text="pickup"
+                android:textAllCaps="false"/>
+
+        </LinearLayout>
 
     </RelativeLayout>
 

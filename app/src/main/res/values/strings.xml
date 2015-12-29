@@ -1,6 +1,9 @@
 <resources>
     <string name="app_name">Printicular</string>
+
     <string name="action_settings">Settings</string>
+    <string name="title_activity_settings">Settings</string>
 
     <string name="facebook_app_id">1448060022160784</string>
+
 </resources>

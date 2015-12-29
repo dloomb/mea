@@ -1,0 +1,96 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+              android:orientation="vertical"
+              android:layout_width="match_parent"
+              android:layout_height="match_parent">
+
+    <TextView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="Select your Country"
+        android:textStyle="bold"
+        android:textColor="#222"
+        android:textSize="20dp"
+        android:layout_margin="10dp"
+        android:id="@+id/titleTextView"/>
+
+    <TextView
+        android:layout_width="match_parent"
+        android:layout_height="1dp"
+        android:background="@color/printicular_primary_grey"
+        android:layout_below="@id/titleTextView"
+        android:id="@+id/upperDivider"/>
+
+
+    <ScrollView
+        android:layout_width="match_parent"
+        android:layout_height="130dp"
+        android:layout_below="@id/upperDivider"
+        android:layout_marginBottom="50dp"
+        android:id="@+id/contentScrollView">
+
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content">
+
+            <RadioGroup xmlns:android="http://schemas.android.com/apk/res/android"
+                        android:layout_width="fill_parent"
+                        android:layout_height="wrap_content"
+                        android:orientation="vertical">
+
+                <RadioButton android:id="@+id/radioUSA"
+                             android:layout_width="wrap_content"
+                             android:layout_height="wrap_content"
+                             android:text="USA, Peurto Rico, Canada, Mexico"/>
+
+
+                <RadioButton android:id="@+id/radioGerman"
+                             android:layout_width="wrap_content"
+                             android:layout_height="wrap_content"
+                             android:text="Germany"/>
+
+                <RadioButton android:id="@+id/radioNZ"
+                             android:layout_width="wrap_content"
+                             android:layout_height="wrap_content"
+                             android:text="New Zealand"/>
+
+                <RadioButton android:id="@+id/radioRest"
+                             android:layout_width="wrap_content"
+                             android:layout_height="wrap_content"
+                             android:text="Rest of World"/>
+
+            </RadioGroup>
+
+        </LinearLayout>
+
+    </ScrollView>
+
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="50dp"
+        android:layout_below="@id/contentScrollView" >
+
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="1dp"
+            android:background="@color/printicular_primary_grey"
+            android:layout_alignParentTop="true"/>
+
+        <Button
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="OK"
+            android:layout_alignParentRight="true"
+            android:id="@+id/okButton"/>
+
+        <Button
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Cancel"
+            android:layout_toLeftOf="@id/okButton"/>
+
+    </RelativeLayout>
+
+
+</RelativeLayout>
