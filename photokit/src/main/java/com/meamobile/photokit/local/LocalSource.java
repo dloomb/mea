@@ -15,7 +15,7 @@ public class LocalSource extends Source
     public LocalSource()
     {
         this.Title = "Local Photos";
-        this.ImageResourceId = R.mipmap.local_badge;
+        this.ImageResourceId = R.drawable.local_badge;
     }
 
     @Override

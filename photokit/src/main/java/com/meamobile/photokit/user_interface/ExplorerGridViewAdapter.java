@@ -93,7 +93,7 @@ public class ExplorerGridViewAdapter extends BaseAdapter implements Collection.C
                             {
                                 Picasso.with(mActivity)
                                         .load(_path)
-                                        .placeholder(R.mipmap.printicular_logo)
+                                        .placeholder(R.drawable.printicular_logo)
                                         .into(mainImageView);
                             }
                         }

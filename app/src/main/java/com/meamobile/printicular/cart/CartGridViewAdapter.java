@@ -69,7 +69,7 @@ public class CartGridViewAdapter extends BaseAdapter {
                         {
                             Picasso.with(mActivity)
                                     .load(_path)
-                                    .placeholder(com.meamobile.photokit.R.mipmap.printicular_logo)
+                                    .placeholder(com.meamobile.photokit.R.drawable.printicular_logo)
                                     .into(imageView);
                         }
                     }

@@ -26,7 +26,7 @@ public class PhotobucketSource extends Source
     public PhotobucketSource()
     {
         this.Title = "Photobucket";
-        this.ImageResourceId = R.drawable.photobucket;
+        this.ImageResourceId = R.drawable.photobucket_badge;
 
         mConsumerKey = "149833797";
         mConsumerSecret = "4a90d33bbac6183f8f3a389b4fbab300";

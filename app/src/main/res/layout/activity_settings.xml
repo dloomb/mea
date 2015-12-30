@@ -98,7 +98,7 @@
                     android:layout_marginBottom="10dp"
                     android:layout_marginLeft="20dp"
                     android:id="@+id/imageViewAccounts"
-                    android:src="@mipmap/facebook_badge"
+                    android:src="@drawable/facebook_badge"
                     android:layout_below="@id/accountsTitle"/>
 
                 <TextView

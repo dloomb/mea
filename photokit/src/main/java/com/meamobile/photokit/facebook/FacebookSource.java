@@ -28,7 +28,7 @@ public class FacebookSource extends Source
     public FacebookSource()
     {
         this.Title = "Facebook";
-        this.ImageResourceId = R.mipmap.facebook_badge;
+        this.ImageResourceId = R.drawable.facebook_badge;
 
         mFacebookAccessToken = AccessToken.getCurrentAccessToken();
         initilizeFacebookAccessTokenTracking();
