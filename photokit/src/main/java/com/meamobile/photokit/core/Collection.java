@@ -6,6 +6,7 @@ import com.google.gson.Gson;
 import com.meamobile.photokit.facebook.FacebookCollection;
 import com.meamobile.photokit.instagram.InstagramCollection;
 import com.meamobile.photokit.local.LocalCollection;
+import com.meamobile.photokit.photobucket.PhotobucketCollection;
 
 import android.os.Parcel;
 import android.os.Parcelable;
@@ -21,7 +22,7 @@ public class Collection implements Parcelable
     {
         Instagram(1),
         Facebook(2),
-        Dropbox(4),
+        Photobucket(4),
         All(Integer.MAX_VALUE);
 
         CollectionType(int val)
@@ -65,6 +66,9 @@ public class Collection implements Parcelable
 
         FacebookCollection facebook = FacebookCollection.RootCollection();
         collection.addCollection(facebook);
+
+        PhotobucketCollection photobucket = PhotobucketCollection.RootCollection();
+        collection.addCollection(photobucket);
 
         return collection;
     }

@@ -1,5 +1,6 @@
 package com.meamobile.printicular;
 
+import android.app.AlertDialog;
 import android.content.Intent;
 import android.graphics.PorterDuff;
 import android.location.Address;
@@ -24,10 +25,9 @@ import com.meamobile.photokit.user_interface.ExplorerFragment;
 import com.meamobile.photokit.user_interface.ExplorerFragment.ExplorerFragmentDelegate;
 import com.meamobile.printicular.cart.CartFragment;
 import com.meamobile.printicular.cart.PhotoKitCartManager;
-import com.meamobile.printicular_sdk.PrinticularCartManager;
-import com.meamobile.printicular_sdk.PrinticularServiceManager;
-import com.meamobile.printicular_sdk.PrinticularServiceManager.PrinticularEnvironment;
-import com.meamobile.printicular_sdk.models.Image;
+import com.meamobile.printicular_sdk.core.PrinticularServiceManager;
+import com.meamobile.printicular_sdk.core.PrinticularServiceManager.PrinticularEnvironment;
+import com.meamobile.printicular_sdk.user_interface.ManageOrderActivity;
 
 
 public class MainActivity extends ActionBarActivity implements ExplorerFragmentDelegate
@@ -207,6 +207,48 @@ public class MainActivity extends ActionBarActivity implements ExplorerFragmentD
 
 
 
+
+    ///-----------------------------------------------------------
+    /// @name Button Actions
+    ///-----------------------------------------------------------
+
+    private boolean checkCartValidity()
+    {
+        if (mCart.getImageCount() == 0)
+        {
+            new AlertDialog.Builder(this)
+                    .setTitle("Oops you haven't selected any images")
+                    .setMessage("Please select some images to continue")
+                    .setPositiveButton("Ok", null)
+                    .create()
+                    .show();
+
+            return false;
+        }
+        return true;
+    }
+
+    public void onNextButtonPressed(View v)
+    {
+
+    }
+
+    public void onDeliverButtonPressed(View v)
+    {
+
+    }
+
+    public void onPickupButtonPressed(View v)
+    {
+        if (checkCartValidity())
+        {
+            Intent i = new Intent(MainActivity.this, ManageOrderActivity.class);
+            startActivity(i);
+        }
+    }
+
+
+
     ///-----------------------------------------------------------
     /// @name Explorer Fragment Navigation
     ///-----------------------------------------------------------
@@ -298,6 +340,8 @@ public class MainActivity extends ActionBarActivity implements ExplorerFragmentD
     @Override
     public void onAssetSelect(Asset asset, int index)
     {
+        int cartIndex = mCart.indexOfAsset(asset);
+
         if (mCart.isAssetSelected(asset))
         {
             mCart.removeAssetFromCart(asset);

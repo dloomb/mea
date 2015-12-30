@@ -5,10 +5,13 @@ import android.app.Dialog;
 import android.content.Context;
 import android.graphics.Bitmap;
 import android.util.Log;
+import android.view.Display;
 import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.Window;
+import android.view.WindowManager;
+import android.webkit.WebSettings;
 import android.webkit.WebView;
 import android.webkit.WebViewClient;
 import android.widget.FrameLayout;
@@ -19,6 +22,8 @@ import com.meamobile.photokit.R;
 
 public class AuthenticatorDialog extends Dialog
 {
+    private static String TAG = "MEA.AuthenticatorDialog";
+
     public interface AuthenticatorDialogRedirectCallback
     {
         public void didHitRedirectUrl(AuthenticatorDialog dialog, String url);
@@ -37,6 +42,13 @@ public class AuthenticatorDialog extends Dialog
 
         mWebView = (WebView) this.findViewById(R.id.webView);
         mWebView.setWebViewClient(getWebViewClient());
+
+        mWebView.setInitialScale(1);
+        mWebView.getSettings().setJavaScriptEnabled(true);
+        mWebView.getSettings().setLoadWithOverviewMode(true);
+        mWebView.getSettings().setUseWideViewPort(true);
+        mWebView.setScrollBarStyle(WebView.SCROLLBARS_OUTSIDE_OVERLAY);
+        mWebView.setScrollbarFadingEnabled(false);
 
         mLoadingIndicator = (FrameLayout) this.findViewById(R.id.loadingFrameLayout);
 
@@ -61,9 +73,9 @@ public class AuthenticatorDialog extends Dialog
             @Override
             public boolean shouldOverrideUrlLoading(WebView view, String url) {
 
-                Log.d("AuthenticatorDialog", url);
+                Log.d(TAG, "Should Load: " + url);
 
-                if (url.startsWith(mRedirectString))
+                if (mRedirectCallback != null && url.startsWith(mRedirectString))
                 {
                     if (mRedirectCallback != null)
                     {

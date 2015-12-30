@@ -1,3 +1,6 @@
 <resources>
     <string name="app_name">Printicular SDK Android</string>
+    <string name="activity_manage_order_title">Manage Order</string>
+    <string name="activity_customer_details_title">Enter Details</string>
+
 </resources>

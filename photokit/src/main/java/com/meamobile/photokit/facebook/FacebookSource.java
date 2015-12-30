@@ -40,10 +40,10 @@ public class FacebookSource extends Source
     }
 
     @Override
-    public void activateSource(Context context, final SourceActivationCallback callback)
+    public void activateSource(Activity activity, final SourceActivationCallback callback)
     {
         mActivationCallback = callback;
-        LoginManager.getInstance().logInWithReadPermissions((Activity) context, Arrays.asList("public_profile", "user_friends"));
+        LoginManager.getInstance().logInWithReadPermissions(activity, Arrays.asList("public_profile", "user_friends"));
     }
 
     ///-----------------------------------------------------------

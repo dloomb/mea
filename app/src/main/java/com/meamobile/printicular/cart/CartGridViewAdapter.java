@@ -51,7 +51,7 @@ public class CartGridViewAdapter extends BaseAdapter {
         }
 
         final ImageView imageView = (ImageView) itemView.findViewById(R.id.imageView);
-        final int tag = (int) imageView.getTag() + 1;
+        final String tag =  "" + (Integer.parseInt((String) imageView.getTag()) + 1);
         imageView.setTag(tag);
 
         Asset asset = mCart.assetAtIndex(position);
@@ -65,7 +65,7 @@ public class CartGridViewAdapter extends BaseAdapter {
                     @Override
                     public void run() {
 
-                        if (tag == imageView.getTag())
+                        if (tag == (String) imageView.getTag())
                         {
                             Picasso.with(mActivity)
                                     .load(_path)

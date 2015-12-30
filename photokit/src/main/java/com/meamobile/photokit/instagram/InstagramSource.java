@@ -68,13 +68,13 @@ public class InstagramSource extends Source
     }
 
     @Override
-    public void activateSource(Context context, SourceActivationCallback callback)
+    public void activateSource(Activity activity, SourceActivationCallback callback)
     {
         mActivationCallback = callback;
 
         final String redirectUrl = "ig" + CLIENT_ID + "://authorize";
 
-        AuthenticatorDialog dialog = new AuthenticatorDialog(context);
+        AuthenticatorDialog dialog = new AuthenticatorDialog(activity);
 //        dialog.setTitle("Login to Instagram");
         dialog.setAuthenticationUrl("https://api.instagram.com/oauth/authorize?client_id=" + CLIENT_ID + "&response_type=code&redirect_uri=" + redirectUrl);
         dialog.setRedirectUrl(redirectUrl, getAuthenticatorDialogCallback(redirectUrl));

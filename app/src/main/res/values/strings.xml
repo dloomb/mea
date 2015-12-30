@@ -6,4 +6,14 @@
 
     <string name="facebook_app_id">1448060022160784</string>
 
+
+
+    <!-- Main Activity -->
+    <string name="button_text_next">next</string>
+    <string name="button_text_pickup">pickup</string>
+    <string name="button_text_deliver">deliver</string>
+    <string name="textview_text_cart">Cart</string>
+
+
+
 </resources>

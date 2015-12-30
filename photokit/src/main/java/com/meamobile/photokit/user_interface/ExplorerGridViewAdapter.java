@@ -61,7 +61,7 @@ public class ExplorerGridViewAdapter extends BaseAdapter implements Collection.C
         }
 
         final ImageView mainImageView = (ImageView)itemView.findViewById(R.id.imageView);
-        final int tag = (int)mainImageView.getTag() + 1;
+        final String tag =  "" + (Integer.parseInt((String) mainImageView.getTag()) + 1);
         mainImageView.setTag(tag);
 
         ImageView selectionImageView = (ImageView)itemView.findViewById(R.id.selectionIndicatorImageView);
@@ -89,7 +89,7 @@ public class ExplorerGridViewAdapter extends BaseAdapter implements Collection.C
                     mActivity.runOnUiThread(new Runnable() {
                         @Override
                         public void run() {
-                            if (tag == mainImageView.getTag())
+                            if (tag == (String) mainImageView.getTag())
                             {
                                 Picasso.with(mActivity)
                                         .load(_path)

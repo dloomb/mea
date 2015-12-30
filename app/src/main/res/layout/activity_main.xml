@@ -26,8 +26,8 @@
         <TextView
             android:layout_width="match_parent"
             android:layout_height="40dp"
-            android:text="Cart"
-            android:textSize="18dp"
+            android:text="@string/textview_text_cart"
+            android:textSize="18sp"
             android:padding="8dp"
             android:background="#ddd"
             android:id="@+id/cartTextView"/>
@@ -48,8 +48,9 @@
             android:layout_below="@id/cartFragment"
             android:layout_centerHorizontal="true"
             android:textColor="#FFF"
-            android:text="next"
-            android:textAllCaps="false"/>
+            android:text="@string/button_text_next"
+            android:textAllCaps="false"
+            android:onClick="onNextButtonPressed"/>
 
         <LinearLayout
             android:layout_width="match_parent"
@@ -63,20 +64,20 @@
                 android:layout_weight="1.5"
                 android:layout_height="wrap_content"
                 android:id="@+id/deliveryButton"
-                android:layout_centerHorizontal="true"
                 android:textColor="#FFF"
-                android:text="deliver"
-                android:textAllCaps="false"/>
+                android:text="@string/button_text_deliver"
+                android:textAllCaps="false"
+                android:onClick="onDeliverButtonPressed"/>
 
             <Button
                 android:layout_width="match_parent"
                 android:layout_weight="1"
                 android:layout_height="wrap_content"
                 android:id="@+id/pickupButton"
-                android:layout_centerHorizontal="true"
                 android:textColor="#FFF"
-                android:text="pickup"
-                android:textAllCaps="false"/>
+                android:text="@string/button_text_pickup"
+                android:textAllCaps="false"
+                android:onClick="onPickupButtonPressed"/>
 
         </LinearLayout>
 

@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <item name="text_dark" type="color">#FF333333</item>
+    <item name="text_semi_dark" type="color">#FF666666</item>
+    <item name="selection_yellow" type="color">#FFffc613</item>
+    <item name="button_red" type="color">#FFFF0012</item>
+
+</resources>

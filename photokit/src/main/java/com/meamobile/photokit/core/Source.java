@@ -1,6 +1,7 @@
 package com.meamobile.photokit.core;
 
 
+import android.app.Activity;
 import android.content.Context;
 import android.os.Parcel;
 import android.os.Parcelable;
@@ -25,7 +26,7 @@ public class Source implements Parcelable
 
     public boolean isActive(){return false;}
 
-    public void activateSource(Context context, SourceActivationCallback callback){}
+    public void activateSource(Activity activity, SourceActivationCallback callback){}
 
 
 

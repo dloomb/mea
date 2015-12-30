@@ -1,11 +1,10 @@
 package com.meamobile.printicular.cart;
 
 import com.meamobile.photokit.core.Asset;
-import com.meamobile.printicular_sdk.PrinticularCartManager;
-import com.meamobile.printicular_sdk.models.Image;
+import com.meamobile.printicular_sdk.core.PrinticularCartManager;
+import com.meamobile.printicular_sdk.core.models.Image;
 
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
@@ -52,5 +51,11 @@ public class PhotoKitCartManager extends PrinticularCartManager
     {
         List<Asset> list = new ArrayList(mAssetToImageMap.keySet());
         return list.get(index);
+    }
+
+    public int indexOfAsset(Asset asset)
+    {
+        List keys = new ArrayList(mData.keySet());
+        return keys.indexOf(asset);
     }
 }

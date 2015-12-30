@@ -2,6 +2,7 @@ package com.meamobile.photokit.local;
 
 
 import android.annotation.SuppressLint;
+import android.app.Activity;
 import android.content.Context;
 
 import com.meamobile.photokit.R;
@@ -24,7 +25,7 @@ public class LocalSource extends Source
     }
 
     @Override
-    public void activateSource(Context context, SourceActivationCallback callback)
+    public void activateSource(Activity activity, SourceActivationCallback callback)
     {
 
     }

@@ -1,0 +1,51 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:layout_marginTop="25dp">
+
+    <TextView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="Postal details"
+        android:textStyle="bold"
+        android:textColor="@color/text_dark"
+        android:id="@+id/titlePostDetails"
+        android:layout_marginBottom="10dp"/>
+
+    <TextView
+        android:textColor="@color/text_dark"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="Daniel Loomb"
+        android:id="@+id/textViewName"
+        android:layout_below="@id/titlePostDetails"/>
+
+    <TextView
+        android:textColor="@color/text_dark"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="Level 15, Tower Building, 48 Ward St"
+        android:id="@+id/textViewAddressLine1"
+        android:layout_below="@id/textViewName"/>
+
+    <TextView
+        android:textColor="@color/text_dark"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="Hamilton, New Zealand"
+        android:id="@+id/textViewAddressLine2"
+        android:layout_below="@id/textViewAddressLine1"/>
+
+    <ImageButton
+        android:layout_width="35dp"
+        android:layout_height="35dp"
+        android:background="?android:attr/selectableItemBackground"
+        android:src="@drawable/vect_pencil"
+        android:tint="@color/text_dark"
+        android:layout_alignParentRight="true"
+        android:scaleType="fitCenter"
+        android:id="@+id/buttonPostalEdit"
+        />
+
+</RelativeLayout>
