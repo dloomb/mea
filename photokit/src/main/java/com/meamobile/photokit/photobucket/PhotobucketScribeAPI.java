@@ -15,12 +15,12 @@ public class PhotobucketScribeAPI extends DefaultApi10a
     @Override
     public String getAccessTokenEndpoint()
     {
-        return null;
+        return "http://api.photobucket.com/login/access";
     }
 
     @Override
     public String getAuthorizationUrl(Token requestToken)
     {
-        return " http://photobucket.com/apilogin/login?oauth_token=" + requestToken.getToken();
+        return "http://photobucket.com/apilogin/login?oauth_token=" + requestToken.getToken();
     }
 }

@@ -1,28 +1,17 @@
 package com.meamobile.photokit.instagram;
 
 import android.app.Activity;
-import android.app.ActivityManager;
-import android.content.Context;
-import android.content.SharedPreferences;
-import android.preference.PreferenceManager;
-import android.util.Log;
+import android.content.Intent;
 
 import com.meamobile.photokit.core.JSONHttpClient;
 import com.meamobile.photokit.core.Source;
 import com.meamobile.photokit.R;
 import com.meamobile.photokit.core.UserDefaults;
-import com.meamobile.photokit.user_interface.AuthenticatorDialog;
-import com.meamobile.photokit.user_interface.AuthenticatorDialog.AuthenticatorDialogRedirectCallback;
+import com.meamobile.photokit.user_interface.AuthenticatorActivity;
 
-import org.apache.http.HttpResponse;
 import org.apache.http.NameValuePair;
-import org.apache.http.client.methods.HttpPost;
-import org.apache.http.impl.client.DefaultHttpClient;
 import org.apache.http.message.BasicNameValuePair;
-import org.json.JSONException;
-import org.json.JSONObject;
 
-import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
@@ -74,28 +63,36 @@ public class InstagramSource extends Source
 
         final String redirectUrl = "ig" + CLIENT_ID + "://authorize";
 
-        AuthenticatorDialog dialog = new AuthenticatorDialog(activity);
-//        dialog.setTitle("Login to Instagram");
-        dialog.setAuthenticationUrl("https://api.instagram.com/oauth/authorize?client_id=" + CLIENT_ID + "&response_type=code&redirect_uri=" + redirectUrl);
-        dialog.setRedirectUrl(redirectUrl, getAuthenticatorDialogCallback(redirectUrl));
-        dialog.show();
+        String authUrl = "https://api.instagram.com/oauth/authorize?client_id=" + CLIENT_ID + "&response_type=code&redirect_uri=" + redirectUrl;
+
+        Intent i = new Intent(activity, AuthenticatorActivity.class);
+        i.putExtra(AuthenticatorActivity.AUTH_URL, authUrl);
+        i.putExtra(AuthenticatorActivity.REDIRECT_URL, redirectUrl);
+        i.putExtra(AuthenticatorActivity.TITLE, "Login to Instagram");
+        activity.startActivityForResult(i, 0);
+
+//        AuthenticatorActivity dialog = new AuthenticatorDialog(activity);
+////        dialog.setTitle("Login to Instagram");
+//        dialog.setAuthenticationUrl();
+//        dialog.setRedirectUrl(redirectUrl, getAuthenticatorDialogCallback(redirectUrl));
+//        dialog.show();
     }
 
-    protected AuthenticatorDialogRedirectCallback getAuthenticatorDialogCallback(String redirectUrl)
-    {
-        final String finalRedirectUrl = redirectUrl;
-        return new AuthenticatorDialogRedirectCallback() {
-            @Override
-            public void didHitRedirectUrl(AuthenticatorDialog dialog, String url) {
-                String[] parts = url.split(finalRedirectUrl + "\\?code=");
-                if (parts.length > 1) {
-                    String code = parts[1];
-                    dialog.dismiss();
-                    postCodeForAuthentication(code);
-                }
-            }
-        };
-    }
+//    protected AuthenticatorDialogRedirectCallback getAuthenticatorDialogCallback(String redirectUrl)
+//    {
+//        final String finalRedirectUrl = redirectUrl;
+//        return new AuthenticatorDialogRedirectCallback() {
+//            @Override
+//            public void didHitRedirectUrl(AuthenticatorDialog dialog, String url) {
+//                String[] parts = url.split(finalRedirectUrl + "\\?code=");
+//                if (parts.length > 1) {
+//                    String code = parts[1];
+//                    dialog.dismiss();
+//                    postCodeForAuthentication(code);
+//                }
+//            }
+//        };
+//    }
 
     protected void postCodeForAuthentication(String code)
     {

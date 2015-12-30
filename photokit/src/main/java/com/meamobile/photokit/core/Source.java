@@ -21,14 +21,30 @@ public class Source implements Parcelable
 
     public String Title;
     public int ImageResourceId;
+    private SourceActivationCallback mActivationCallback;
 
     public Source(){}
 
     public boolean isActive(){return false;}
 
-    public void activateSource(Activity activity, SourceActivationCallback callback){}
+    public void activateSource(Activity activity, SourceActivationCallback callback){
+        mActivationCallback = callback;
+    }
 
-
+    protected void handleSourceActivation(boolean success, String error)
+    {
+        if (mActivationCallback != null)
+        {
+            if (success || error != null)
+            {
+                mActivationCallback.success();
+            }
+            else
+            {
+                mActivationCallback.error(error);
+            }
+        }
+    }
 
     ///-----------------------------------------------------------
     /// @name Parcelable

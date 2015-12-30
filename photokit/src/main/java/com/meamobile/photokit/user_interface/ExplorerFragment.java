@@ -1,6 +1,7 @@
 package com.meamobile.photokit.user_interface;
 
 import android.app.Activity;
+import android.content.Intent;
 import android.net.Uri;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
@@ -23,12 +24,12 @@ public class ExplorerFragment extends Fragment {
 
     public interface ExplorerFragmentDelegate
     {
-        public void pushExplorerWithCollection(Collection collection);
-        public void setNavigationTitle(String title);
-        public void setDisplaysBackButton(Boolean shouldDisplay);
+        void pushExplorerWithCollection(Collection collection);
+        void setNavigationTitle(String title);
+        void setDisplaysBackButton(Boolean shouldDisplay);
 
-        public void onAssetSelect(Asset asset, int index);
-        public boolean isAssetSelected(Asset asset, int index);
+        void onAssetSelect(Asset asset, int index);
+        boolean isAssetSelected(Asset asset, int index);
     }
 
     private static final String ARG_COLLECTION = "collection";
@@ -97,7 +98,6 @@ public class ExplorerFragment extends Fragment {
         mListener = null;
     }
 
-
     public interface OnFragmentInteractionListener {
         void onFragmentInteraction(Uri uri);
     }
@@ -113,6 +113,17 @@ public class ExplorerFragment extends Fragment {
                 mDelegate.setNavigationTitle("Select a Source");
             }
         }
+    }
+
+    @Override
+    public void onActivityResult(int requestCode, int resultCode, Intent data)
+    {
+        super.onActivityResult(requestCode, resultCode, data);
+    }
+
+    public void onAuthenticatorResult()
+    {
+
     }
 
     //--------------------------

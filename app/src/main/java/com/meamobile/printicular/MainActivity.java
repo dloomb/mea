@@ -21,6 +21,7 @@ import com.facebook.FacebookSdk;
 import com.meamobile.photokit.core.Asset;
 import com.meamobile.photokit.core.Collection;
 import com.meamobile.photokit.core.UserDefaults;
+import com.meamobile.photokit.user_interface.AuthenticatorCallbackManager;
 import com.meamobile.photokit.user_interface.ExplorerFragment;
 import com.meamobile.photokit.user_interface.ExplorerFragment.ExplorerFragmentDelegate;
 import com.meamobile.printicular.cart.CartFragment;
@@ -182,7 +183,14 @@ public class MainActivity extends ActionBarActivity implements ExplorerFragmentD
     @Override
     protected void onActivityResult(final int requestCode, final int resultCode, final Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
-        mFacebookCallbackManager.onActivityResult(requestCode, resultCode, data);
+
+        boolean handled = mFacebookCallbackManager.onActivityResult(requestCode, resultCode, data);
+
+        if (!handled)
+        {
+            handled = AuthenticatorCallbackManager.getInstance().onActivityResult(requestCode, resultCode, data);
+        }
+
     }
 
     @Override
@@ -193,6 +201,8 @@ public class MainActivity extends ActionBarActivity implements ExplorerFragmentD
         PrinticularServiceManager.getInstance()
                 .initialize(this, PrinticularEnvironment.STAGING);
     }
+
+
 
     ///-----------------------------------------------------------
     /// @name Hardware Button Input
