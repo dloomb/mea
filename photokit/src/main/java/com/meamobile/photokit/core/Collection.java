@@ -11,8 +11,9 @@ import com.meamobile.photokit.photobucket.PhotobucketCollection;
 import android.os.Parcel;
 import android.os.Parcelable;
 import java.util.ArrayList;
+import java.util.Calendar;
+import java.util.Date;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 
 
@@ -40,6 +41,9 @@ public class Collection implements Parcelable
         public void collectionRefresh(Collection collection);
     }
 
+    private boolean mIsRoot;
+    private Date mLastLoaded;
+
     private ArrayList<Collection> mCollections;
     private ArrayList<Asset> mAssets;
     private CollectionObserver mObserver;
@@ -57,6 +61,7 @@ public class Collection implements Parcelable
     public static Collection RootCollection()
     {
         Collection collection = new Collection();
+        collection.mIsRoot = true;
 
         LocalCollection local = LocalCollection.RootCollection();
         collection.addCollection(local);
@@ -147,7 +152,23 @@ public class Collection implements Parcelable
     //          Loading
     //---------------------------------
 
-    public void loadContents(){};
+    public void loadContents(){
+
+        if (!mIsRoot )
+        {
+//            Date now = new Date();
+//            Calendar calendar = Calendar.getInstance();
+//            calendar.setTime(now);
+//            calendar.add(Calendar.HOUR, 1);
+//
+//            if (mLastLoaded != null &&  now.before(mLastLoaded))
+//            {
+//                mLastLoaded = now;
+                mCollections = new ArrayList<Collection>();
+                mAssets = new ArrayList<Asset>();
+//            }
+        }
+    }
 
 
     ///-----------------------------------------------------------

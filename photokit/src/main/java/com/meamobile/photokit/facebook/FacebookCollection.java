@@ -46,6 +46,7 @@ public class FacebookCollection extends Collection
     @Override
     public void loadContents()
     {
+        super.loadContents();
 
         if (mFacebookAlbumId == null)
         {

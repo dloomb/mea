@@ -33,4 +33,5 @@ dependencies {
     compile 'com.squareup.picasso:picasso:2.5.2'
     compile 'com.facebook.android:facebook-android-sdk:4.5.0'
     compile 'com.github.scribejava:scribejava-core:2.0.1'
+    compile files('libs/json-20151123.jar')
 }

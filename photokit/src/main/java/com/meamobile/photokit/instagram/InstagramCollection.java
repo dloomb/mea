@@ -46,6 +46,8 @@ public class InstagramCollection extends Collection
     @Override
     public void loadContents()
     {
+        super.loadContents();
+
         InstagramSource igSource = (InstagramSource) this.Source;
         String url = "https://api.instagram.com/v1/users/self/media/recent/?count=20&access_token=" + igSource.getAccessToken();
 

@@ -3,6 +3,8 @@ package com.meamobile.photokit.core;
 
 import android.app.Activity;
 import android.content.Context;
+import android.os.Handler;
+import android.os.Looper;
 import android.os.Parcel;
 import android.os.Parcelable;
 
@@ -35,14 +37,24 @@ public class Source implements Parcelable
     {
         if (mActivationCallback != null)
         {
-            if (success || error != null)
+            final boolean _success = success;
+            final String _error = error;
+
+            new Handler(Looper.getMainLooper()).post(new Runnable()
             {
-                mActivationCallback.success();
-            }
-            else
-            {
-                mActivationCallback.error(error);
-            }
+                @Override
+                public void run()
+                {
+                    if (_success || _error != null)
+                    {
+                        mActivationCallback.success();
+                    }
+                    else
+                    {
+                        mActivationCallback.error(_error);
+                    }
+                }
+            });
         }
     }
 
