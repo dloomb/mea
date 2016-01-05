@@ -21,12 +21,6 @@ public class LocalSource extends Source
     @Override
     public boolean isActive()
     {
-        return false;
-    }
-
-    @Override
-    public void activateSource(Activity activity, SourceActivationCallback callback)
-    {
-
+        return true;
     }
 }

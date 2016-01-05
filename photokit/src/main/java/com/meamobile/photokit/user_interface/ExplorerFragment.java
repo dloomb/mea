@@ -5,8 +5,11 @@ import android.content.Intent;
 import android.net.Uri;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
+import android.support.v7.widget.RecyclerView;
+import android.support.v7.widget.StaggeredGridLayoutManager;
 import android.util.DisplayMetrics;
 import android.view.LayoutInflater;
+import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
@@ -18,7 +21,6 @@ import com.meamobile.photokit.core.Collection;
 
 import com.meamobile.photokit.R;
 import com.meamobile.photokit.core.Source;
-
 
 public class ExplorerFragment extends Fragment {
 
@@ -37,12 +39,11 @@ public class ExplorerFragment extends Fragment {
     private Collection mCollection;
 
     private GridView mGridView;
+    private RecyclerView mRecyclerView;
     private OnFragmentInteractionListener mListener;
     private ExplorerFragmentDelegate mDelegate;
 
-    public ExplorerFragment() {
-        // Required empty public constructor
-    }
+    public ExplorerFragment() {}
 
 
     public static ExplorerFragment newInstance(Collection collection)
@@ -61,7 +62,7 @@ public class ExplorerFragment extends Fragment {
             mCollection = (Collection) getArguments().getParcelable(ARG_COLLECTION);
         }
 
-        mCollection.loadContents();
+        mCollection.loadContents(getActivity());
     }
 
     @Override
@@ -132,12 +133,15 @@ public class ExplorerFragment extends Fragment {
 
     protected void initializeGridView(View view)
     {
-        ExplorerGridViewAdapter adapter = new ExplorerGridViewAdapter(getActivity(), mCollection, mDelegate);
+        mRecyclerView = (RecyclerView) view.findViewById(R.id.recyclerView);
+
+        ExplorerRecyclerViewAdapter adapter = new ExplorerRecyclerViewAdapter(getActivity(), mCollection, mDelegate);
+        mRecyclerView.setAdapter(adapter);
         mCollection.setCollectionObserver(adapter);
 
-        mGridView = (GridView) view.findViewById(R.id.gridview);
-        mGridView.setAdapter(adapter);
-        mGridView.setOnItemClickListener(getOnItemClickListener());
+        ItemClickSupport.addTo(mRecyclerView).setOnItemClickListener(getOnItemClickListener());
+
+        StaggeredGridLayoutManager layout = new StaggeredGridLayoutManager(2, StaggeredGridLayoutManager.VERTICAL);
 
         //Larger Screens means more columns
         DisplayMetrics metrics = new DisplayMetrics();
@@ -145,24 +149,26 @@ public class ExplorerFragment extends Fragment {
         int w = (int)(metrics.widthPixels / metrics.density);
         if (w < 400)
         {
-            mGridView.setNumColumns(3);
+            layout.setSpanCount(3);
         }
         else if (w < 500)
         {
-            mGridView.setNumColumns(4);
+            layout.setSpanCount(4);
         }
         else
         {
-            mGridView.setNumColumns(5);
+            layout.setSpanCount(5);
         }
+        mRecyclerView.setLayoutManager(layout);
 
     }
 
-    protected AdapterView.OnItemClickListener getOnItemClickListener()
+    protected ItemClickSupport.OnItemClickListener getOnItemClickListener()
     {
-        return new AdapterView.OnItemClickListener() {
+        return new ItemClickSupport.OnItemClickListener()
+        {
             @Override
-            public void onItemClick(AdapterView<?> parent, View view, int position, long id)
+            public void onItemClicked(RecyclerView recyclerView, int position, View v)
             {
                 int collectionsCount = mCollection.numberOfCollections();
                 if (position < collectionsCount)
@@ -171,7 +177,7 @@ public class ExplorerFragment extends Fragment {
                 }
                 else
                 {
-                    didSelectAssetAtIndex(position - collectionsCount, view);
+                    didSelectAssetAtIndex(position - collectionsCount, v);
                 }
             }
         };

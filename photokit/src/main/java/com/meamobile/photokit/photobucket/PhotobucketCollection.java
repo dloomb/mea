@@ -1,7 +1,7 @@
 package com.meamobile.photokit.photobucket;
 
 import android.annotation.SuppressLint;
-import android.util.Log;
+import android.app.Activity;
 
 import com.github.scribejava.core.model.OAuthRequest;
 import com.github.scribejava.core.model.Response;
@@ -9,7 +9,6 @@ import com.github.scribejava.core.model.Verb;
 import com.github.scribejava.core.oauth.OAuthService;
 import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
-import com.meamobile.photokit.core.Asset;
 import com.meamobile.photokit.core.Collection;
 
 import org.json.JSONObject;
@@ -55,9 +54,15 @@ public class PhotobucketCollection extends Collection
     }
 
     @Override
-    public void loadContents()
+    public CollectionType getType()
     {
-        super.loadContents();
+        return CollectionType.Photobucket;
+    }
+
+    @Override
+    public void loadContents(Activity activity)
+    {
+        super.loadContents(activity);
 
         new Thread(new Runnable() { @Override public void run()
         {

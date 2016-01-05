@@ -1,12 +1,15 @@
 package com.meamobile.photokit.core;
 
 
+import android.content.ContentResolver;
 import android.content.Context;
 import android.graphics.Bitmap;
 import android.graphics.drawable.Drawable;
 import android.os.storage.StorageManager;
+import android.provider.MediaStore;
 import android.util.Log;
 
+import com.meamobile.photokit.local.LocalAsset;
 import com.squareup.picasso.Callback;
 import com.squareup.picasso.Picasso;
 import com.squareup.picasso.Target;
@@ -48,6 +51,9 @@ public class CachingImageManager
 
         switch (asset.getType())
         {
+            case Local:
+                loadLocalAssetThumbnailWithContentResolver((LocalAsset) asset, file, callback);
+                break;
             case Remote:
                 downloadImageFromUrl(((RemoteAsset)asset).ThumbnailUrlString, file, callback);
                 break;
@@ -112,7 +118,42 @@ public class CachingImageManager
                 }
             }
         }).start();
+    }
 
 
+    protected void loadLocalAssetThumbnailWithContentResolver(LocalAsset asset, File file, CachingImageManagerRequestCallback callback)
+    {
+        ContentResolver resolver = mContext.getContentResolver();
+
+        Bitmap thumb = null;
+        FileOutputStream out = null;
+
+        try
+        {
+            thumb = MediaStore.Images.Thumbnails
+                    .getThumbnail(
+                            resolver,
+                            asset.getContentResolverId(),
+                            MediaStore.Images.Thumbnails.MINI_KIND,
+                            null);
+
+            out = new FileOutputStream(file);
+            thumb.compress(asset.getCompressionFormat(), 100, out);
+
+            out.close();
+        }
+        catch(Exception e)
+        {
+            e.printStackTrace();
+            callback.error(e.getLocalizedMessage());
+
+            try {
+                if (out != null) {
+                    out.close();
+                }
+            } catch (Exception e1) {
+                e.printStackTrace();
+            }
+        }
     }
 }

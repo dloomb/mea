@@ -1,22 +1,145 @@
 package com.meamobile.photokit.local;
 
 import android.annotation.SuppressLint;
+import android.app.Activity;
+import android.content.ContentResolver;
+import android.database.Cursor;
+import android.media.Image;
+import android.os.Environment;
+import android.provider.MediaStore;
+import android.provider.MediaStore.Images.ImageColumns;
+import android.util.Log;
 
+import com.meamobile.photokit.core.Asset;
 import com.meamobile.photokit.core.Collection;
-
 
 @SuppressLint("ParcelCreator")
 public class LocalCollection extends Collection
 {
+    private static String LOCAL_CAMERA_BUCKET_NAME = Environment.getExternalStorageDirectory().toString();
+
+    private long mBucketId = 0;
 
     public static LocalCollection RootCollection()
     {
-        LocalCollection collection = new LocalCollection();
-
-        collection.Source = new LocalSource();
-        collection.Title = collection.Source.Title;
+        LocalSource source = new LocalSource();
+        LocalCollection collection = new LocalCollection(source.Title, 0, source, null);
 
         return collection;
     }
+
+    private LocalCollection(){};
+
+    private LocalCollection(String name, long id, LocalSource source, Asset cover)
+    {
+        Title = name;
+        mBucketId = id;
+        Source = source;
+        CoverAsset = cover;
+    }
+
+    @Override
+    public CollectionType getType()
+    {
+        return CollectionType.Local;
+    }
+
+
+    @Override
+    public void loadContents(final Activity activity)
+    {
+        super.loadContents(activity);
+
+        final Activity _activity = activity;
+
+        new Thread(new Runnable() { @Override public void run()
+        {
+            if (mBucketId == 0)
+            {
+                loadBaseCollections(_activity);
+            }
+            else
+            {
+                loadAssets(activity);
+            }
+        }}).start();
+    }
+
+    private void loadBaseCollections(Activity activity)
+    {
+        ContentResolver contentResolver = activity.getContentResolver();
+        String[] projection = new String[]{"distinct " + ImageColumns.BUCKET_ID, ImageColumns.BUCKET_DISPLAY_NAME};
+
+        Cursor cursor = contentResolver.query(MediaStore.Images.Media.EXTERNAL_CONTENT_URI, projection, "", null, null);
+
+        if (cursor != null)
+        {
+            int count = cursor.getCount();
+            int bucketIdCol = cursor.getColumnIndex(ImageColumns.BUCKET_ID);
+            int nameCol = cursor.getColumnIndex(ImageColumns.BUCKET_DISPLAY_NAME);
+
+            for (int i = 0; i < count; i++)
+            {
+                cursor.moveToPosition(i);
+
+                long bucketId = cursor.getLong(bucketIdCol);
+                String name = cursor.getString(nameCol);
+
+                Asset cover = coverAssetForBucketId(bucketId, contentResolver);
+
+                LocalCollection collection = new LocalCollection(name, bucketId, (LocalSource)Source, cover);
+                addCollection(collection);
+            }
+
+            cursor.close();
+        }
+    }
+
+    private void loadAssets(Activity activity)
+    {
+        ContentResolver contentResolver = activity.getContentResolver();
+        String[] projection = { ImageColumns._ID, ImageColumns.DISPLAY_NAME, ImageColumns.DATE_TAKEN, ImageColumns.DATA };
+        String selection = ImageColumns.BUCKET_ID + " = ? ";
+        String[] selectionArgs = { "" + mBucketId };
+
+        Cursor cursor = contentResolver.query(MediaStore.Images.Media.EXTERNAL_CONTENT_URI, projection, selection, selectionArgs, null);
+
+        if (cursor != null)
+        {
+            int count = cursor.getCount();
+
+            for (int i = 0; i < count; i++)
+            {
+                cursor.moveToPosition(i);
+
+                LocalAsset asset = new LocalAsset(cursor);
+                addAsset(asset);
+            }
+
+            cursor.close();
+        }
+    }
+
+    private Asset coverAssetForBucketId(long mBucketId, ContentResolver contentResolver)
+    {
+        String[] projection = { "max(" + ImageColumns.DATE_TAKEN + ")", ImageColumns._ID, ImageColumns.DISPLAY_NAME };
+        String selection = ImageColumns.BUCKET_ID + " = ? ";
+        String[] selectionArgs = { "" + mBucketId };
+
+        Cursor cursor = contentResolver.query(MediaStore.Images.Media.EXTERNAL_CONTENT_URI, projection, selection, selectionArgs, null);
+
+        if (cursor != null)
+        {
+            cursor.moveToFirst();
+            long imageId = cursor.getLong(cursor.getColumnIndex(ImageColumns._ID));
+            String imageName = cursor.getString(cursor.getColumnIndex(ImageColumns.DISPLAY_NAME));
+
+            return new LocalAsset(imageId, imageName);
+        }
+
+        return null;
+    }
+
+
 
 }

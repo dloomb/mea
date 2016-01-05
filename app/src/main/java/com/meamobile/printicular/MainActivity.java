@@ -20,6 +20,8 @@ import com.facebook.CallbackManager;
 import com.facebook.FacebookSdk;
 import com.meamobile.photokit.core.Asset;
 import com.meamobile.photokit.core.Collection;
+import com.meamobile.photokit.core.Collection.CollectionType;
+import com.meamobile.photokit.core.CollectionFactory;
 import com.meamobile.photokit.core.UserDefaults;
 import com.meamobile.photokit.user_interface.AuthenticatorCallbackManager;
 import com.meamobile.photokit.user_interface.ExplorerFragment;
@@ -29,6 +31,8 @@ import com.meamobile.printicular.cart.PhotoKitCartManager;
 import com.meamobile.printicular_sdk.core.PrinticularServiceManager;
 import com.meamobile.printicular_sdk.core.PrinticularServiceManager.PrinticularEnvironment;
 import com.meamobile.printicular_sdk.user_interface.ManageOrderActivity;
+
+import java.util.EnumSet;
 
 
 public class MainActivity extends ActionBarActivity implements ExplorerFragmentDelegate
@@ -313,7 +317,14 @@ public class MainActivity extends ActionBarActivity implements ExplorerFragmentD
 
     protected void pushRootExplorer()
     {
-        ExplorerFragment fragment = ExplorerFragment.newInstance(Collection.RootCollection());
+        Collection root = CollectionFactory.BaseCollectionWithSourceTypes(EnumSet.of(
+                CollectionType.Local,
+                CollectionType.Instagram,
+                CollectionType.Facebook,
+                CollectionType.Photobucket
+        ));
+
+        ExplorerFragment fragment = ExplorerFragment.newInstance(root);
         getSupportFragmentManager().beginTransaction()
                 .replace(R.id.fragmentContainer, fragment)
                 .commit();

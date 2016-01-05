@@ -1,0 +1,16 @@
+package com.meamobile.photokit.deviant_art;
+
+import android.annotation.SuppressLint;
+
+import com.meamobile.photokit.R;
+import com.meamobile.photokit.core.Source;
+
+@SuppressLint("ParcelCreator")
+public class DeviantArtSource extends Source
+{
+    public DeviantArtSource()
+    {
+        Title = "Deviant Art";
+        ImageResourceId = R.drawable.deviantart_badge;
+    }
+}

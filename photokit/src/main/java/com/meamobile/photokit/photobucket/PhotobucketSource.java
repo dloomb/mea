@@ -4,15 +4,11 @@ import android.annotation.SuppressLint;
 import android.app.Activity;
 import android.content.Intent;
 import android.net.Uri;
-import android.os.Bundle;
 import android.util.Log;
 
 import com.github.scribejava.core.builder.ServiceBuilder;
-import com.github.scribejava.core.model.OAuthConstants;
-import com.github.scribejava.core.model.OAuthRequest;
 import com.github.scribejava.core.model.SignatureType;
 import com.github.scribejava.core.model.Token;
-import com.github.scribejava.core.model.Verb;
 import com.github.scribejava.core.model.Verifier;
 import com.github.scribejava.core.oauth.OAuthService;
 import com.google.gson.Gson;
@@ -25,7 +21,6 @@ import com.meamobile.photokit.user_interface.AuthenticatorCallbackManager;
 
 import java.io.UnsupportedEncodingException;
 import java.net.URLDecoder;
-import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -85,16 +80,16 @@ public class PhotobucketSource extends Source
         return mBaseUrl;
     }
 
-    public OAuthRequest signUrl(Verb verb, String url)
-    {
-        OAuthRequest request = new OAuthRequest(verb, url, mOAuthService);
-
-        request.addOAuthParameter(OAuthConstants.CONSUMER_KEY, mConsumerKey);
-        request.addOAuthParameter(OAuthConstants.SIGN_METHOD, "HMAC-SHA1");
-        request.addOAuthParameter(OAuthConstants.TIMESTAMP, "" + new Date().getTime());
-
-        return request;
-    }
+//    public OAuthRequest signUrl(Verb verb, String url)
+//    {
+//        OAuthRequest request = new OAuthRequest(verb, url, mOAuthService);
+//
+//        request.addOAuthParameter(OAuthConstants.CONSUMER_KEY, mConsumerKey);
+//        request.addOAuthParameter(OAuthConstants.SIGN_METHOD, "HMAC-SHA1");
+//        request.addOAuthParameter(OAuthConstants.TIMESTAMP, "" + new Date().getTime());
+//
+//        return request;
+//    }
 
     @Override
     public boolean isActive()

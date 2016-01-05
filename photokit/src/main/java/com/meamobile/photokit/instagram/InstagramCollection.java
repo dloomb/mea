@@ -1,6 +1,7 @@
 package com.meamobile.photokit.instagram;
 
 import android.annotation.SuppressLint;
+import android.app.Activity;
 import android.util.Log;
 
 import com.google.gson.Gson;
@@ -38,15 +39,15 @@ public class InstagramCollection extends Collection
     }
 
     @Override
-    public CollectionType type()
+    public CollectionType getType()
     {
         return CollectionType.Instagram;
     }
 
     @Override
-    public void loadContents()
+    public void loadContents(Activity activity)
     {
-        super.loadContents();
+        super.loadContents(activity);
 
         InstagramSource igSource = (InstagramSource) this.Source;
         String url = "https://api.instagram.com/v1/users/self/media/recent/?count=20&access_token=" + igSource.getAccessToken();

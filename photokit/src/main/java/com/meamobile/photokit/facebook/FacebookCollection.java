@@ -2,6 +2,7 @@ package com.meamobile.photokit.facebook;
 
 
 import android.annotation.SuppressLint;
+import android.app.Activity;
 import android.os.Bundle;
 
 import com.facebook.AccessToken;
@@ -44,9 +45,9 @@ public class FacebookCollection extends Collection
 
 
     @Override
-    public void loadContents()
+    public void loadContents(Activity activity)
     {
-        super.loadContents();
+        super.loadContents(activity);
 
         if (mFacebookAlbumId == null)
         {

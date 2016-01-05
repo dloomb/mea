@@ -8,11 +8,13 @@ import com.meamobile.photokit.instagram.InstagramCollection;
 import com.meamobile.photokit.local.LocalCollection;
 import com.meamobile.photokit.photobucket.PhotobucketCollection;
 
+import android.app.Activity;
 import android.os.Parcel;
 import android.os.Parcelable;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
+import java.util.EnumSet;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -21,15 +23,26 @@ public class Collection implements Parcelable
 {
     public enum CollectionType
     {
-        Instagram(1),
-        Facebook(2),
-        Photobucket(4),
-        All(Integer.MAX_VALUE);
+        Root        (1 << 0),
+        Local       (1 << 1),
+        Instagram   (1 << 2),
+        Facebook    (1 << 3),
+        Dropbox     (1 << 4),
+        Flickr      (1 << 5),
+        Google      (1 << 6),
+        Twitter     (1 << 7),
+        DeviantArt  (1 << 8),
+        Pinterest   (1 << 9),
+        OneDrive    (1 << 10),
+        Amazon      (1 << 11),
+        Photobucket (1 << 12);
 
         CollectionType(int val)
         {
             this.value = val;
         }
+
+        public static final EnumSet<CollectionType> All = EnumSet.allOf(CollectionType.class);
 
         public int value;
     }
@@ -41,7 +54,6 @@ public class Collection implements Parcelable
         public void collectionRefresh(Collection collection);
     }
 
-    private boolean mIsRoot;
     private Date mLastLoaded;
 
     private ArrayList<Collection> mCollections;
@@ -50,7 +62,7 @@ public class Collection implements Parcelable
 
     public Source Source;
     public String Title;
-    public String ThumbnailPath;
+    public Asset CoverAsset;
 
     public Collection()
     {
@@ -58,29 +70,11 @@ public class Collection implements Parcelable
         mAssets = new ArrayList<Asset>();
     }
 
-    public static Collection RootCollection()
+
+
+    public CollectionType getType()
     {
-        Collection collection = new Collection();
-        collection.mIsRoot = true;
-
-        LocalCollection local = LocalCollection.RootCollection();
-        collection.addCollection(local);
-
-        InstagramCollection instagram = InstagramCollection.RootCollection();
-        collection.addCollection(instagram);
-
-        FacebookCollection facebook = FacebookCollection.RootCollection();
-        collection.addCollection(facebook);
-
-        PhotobucketCollection photobucket = PhotobucketCollection.RootCollection();
-        collection.addCollection(photobucket);
-
-        return collection;
-    }
-
-    public CollectionType type()
-    {
-        return null;
+        return CollectionType.Root;
     }
 
     public String collectionIdentifier () {
@@ -152,9 +146,9 @@ public class Collection implements Parcelable
     //          Loading
     //---------------------------------
 
-    public void loadContents(){
+    public void loadContents(Activity activity){
 
-        if (!mIsRoot )
+        if (getType() != CollectionType.Root)
         {
 //            Date now = new Date();
 //            Calendar calendar = Calendar.getInstance();
@@ -212,7 +206,7 @@ public class Collection implements Parcelable
         mCollections = (ArrayList<Collection>) data.get("collections");
         Title = (String) data.get("title");
         Source = (com.meamobile.photokit.core.Source) data.get("source");
-        ThumbnailPath = (String) data.get("thumbnail_path");
+        CoverAsset = (Asset) data.get("cover_asset");
     }
 
 }

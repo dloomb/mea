@@ -1,7 +1,10 @@
 <?xml version="1.0" encoding="utf-8"?>
-<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<FrameLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
-    android:layout_height="match_parent">
+    android:layout_height="100dp"
+    android:tag="0">
+
 
     <FrameLayout
         android:layout_width="match_parent"
@@ -9,12 +12,13 @@
         android:layout_gravity="center">
 
         <com.meamobile.photokit.user_interface.SquareImageView
-            android:layout_width="match_parent"
-            android:layout_height="match_parent"
+            android:layout_width="90dp"
+            android:layout_height="90dp"
+            android:layout_margin="5dp"
             android:id="@+id/imageView"
-            android:layout_gravity="center"
+            android:layout_gravity="left"
             android:scaleType="centerCrop"
-            android:tag="0"/>
+            android:src="@drawable/printicular_logo"/>
 
         <ImageView
             android:layout_width="50dp"
@@ -24,8 +28,6 @@
             android:id="@+id/selectionIndicatorImageView"
             android:layout_gravity="right|top"
             android:src="@drawable/printicular_selection"/>
-
-
 
     </FrameLayout>
 

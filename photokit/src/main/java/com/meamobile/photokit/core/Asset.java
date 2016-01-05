@@ -15,7 +15,8 @@ public class Asset implements Parcelable
     static public enum AssetType
     {
         Invalid,
-        Remote
+        Remote,
+        Local
     }
 
     public String Title;
