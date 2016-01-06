@@ -35,4 +35,5 @@ dependencies {
     compile 'com.github.scribejava:scribejava-core:2.0.1'
     compile files('libs/json-20151123.jar')
     compile 'com.android.support:recyclerview-v7:23.1.1'
+    compile 'com.cocosw:bottomsheet:1.+@aar'
 }

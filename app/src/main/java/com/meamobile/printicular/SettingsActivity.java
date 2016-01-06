@@ -5,13 +5,18 @@ import android.app.Dialog;
 import android.content.DialogInterface;
 import android.os.Bundle;
 import android.support.v7.app.ActionBarActivity;
+import android.support.v7.widget.RecyclerView;
+import android.support.v7.widget.StaggeredGridLayoutManager;
 import android.util.Log;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.Window;
 
+import com.meamobile.printicular.settings.SettingsRecyclerViewAdapter;
+
 public class SettingsActivity extends ActionBarActivity
 {
+    RecyclerView mRecyclerView;
 
     @Override
     protected void onCreate(Bundle savedInstanceState)
@@ -23,6 +28,9 @@ public class SettingsActivity extends ActionBarActivity
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
 
 
+        mRecyclerView = (RecyclerView) findViewById(R.id.recyclerView);
+        mRecyclerView.setLayoutManager(new StaggeredGridLayoutManager(1, StaggeredGridLayoutManager.VERTICAL));
+        mRecyclerView.setAdapter(new SettingsRecyclerViewAdapter(this));
     }
 
     @Override
@@ -53,16 +61,6 @@ public class SettingsActivity extends ActionBarActivity
         goBack();
     }
 
-
-
-
-    public void countrySelectorClicked(View v)
-    {
-        Dialog alert = new Dialog(this);
-        alert.requestWindowFeature(Window.FEATURE_NO_TITLE);
-        alert.setContentView(R.layout.settings_country_selection_dialog);
-        alert.show();
-    }
 
 
 }

@@ -14,7 +14,7 @@
         android:layout_margin="10dp"
         android:id="@+id/titleTextView"/>
 
-    <TextView
+    <View
         android:layout_width="match_parent"
         android:layout_height="1dp"
         android:background="@color/printicular_primary_grey"
@@ -35,28 +35,29 @@
             android:layout_height="wrap_content">
 
             <RadioGroup xmlns:android="http://schemas.android.com/apk/res/android"
+                        android:id="@+id/radioGroup"
                         android:layout_width="fill_parent"
                         android:layout_height="wrap_content"
                         android:orientation="vertical">
 
                 <RadioButton android:id="@+id/radioUSA"
-                             android:layout_width="wrap_content"
+                             android:layout_width="match_parent"
                              android:layout_height="wrap_content"
                              android:text="USA, Peurto Rico, Canada, Mexico"/>
 
 
                 <RadioButton android:id="@+id/radioGerman"
-                             android:layout_width="wrap_content"
+                             android:layout_width="match_parent"
                              android:layout_height="wrap_content"
                              android:text="Germany"/>
 
                 <RadioButton android:id="@+id/radioNZ"
-                             android:layout_width="wrap_content"
+                             android:layout_width="match_parent"
                              android:layout_height="wrap_content"
                              android:text="New Zealand"/>
 
                 <RadioButton android:id="@+id/radioRest"
-                             android:layout_width="wrap_content"
+                             android:layout_width="match_parent"
                              android:layout_height="wrap_content"
                              android:text="Rest of World"/>
 
@@ -71,20 +72,21 @@
         android:layout_height="50dp"
         android:layout_below="@id/contentScrollView" >
 
-        <TextView
+        <View
             android:layout_width="match_parent"
             android:layout_height="1dp"
             android:background="@color/printicular_primary_grey"
             android:layout_alignParentTop="true"/>
 
         <Button
+            android:id="@+id/okButton"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text="OK"
-            android:layout_alignParentRight="true"
-            android:id="@+id/okButton"/>
+            android:layout_alignParentRight="true"/>
 
         <Button
+            android:id="@+id/cancelButton"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text="Cancel"

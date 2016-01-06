@@ -80,17 +80,6 @@ public class PhotobucketSource extends Source
         return mBaseUrl;
     }
 
-//    public OAuthRequest signUrl(Verb verb, String url)
-//    {
-//        OAuthRequest request = new OAuthRequest(verb, url, mOAuthService);
-//
-//        request.addOAuthParameter(OAuthConstants.CONSUMER_KEY, mConsumerKey);
-//        request.addOAuthParameter(OAuthConstants.SIGN_METHOD, "HMAC-SHA1");
-//        request.addOAuthParameter(OAuthConstants.TIMESTAMP, "" + new Date().getTime());
-//
-//        return request;
-//    }
-
     @Override
     public boolean isActive()
     {
@@ -111,7 +100,7 @@ public class PhotobucketSource extends Source
 
             _activity.runOnUiThread(new Runnable() {@Override public void run()
             {
-                showAuthenticatorDialogWithUrl(_activity, authUrl);
+                showAuthenticatorActivityWithUrl(_activity, authUrl);
             }});
         }}).start();
     }
@@ -131,7 +120,7 @@ public class PhotobucketSource extends Source
         }
     }
 
-    private void showAuthenticatorDialogWithUrl(Activity activity, String url)
+    private void showAuthenticatorActivityWithUrl(Activity activity, String url)
     {
         AuthenticatorCallbackManager.getInstance().addListener(getResultListener());
 

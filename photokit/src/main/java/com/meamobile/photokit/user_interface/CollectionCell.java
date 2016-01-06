@@ -3,6 +3,7 @@ package com.meamobile.photokit.user_interface;
 import android.support.v7.widget.RecyclerView;
 import android.view.View;
 import android.widget.ImageView;
+import android.widget.TextView;
 
 import com.meamobile.photokit.R;
 
@@ -10,6 +11,9 @@ public class CollectionCell extends RecyclerView.ViewHolder
 {
     private ImageView mImageView;
     private ImageView mSelectionView;
+    private TextView mMainTextView;
+    private TextView mAccessoryTextView;
+    private View mDividerView;
     private boolean mSelected;
     private int mTag = 0;
 
@@ -18,6 +22,9 @@ public class CollectionCell extends RecyclerView.ViewHolder
 
         mImageView = (ImageView) v.findViewById(R.id.imageView);
         mSelectionView = (ImageView) v.findViewById(R.id.selectionIndicatorImageView);
+        mMainTextView = (TextView) v.findViewById(R.id.textViewMain);
+        mAccessoryTextView = (TextView) v.findViewById(R.id.textViewAccessory);
+        mDividerView = v.findViewById(R.id.divider);
     }
 
 
@@ -33,6 +40,21 @@ public class CollectionCell extends RecyclerView.ViewHolder
     public ImageView getSelectionView()
     {
         return mSelectionView;
+    }
+
+    public void setMainText(String text)
+    {
+        mMainTextView.setText(text);
+    }
+
+    public void setAccessoryText(String text)
+    {
+        mAccessoryTextView.setText(text);
+    }
+
+    public void setDividerVisible(boolean visible)
+    {
+        mDividerView.setVisibility(visible ? View.VISIBLE : View.INVISIBLE);
     }
 
     public void setSelected(boolean selected)

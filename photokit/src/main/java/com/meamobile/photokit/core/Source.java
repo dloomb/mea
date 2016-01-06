@@ -29,6 +29,8 @@ public class Source implements Parcelable
 
     public boolean isActive(){return false;}
 
+    public String getUsername(){return "";}
+
     public void activateSource(Activity activity, SourceActivationCallback callback){
         mActivationCallback = callback;
     }

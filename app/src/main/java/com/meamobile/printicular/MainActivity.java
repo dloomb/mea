@@ -33,17 +33,16 @@ import com.meamobile.printicular_sdk.core.PrinticularServiceManager.PrinticularE
 import com.meamobile.printicular_sdk.user_interface.ManageOrderActivity;
 
 import java.util.EnumSet;
+import java.util.Locale;
 
 
 public class MainActivity extends ActionBarActivity implements ExplorerFragmentDelegate
 {
     public static String TAG = "MEA.ActivityMain";
-    public static String AUTO_SAVED_COUNTRY = "com.meamobile.printicular.country_selection.auto";
-    public static String USER_SAVED_COUNTRY = "com.meamobile.printicular.country_selection.user";
 
     private long lastBackTap = 0;
     private CallbackManager mFacebookCallbackManager;
-    private String mCountryCode;
+    private Locale mCountryLocale;
     private PhotoKitCartManager mCart;
     private CartFragment mCartFragment;
 
@@ -69,14 +68,12 @@ public class MainActivity extends ActionBarActivity implements ExplorerFragmentD
         FacebookSdk.sdkInitialize(getApplicationContext());
         mFacebookCallbackManager = CallbackManager.Factory.create();
 
-        determineLocation();
-
         pushRootExplorer();
     }
 
     private void setupUserInterface()
     {
-        Log.d(TAG, "Updating UI for " + mCountryCode);
+        Log.d(TAG, "Updating UI for " + mCountryLocale.getISO3Country());
 
         int red = getResources().getColor(R.color.printicular_wag_red);
         int blue = getResources().getColor(R.color.printicular_hack_blue);
@@ -91,23 +88,23 @@ public class MainActivity extends ActionBarActivity implements ExplorerFragmentD
         mBtnNext.setVisibility(View.INVISIBLE);
         mBtnContainer.setVisibility(View.INVISIBLE);
 
-        switch (mCountryCode)
+        switch (mCountryLocale.getISO3Country())
         {
-            case "NZ":
+            case "NZL":
                 mBtnContainer.setVisibility(View.VISIBLE);
                 mBtnPickup.getBackground().setColorFilter(blue, PorterDuff.Mode.MULTIPLY);
                 mBtnPickup.setText("Warehouse Stationery");
                 mBtnDeliver.getBackground().setColorFilter(grey, PorterDuff.Mode.MULTIPLY);
                 break;
 
-            case "US":
+            case "USA":
                 mBtnContainer.setVisibility(View.VISIBLE);
                 mBtnPickup.getBackground().setColorFilter(red, PorterDuff.Mode.MULTIPLY);
                 mBtnPickup.setText("Walgreens");
                 mBtnDeliver.getBackground().setColorFilter(blue, PorterDuff.Mode.MULTIPLY);
                 break;
 
-            case "DE":
+            case "DEU":
                 mBtnContainer.setVisibility(View.VISIBLE);
                 mBtnPickup.getBackground().setColorFilter(orange, PorterDuff.Mode.MULTIPLY);
                 mBtnPickup.setText("Kodak");
@@ -115,7 +112,10 @@ public class MainActivity extends ActionBarActivity implements ExplorerFragmentD
                 break;
 
             default:
-
+                mBtnContainer.setVisibility(View.VISIBLE);
+                mBtnPickup.getBackground().setColorFilter(red, PorterDuff.Mode.MULTIPLY);
+                mBtnPickup.setText("Pickup");
+                mBtnDeliver.getBackground().setColorFilter(blue, PorterDuff.Mode.MULTIPLY);
                 break;
         }
     }
@@ -123,16 +123,8 @@ public class MainActivity extends ActionBarActivity implements ExplorerFragmentD
     private void determineLocation()
     {
         //Location has already been set
-        mCountryCode = UserDefaults.getInstance().stringForKey(USER_SAVED_COUNTRY);
-        if (mCountryCode != null)
-        {
-            setupUserInterface();
-            return;
-        }
-
-        //If we have a saved one, start with that
-        mCountryCode = UserDefaults.getInstance().stringForKey(AUTO_SAVED_COUNTRY);
-        if (mCountryCode != null)
+        mCountryLocale = LocationUtil.getCurrentCountry();
+        if (mCountryLocale != null)
         {
             setupUserInterface();
             return;
@@ -145,15 +137,15 @@ public class MainActivity extends ActionBarActivity implements ExplorerFragmentD
                     @Override
                     public void completion(String error, Address address)
                     {
-                        String code = getApplicationContext().getResources().getConfiguration().locale.getISO3Country();
+                        Locale locale = getApplicationContext().getResources().getConfiguration().locale;
 
                         if (address != null)
                         {
-                            code = address.getCountryCode();
-                            UserDefaults.getInstance().setStringValueForKey(code, AUTO_SAVED_COUNTRY);
+                            locale = address.getLocale();
+                            LocationUtil.setAutoSavedCountry(locale);
                         }
 
-                        mCountryCode = code;
+                        mCountryLocale = locale;
                         setupUserInterface();
                     }
                 });
@@ -170,8 +162,8 @@ public class MainActivity extends ActionBarActivity implements ExplorerFragmentD
     public boolean onOptionsItemSelected(MenuItem item) {
         int id = item.getItemId();
 
-        if (id == R.id.action_settings) {
-
+        if (id == R.id.action_settings)
+        {
             startActivity(new Intent(MainActivity.this, SettingsActivity.class));
             return true;
         }
@@ -206,7 +198,12 @@ public class MainActivity extends ActionBarActivity implements ExplorerFragmentD
                 .initialize(this, PrinticularEnvironment.STAGING);
     }
 
-
+    @Override
+    protected void onResume()
+    {
+        super.onResume();
+        determineLocation();
+    }
 
     ///-----------------------------------------------------------
     /// @name Hardware Button Input
@@ -215,7 +212,6 @@ public class MainActivity extends ActionBarActivity implements ExplorerFragmentD
     @Override
     public void onBackPressed()
     {
-        Log.d("!!", "Back");
         popExplorerFragment();
     }
 

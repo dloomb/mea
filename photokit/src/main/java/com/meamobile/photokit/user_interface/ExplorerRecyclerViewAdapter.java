@@ -28,6 +28,7 @@ public class ExplorerRecyclerViewAdapter extends RecyclerView.Adapter implements
     private Collection mCollection;
     private ExplorerFragmentDelegate mDelegate;
     private CachingImageManager mImageCache;
+    private RecyclerView mRecyclerView;
 
 
     public ExplorerRecyclerViewAdapter(Activity activity, Collection collection, ExplorerFragmentDelegate delegate) {
@@ -72,7 +73,18 @@ public class ExplorerRecyclerViewAdapter extends RecyclerView.Adapter implements
         return mCollection.numberOfAll();
     }
 
+    @Override
+    public void onAttachedToRecyclerView(RecyclerView recyclerView)
+    {
+        super.onAttachedToRecyclerView(recyclerView);
+        mRecyclerView = recyclerView;
+    }
 
+    protected int getSpanCount()
+    {
+        StaggeredGridLayoutManager layout = (StaggeredGridLayoutManager) mRecyclerView.getLayoutManager();
+        return layout.getSpanCount();
+    }
 
     ///-----------------------------------------------------------
     /// @name View Recycling
@@ -90,6 +102,7 @@ public class ExplorerRecyclerViewAdapter extends RecyclerView.Adapter implements
             cell.getImageView().setImageResource(collection.Source.ImageResourceId);
         }
         cell.setSelected(false);
+        cell.setMainText(collection.Title);
 
         StaggeredGridLayoutManager.LayoutParams layoutParams = (StaggeredGridLayoutManager.LayoutParams) cell.itemView.getLayoutParams();
         layoutParams.setFullSpan(true);

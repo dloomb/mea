@@ -15,5 +15,13 @@
     <string name="textview_text_cart">Cart</string>
 
 
+    <!-- Settings Activity -->
+    <string name="textview_text_small_print">Printicular - The Most Convenient Way to Print Your Phone\'s Photos. This application uses the Instagram&#8482; API and is not endorsed or certified by Instagram or Instagram, Inc. All Instagram&#8482; logos and trademarks displayed on this application are property of Instagram, Inc. This product uses the Flickr API but is not endorsed or certified by Flickr</string>
+    <string name="textview_text_privacy_policy">Privacy Policy</string>
+    <string name="textview_text_terms_and_conditions">Terms and Conditons</string>
+
+    <string name="bottomsheet_change_user">Login as a different user</string>
+    <string name="bottomsheet_logout">Logout</string>
+    <string name="bottomsheet_cancel">Cancel</string>
 
 </resources>

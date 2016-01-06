@@ -9,6 +9,8 @@ import android.location.LocationManager;
 import android.os.Bundle;
 import android.util.Log;
 
+import com.meamobile.photokit.core.UserDefaults;
+
 import java.io.IOException;
 import java.util.Calendar;
 import java.util.List;
@@ -17,6 +19,10 @@ import java.util.Locale;
 public class LocationUtil implements LocationListener
 {
     private static String TAG = "MEA.LocationUtil";
+
+    public static String AUTO_SAVED_COUNTRY = "com.meamobile.printicular.country_selection.auto";
+    public static String USER_SAVED_COUNTRY = "com.meamobile.printicular.country_selection.user";
+
     private static LocationUtil mInstance;
 
     private LocationManager mLocationManager;
@@ -130,5 +136,51 @@ public class LocationUtil implements LocationListener
 
 
 
+    ///-----------------------------------------------------------
+    /// @name Saving Data
+    ///-----------------------------------------------------------
+    /*
+        @description
 
+        User Saved: the country a user has picked via some input (Probably settings)
+        Auto Saved: the coutnry that was automatically choosen based on Location data
+
+        User Saved has a higher priority the Auto Saved.
+    */
+
+
+    public static Locale getUserSavedCountry()
+    {
+        String code = UserDefaults.getInstance().stringForKey(USER_SAVED_COUNTRY);
+
+        return (code == null ? null : new Locale("", code));
+    }
+
+    public static void setUserSavedCountry(Locale country)
+    {
+        UserDefaults.getInstance().setStringValueForKey(country.getISO3Country(), USER_SAVED_COUNTRY);
+    }
+
+    public static Locale getAutoSavedCountry()
+    {
+        String code = UserDefaults.getInstance().stringForKey(AUTO_SAVED_COUNTRY);
+
+        return (code == null ? null : new Locale("", code));
+    }
+
+    public static void setAutoSavedCountry(Locale country)
+    {
+        UserDefaults.getInstance().setStringValueForKey(country.getISO3Country(), AUTO_SAVED_COUNTRY);
+    }
+
+    public static Locale getCurrentCountry()
+    {
+        Locale country = getUserSavedCountry();
+        if (country == null)
+        {
+            country = getAutoSavedCountry();
+        }
+
+        return country;
+    }
 }

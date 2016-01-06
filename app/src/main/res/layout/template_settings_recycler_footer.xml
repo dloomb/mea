@@ -1,0 +1,49 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:padding="10dp">
+
+    <TextView
+        android:id="@+id/textViewMain"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_alignParentTop="true"
+        android:layout_alignParentLeft="true"
+        android:textSize="15sp"
+        android:text="@string/textview_text_small_print"/>
+
+    <TextView
+        android:id="@+id/textViewSecondary"
+        android:layout_marginTop="10dp"
+        android:layout_marginBottom="15dp"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_below="@id/textViewMain"
+        android:textSize="12sp"
+        android:text="@string/activity_customer_details_title"/>
+
+    <TextView
+        android:id="@+id/textViewTerms"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentLeft="true"
+        android:layout_below="@id/textViewSecondary"
+        android:text="@string/textview_text_terms_and_conditions"
+        android:textColor="@color/printicular_blue"
+        android:background="?attr/selectableItemBackground"
+        android:clickable="true"/>
+
+    <TextView
+        android:id="@+id/textViewPrivacy"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentRight="true"
+        android:layout_below="@id/textViewSecondary"
+        android:layout_marginBottom="20dp"
+        android:text="@string/textview_text_privacy_policy"
+        android:textColor="@color/printicular_blue"
+        android:background="?attr/selectableItemBackground"
+        android:clickable="true"/>
+
+</RelativeLayout>
