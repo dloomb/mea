@@ -10,6 +10,7 @@ public class AuthenticatorCallbackManager
     public interface OnResultListener
     {
         boolean handleResult(final int requestCode, final int resultCode, final Intent data);
+        void onResume();
     }
 
     private static AuthenticatorCallbackManager mInstance = null;
@@ -35,6 +36,14 @@ public class AuthenticatorCallbackManager
         }
 
         return false;
+    }
+
+    public void onResume()
+    {
+        for (OnResultListener listener : mListeners)
+        {
+            listener.onResume();
+        }
     }
 
     public void addListener(OnResultListener listener)

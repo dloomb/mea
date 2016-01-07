@@ -1,6 +1,5 @@
 package com.meamobile.photokit.instagram;
 
-import com.meamobile.photokit.core.Asset;
 import com.meamobile.photokit.core.RemoteAsset;
 
 import java.util.Map;
@@ -19,11 +18,11 @@ public class InstagramAsset extends RemoteAsset
         Number width = (Number) standard.get("width");
         Number height = (Number) standard.get("height");
 
-        Title = (String) json.get("id");
-        TimeStamp = created.longValue();
+        mTitle = (String) json.get("id");
+        mTimestamp = created.longValue();
         FullResolutionUrlString = (String) standard.get("url");
         ThumbnailUrlString = (String) thumb.get("url");;
-        Width = width.intValue();
-        Height = height.intValue();
+        mWidth = width.intValue();
+        mHeight = height.intValue();
     }
 }

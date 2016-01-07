@@ -2,24 +2,13 @@ package com.meamobile.photokit.instagram;
 
 import android.annotation.SuppressLint;
 import android.app.Activity;
+import android.os.Parcel;
+import android.os.Parcelable;
 import android.util.Log;
 
-import com.google.gson.Gson;
-import com.google.gson.reflect.TypeToken;
 import com.meamobile.photokit.core.Collection;
 import com.meamobile.photokit.core.JSONHttpClient;
 
-import org.apache.http.NameValuePair;
-import org.apache.http.client.HttpClient;
-import org.apache.http.client.methods.HttpGet;
-import org.apache.http.impl.client.DefaultHttpClient;
-import org.apache.http.message.BasicNameValuePair;
-import org.json.JSONArray;
-import org.json.JSONException;
-import org.json.JSONObject;
-
-import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -28,12 +17,14 @@ public class InstagramCollection extends Collection
 {
     static private String LOG = "Collection.Instagram";
 
+    public InstagramCollection(){}
+
     public static InstagramCollection RootCollection()
     {
         InstagramCollection collection = new InstagramCollection();
 
-        collection.Source = new InstagramSource();
-        collection.Title = collection.Source.Title;
+        collection.mSource = new InstagramSource();
+        collection.mTitle = collection.mSource.getTitle();
 
         return collection;
     }
@@ -49,7 +40,7 @@ public class InstagramCollection extends Collection
     {
         super.loadContents(activity);
 
-        InstagramSource igSource = (InstagramSource) this.Source;
+        InstagramSource igSource = (InstagramSource) this.mSource;
         String url = "https://api.instagram.com/v1/users/self/media/recent/?count=20&access_token=" + igSource.getAccessToken();
 
         loadAssetsWithUrl(url);
@@ -96,4 +87,25 @@ public class InstagramCollection extends Collection
             }
         });
     }
+
+
+
+    ///-----------------------------------------------------------
+    /// @name Parcelable
+    ///-----------------------------------------------------------
+
+    public static final Parcelable.Creator<InstagramCollection> CREATOR = new Parcelable.Creator<InstagramCollection>() {
+        public InstagramCollection createFromParcel(Parcel in) {
+            return new InstagramCollection(in);
+        }
+        public InstagramCollection[] newArray(int size) {
+            return new InstagramCollection[size];
+        }
+    };
+
+    protected InstagramCollection(Parcel in)
+    {
+        super(in);
+    }
+
 }

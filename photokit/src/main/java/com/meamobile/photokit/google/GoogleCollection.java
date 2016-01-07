@@ -17,8 +17,8 @@ public class GoogleCollection extends Collection
     {
         GoogleCollection collection = new GoogleCollection();
 
-        collection.Source = new GoogleSource();
-        collection.Title = collection.Source.Title;
+        collection.mSource = new GoogleSource();
+        collection.mTitle = collection.mSource.getTitle();
 
         return collection;
     }

@@ -32,14 +32,14 @@ public class PhotobucketSource extends Source
     private static final String PHOTOBUCKET_SAVED_DATA = "com.meamobile.photokit.photobucket.saved_data";
 
 
-    private String mConsumerKey, mConsumerSecret, mUsername, mHomeUrl, mBaseUrl;
+    private String mConsumerKey, mConsumerSecret, mHomeUrl, mBaseUrl;
     private Token mRequestToken, mAccessToken;
     private OAuthService mOAuthService;
 
     public PhotobucketSource()
     {
-        this.Title = "Photobucket";
-        this.ImageResourceId = R.drawable.photobucket_badge;
+        this.mTitle = "Photobucket";
+        this.mImageResourceId = R.drawable.photobucket_badge;
 
         mConsumerKey = "149833797";
         mConsumerSecret = "4a90d33bbac6183f8f3a389b4fbab300";
@@ -63,11 +63,6 @@ public class PhotobucketSource extends Source
     public Token getOAuthToken()
     {
         return mAccessToken;
-    }
-
-    public String getUsername()
-    {
-        return mUsername;
     }
 
     public String getHomeUrl()
@@ -103,6 +98,12 @@ public class PhotobucketSource extends Source
                 showAuthenticatorActivityWithUrl(_activity, authUrl);
             }});
         }}).start();
+    }
+
+    @Override
+    public int getBrandColor()
+    {
+        return 0xFF0ea0db;
     }
 
     private void refreshToken()
@@ -154,6 +155,9 @@ public class PhotobucketSource extends Source
                 }
                 return false;
             }
+
+            //ignored
+            @Override public void onResume() {}
         };
     }
 

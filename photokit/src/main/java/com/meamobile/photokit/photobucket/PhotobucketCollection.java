@@ -31,9 +31,9 @@ public class PhotobucketCollection extends Collection
     {
         PhotobucketCollection collection = new PhotobucketCollection();
 
-        collection.Source = new PhotobucketSource();
-        collection.Title = collection.Source.Title;
-        collection.mPBSource = (PhotobucketSource) collection.Source;
+        collection.mSource = new PhotobucketSource();
+        collection.mTitle = collection.mSource.getTitle();
+        collection.mPBSource = (PhotobucketSource) collection.mSource;
 
         return collection;
     }
@@ -45,10 +45,10 @@ public class PhotobucketCollection extends Collection
 //        int id = ((Number) json.get("id")).intValue();
         String parent = (String) json.get("parent");
 
-        Title = (String) json.get("name");
-        Source = source;
+        mTitle = (String) json.get("name");
+        mSource = source;
 
-        mPhotobucketAlbumId = URLEncoder.encode(parent + "/" + Title, "UTF-8");
+        mPhotobucketAlbumId = URLEncoder.encode(parent + "/" + mTitle, "UTF-8");
         mPBSource = source;
 
     }

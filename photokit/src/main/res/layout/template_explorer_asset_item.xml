@@ -1,20 +1,14 @@
 <?xml version="1.0" encoding="utf-8"?>
-<FrameLayout
+<RelativeLayout
     xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
-    android:layout_height="100dp"
-    android:tag="0">
-
-
-    <RelativeLayout
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:layout_gravity="center">
+    android:layout_height="match_parent">
 
         <com.meamobile.photokit.user_interface.SquareImageView
-            android:layout_width="90dp"
-            android:layout_height="90dp"
-            android:layout_margin="5dp"
+            android:layout_width="70dp"
+            android:layout_height="match_parent"
+            android:layout_marginTop="5dp"
+            android:layout_marginLeft="5dp"
             android:id="@+id/imageView"
             android:layout_alignParentLeft="true"
             android:layout_alignParentTop="true"
@@ -22,13 +16,14 @@
             android:src="@drawable/printicular_logo"/>
 
         <TextView
+            android:id="@+id/textViewMain"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:textSize="20sp"
             android:layout_toRightOf="@id/imageView"
             android:layout_centerVertical="true"
-            android:id="@+id/textViewMain"
-            android:layout_marginRight="10dp"/>
+            android:layout_marginRight="10dp"
+            android:layout_marginLeft="10dp"
+            android:textSize="20sp"/>
 
         <TextView
             android:layout_width="match_parent"
@@ -42,8 +37,8 @@
         <ImageView
             android:layout_width="50dp"
             android:layout_height="50dp"
-            android:layout_marginTop="2dp"
-            android:layout_marginRight="2dp"
+            android:layout_marginTop="5dp"
+            android:layout_marginRight="5dp"
             android:id="@+id/selectionIndicatorImageView"
             android:src="@drawable/printicular_selection"
             android:layout_alignParentRight="true"
@@ -58,6 +53,5 @@
             android:id="@+id/divider"
             android:visibility="invisible"/>
 
-    </RelativeLayout>
 
-</FrameLayout>
+</RelativeLayout>

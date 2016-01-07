@@ -18,7 +18,14 @@ import java.util.EnumSet;
 
 public class CollectionFactory
 {
-    public static Collection BaseCollectionWithSourceTypes(EnumSet<CollectionType> types)
+    public static Collection sRootCollection;
+
+    public static Collection getRootCollection()
+    {
+        return sRootCollection;
+    }
+
+    public static Collection initRootCollectionWithSourceTypes(EnumSet<CollectionType> types)
     {
         Collection collection = new Collection();
 
@@ -94,6 +101,7 @@ public class CollectionFactory
             collection.addCollection(photobucket);
         }
 
+        sRootCollection = collection;
         return collection;
     }
 

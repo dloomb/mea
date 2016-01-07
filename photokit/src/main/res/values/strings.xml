@@ -1,3 +1,8 @@
 <resources>
     <string name="app_name">PhotoKit</string>
+
+    <!-- mSource Keys -->
+    <string name="dropbox_app_key">7465oxqr1g5j3ob</string>
+    <string name="dropbox_url_scheme">db-7465oxqr1g5j3ob</string>
+
 </resources>

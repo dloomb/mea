@@ -14,12 +14,12 @@ public class PhotobucketAsset extends RemoteAsset
     {
         int uploaded = ((Number) json.get("uploaddate")).intValue();
 
-        Title = (String) json.get("name");
-        TimeStamp = uploaded;
+        mTitle = (String) json.get("name");
+        mTimestamp = uploaded;
         FullResolutionUrlString = (String) json.get("url");
         ThumbnailUrlString = (String) json.get("thumb");
-        Width = 0;
-        Height = 0;
+        mWidth = 0;
+        mHeight = 0;
     }
 
 }

@@ -7,11 +7,12 @@
 
 
     <RelativeLayout
+        android:id="@+id/fragmentContainer"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:layout_alignParentTop="true"
         android:layout_marginBottom="190dp"
-        android:id="@+id/fragmentContainer"/>
+        android:clipChildren="false"/>
 
 
     <RelativeLayout
@@ -75,6 +76,7 @@
                 android:text="@string/button_text_pickup"
                 android:textAllCaps="false"
                 android:onClick="onPickupButtonPressed"/>
+
 
         </LinearLayout>
 

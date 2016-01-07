@@ -124,7 +124,7 @@ public class CartFragment extends Fragment {
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
 
 //
-                Log.d(LOG, "Width " + mGridView.getWidth() + ", Height " + mGridView.getHeight());
+                Log.d(LOG, "mWidth " + mGridView.getWidth() + ", mHeight " + mGridView.getHeight());
             }
         };
     }

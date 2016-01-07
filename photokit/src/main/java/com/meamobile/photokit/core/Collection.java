@@ -3,16 +3,12 @@ package com.meamobile.photokit.core;
 
 
 import com.google.gson.Gson;
-import com.meamobile.photokit.facebook.FacebookCollection;
-import com.meamobile.photokit.instagram.InstagramCollection;
-import com.meamobile.photokit.local.LocalCollection;
-import com.meamobile.photokit.photobucket.PhotobucketCollection;
 
 import android.app.Activity;
 import android.os.Parcel;
 import android.os.Parcelable;
 import java.util.ArrayList;
-import java.util.Calendar;
+import java.util.Arrays;
 import java.util.Date;
 import java.util.EnumSet;
 import java.util.HashMap;
@@ -60,9 +56,9 @@ public class Collection implements Parcelable
     private ArrayList<Asset> mAssets;
     private CollectionObserver mObserver;
 
-    public Source Source;
-    public String Title;
-    public Asset CoverAsset;
+    protected Source mSource;
+    protected String mTitle;
+    protected Asset mCoverAsset;
 
     public Collection()
     {
@@ -77,8 +73,14 @@ public class Collection implements Parcelable
         return CollectionType.Root;
     }
 
+    public Source getSource() { return mSource; }
+
+    public String getTitle() { return mTitle; }
+
+    public Asset getCoverAsset() { return mCoverAsset; }
+
     public String collectionIdentifier () {
-        return getClass().getName() + Title;
+        return getClass().getName() + mTitle;
     }
 
     public void setCollectionObserver(CollectionObserver observer)
@@ -98,6 +100,7 @@ public class Collection implements Parcelable
     public void addCollection(Collection collection)
     {
         mCollections.add(collection);
+
         if (mObserver != null)
         {
             mObserver.collectionDidAddCollection(this, collection);
@@ -143,7 +146,7 @@ public class Collection implements Parcelable
 
 
     //---------------------------------
-    //          Loading
+    //          ContentLoading
     //---------------------------------
 
     public void loadContents(Activity activity){
@@ -169,7 +172,6 @@ public class Collection implements Parcelable
     /// @name Parcelable
     ///-----------------------------------------------------------
 
-
     @Override
     public int describeContents() {
         return 0;
@@ -178,15 +180,15 @@ public class Collection implements Parcelable
     @Override
     public void writeToParcel(Parcel dest, int flags)
     {
-        Map<String, Object> data = new HashMap<String, Object>();
-//        data.put("assets", mAssets);
-//        data.put("collections", mCollections);
-//        data.put("title", Title);
-//        data.put("source", Source);
-//        data.put("thumbnail_path", ThumbnailPath);
+        Asset[] assets = new Asset[mAssets.size()];
+        assets = mAssets.toArray(assets);
+        dest.writeParcelableArray(assets, flags);
 
-        String s = (new Gson()).toJson(data);
-        dest.writeString(s);
+        Collection[] collections = new Collection[mCollections.size()];
+        collections = mCollections.toArray(collections);
+        dest.writeParcelableArray(collections, flags);
+
+        dest.writeParcelable(mSource, flags);
     }
 
     public static final Parcelable.Creator<Collection> CREATOR = new Parcelable.Creator<Collection>() {
@@ -199,14 +201,15 @@ public class Collection implements Parcelable
         }
     };
 
-    private Collection(Parcel in)
+    protected Collection(Parcel in)
     {
-        Map<String, Object> data = (new Gson()).fromJson(in.readString(), Map.class);
-        mAssets = (ArrayList<Asset>) data.get("assets");
-        mCollections = (ArrayList<Collection>) data.get("collections");
-        Title = (String) data.get("title");
-        Source = (com.meamobile.photokit.core.Source) data.get("source");
-        CoverAsset = (Asset) data.get("cover_asset");
+        Parcelable[] assets = in.readParcelableArray(Asset.class.getClassLoader());
+        mAssets = new ArrayList(Arrays.asList(assets));
+
+        Parcelable[] collections = in.readParcelableArray(Collection.class.getClassLoader());
+        mCollections = new ArrayList(Arrays.asList(collections));
+
+        mSource = in.readParcelable(Source.class.getClassLoader());
     }
 
 }

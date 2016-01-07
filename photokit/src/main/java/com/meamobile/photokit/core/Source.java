@@ -2,7 +2,6 @@ package com.meamobile.photokit.core;
 
 
 import android.app.Activity;
-import android.content.Context;
 import android.os.Handler;
 import android.os.Looper;
 import android.os.Parcel;
@@ -15,24 +14,31 @@ import java.util.Map;
 
 public class Source implements Parcelable
 {
+    public static int BASE_BRAND_COLOR = 0xFFAAAAAA;
+
     public interface SourceActivationCallback
     {
         void success();
         void error(String error);
     }
 
-    public String Title;
-    public int ImageResourceId;
+    protected String mTitle, mUsername;
+    protected int mImageResourceId;
+
     private SourceActivationCallback mActivationCallback;
 
     public Source(){}
 
     public boolean isActive(){return false;}
 
-    public String getUsername(){return "";}
 
     public void activateSource(Activity activity, SourceActivationCallback callback){
         mActivationCallback = callback;
+    }
+
+    public void invalidateSource()
+    {
+        mUsername = null;
     }
 
     protected void handleSourceActivation(boolean success, String error)
@@ -55,10 +61,36 @@ public class Source implements Parcelable
                     {
                         mActivationCallback.error(_error);
                     }
+
+                    mActivationCallback = null;
                 }
             });
         }
     }
+
+
+
+    ///-----------------------------------------------------------
+    /// @name Property Access
+    ///-----------------------------------------------------------
+
+    public String getTitle()
+    {
+        return mTitle;
+    }
+
+    public int getImageResource()
+    {
+        return mImageResourceId;
+    }
+
+    public String getUsername(){return mUsername;}
+
+    public int getBrandColor()
+    {
+        return BASE_BRAND_COLOR;
+    }
+
 
     ///-----------------------------------------------------------
     /// @name Parcelable
@@ -73,19 +105,16 @@ public class Source implements Parcelable
     @Override
     public void writeToParcel(Parcel dest, int flags)
     {
-        Map<String, Object> data = new HashMap<String, Object>();
-        data.put("title", Title);
-        data.put("image_resource_id", ImageResourceId);
-
-        String s = (new Gson()).toJson(data);
-        dest.writeString(s);
+        dest.writeString(mTitle);
+        dest.writeInt(mImageResourceId);
+        dest.writeString(mUsername);
     }
 
-    private Source(Parcel in)
+    protected Source(Parcel in)
     {
-        Map<String, Object> data = (new Gson()).fromJson(in.readString(), Map.class);
-        Title = (String) data.get("title");
-        ImageResourceId = (int) data.get("image_resource_id");
+        mTitle = in.readString();
+        mImageResourceId = in.readInt();
+        mUsername = in.readString();
     }
 
     public static final Parcelable.Creator<Source> CREATOR = new Parcelable.Creator<Source>() {

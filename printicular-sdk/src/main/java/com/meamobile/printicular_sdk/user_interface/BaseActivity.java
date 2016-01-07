@@ -25,7 +25,7 @@ public class BaseActivity extends ActionBarActivity
             goBack();
             return true;
         }
-
+        
         return super.onOptionsItemSelected(item);
     }
 

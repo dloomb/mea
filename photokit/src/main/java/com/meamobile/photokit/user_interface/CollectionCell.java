@@ -1,7 +1,10 @@
 package com.meamobile.photokit.user_interface;
 
 import android.support.v7.widget.RecyclerView;
+import android.view.LayoutInflater;
 import android.view.View;
+import android.view.ViewGroup;
+import android.widget.FrameLayout;
 import android.widget.ImageView;
 import android.widget.TextView;
 
@@ -25,6 +28,18 @@ public class CollectionCell extends RecyclerView.ViewHolder
         mMainTextView = (TextView) v.findViewById(R.id.textViewMain);
         mAccessoryTextView = (TextView) v.findViewById(R.id.textViewAccessory);
         mDividerView = v.findViewById(R.id.divider);
+    }
+
+    public void setupForAsset()
+    {
+        ViewGroup.LayoutParams layout = mImageView.getLayoutParams();
+        layout.width = ViewGroup.LayoutParams.MATCH_PARENT;;
+        layout.height = ViewGroup.LayoutParams.MATCH_PARENT;
+
+        itemView.post(new Runnable() {@Override public void run()
+        {
+            itemView.setMinimumHeight(itemView.getWidth());
+        }});
     }
 
 

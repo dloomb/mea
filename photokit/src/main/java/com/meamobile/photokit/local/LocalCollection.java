@@ -4,16 +4,19 @@ import android.annotation.SuppressLint;
 import android.app.Activity;
 import android.content.ContentResolver;
 import android.database.Cursor;
-import android.media.Image;
 import android.os.Environment;
+import android.os.Parcel;
+import android.os.Parcelable;
 import android.provider.MediaStore;
 import android.provider.MediaStore.Images.ImageColumns;
-import android.util.Log;
 
 import com.meamobile.photokit.core.Asset;
 import com.meamobile.photokit.core.Collection;
+import com.meamobile.photokit.core.Source;
 
-@SuppressLint("ParcelCreator")
+import java.util.ArrayList;
+import java.util.Arrays;
+
 public class LocalCollection extends Collection
 {
     private static String LOCAL_CAMERA_BUCKET_NAME = Environment.getExternalStorageDirectory().toString();
@@ -23,7 +26,7 @@ public class LocalCollection extends Collection
     public static LocalCollection RootCollection()
     {
         LocalSource source = new LocalSource();
-        LocalCollection collection = new LocalCollection(source.Title, 0, source, null);
+        LocalCollection collection = new LocalCollection(source.getTitle(), 0, source, null);
 
         return collection;
     }
@@ -32,10 +35,10 @@ public class LocalCollection extends Collection
 
     private LocalCollection(String name, long id, LocalSource source, Asset cover)
     {
-        Title = name;
+        mTitle = name;
         mBucketId = id;
-        Source = source;
-        CoverAsset = cover;
+        mSource = source;
+        mCoverAsset = cover;
     }
 
     @Override
@@ -87,7 +90,7 @@ public class LocalCollection extends Collection
 
                 Asset cover = coverAssetForBucketId(bucketId, contentResolver);
 
-                LocalCollection collection = new LocalCollection(name, bucketId, (LocalSource)Source, cover);
+                LocalCollection collection = new LocalCollection(name, bucketId, (LocalSource) mSource, cover);
                 addCollection(collection);
             }
 
@@ -140,6 +143,28 @@ public class LocalCollection extends Collection
         return null;
     }
 
+
+
+
+
+    ///-----------------------------------------------------------
+    /// @name Parcelable
+    ///-----------------------------------------------------------
+
+    public static final Parcelable.Creator<LocalCollection> CREATOR = new Parcelable.Creator<LocalCollection>() {
+        public LocalCollection createFromParcel(Parcel in) {
+            return new LocalCollection(in);
+        }
+
+        public LocalCollection[] newArray(int size) {
+            return new LocalCollection[size];
+        }
+    };
+
+    protected LocalCollection(Parcel in)
+    {
+        super(in);
+    }
 
 
 }

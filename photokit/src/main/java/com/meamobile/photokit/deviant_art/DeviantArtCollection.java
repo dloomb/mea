@@ -17,8 +17,8 @@ public class DeviantArtCollection extends Collection
     {
         DeviantArtCollection collection = new DeviantArtCollection();
 
-        collection.Source = new DeviantArtSource();
-        collection.Title = collection.Source.Title;
+        collection.mSource = new DeviantArtSource();
+        collection.mTitle = collection.mSource.getTitle();
 
         return collection;
     }

@@ -15,7 +15,7 @@ public class LocalAsset extends Asset
 
     public LocalAsset(long id, String title)
     {
-        Title = title;
+        mTitle = title;
         mId = id;
     }
 
@@ -26,8 +26,8 @@ public class LocalAsset extends Asset
         int timestampCol = cursor.getColumnIndex(MediaStore.Images.ImageColumns.DATE_TAKEN);
         int pathCol = cursor.getColumnIndex(MediaStore.Images.ImageColumns.DATA);
 
-        Title = cursor.getString(nameCol);
-        TimeStamp = cursor.getLong(timestampCol);
+        mTitle = cursor.getString(nameCol);
+        mTimestamp = cursor.getLong(timestampCol);
         mId = cursor.getLong(idCol);
         mPath = cursor.getString(pathCol);
     }
@@ -49,8 +49,8 @@ public class LocalAsset extends Asset
     }
 
     @Override
-    public String assetIdentifer()
+    public String getAssetIdentifier()
     {
-        return getClass().toString() + "-" + mId + "-" + Title + "-" + TimeStamp;
+        return getClass().toString() + "-" + mId + "-" + mTitle + "-" + mTimestamp;
     }
 }

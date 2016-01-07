@@ -11,8 +11,8 @@ public class AmazonSource extends Source
 
     public AmazonSource()
     {
-        Title = "Amazon";
-        ImageResourceId = R.drawable.amazon_badge;
+        mTitle = "Amazon";
+        mImageResourceId = R.drawable.amazon_badge;
     }
 
 }

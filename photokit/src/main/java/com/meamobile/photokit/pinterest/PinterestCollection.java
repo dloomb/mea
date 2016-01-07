@@ -17,8 +17,8 @@ public class PinterestCollection extends Collection
     {
         PinterestCollection collection = new PinterestCollection();
 
-        collection.Source = new PinterestSource();
-        collection.Title = collection.Source.Title;
+        collection.mSource = new PinterestSource();
+        collection.mTitle = collection.mSource.getTitle();
 
         return collection;
     }

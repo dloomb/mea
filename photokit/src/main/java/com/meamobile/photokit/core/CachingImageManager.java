@@ -9,6 +9,7 @@ import android.os.storage.StorageManager;
 import android.provider.MediaStore;
 import android.util.Log;
 
+import com.meamobile.photokit.dropbox.DropboxAsset;
 import com.meamobile.photokit.local.LocalAsset;
 import com.squareup.picasso.Callback;
 import com.squareup.picasso.Picasso;
@@ -42,7 +43,7 @@ public class CachingImageManager
 
     public void requestThumbnailForAsset(Asset asset, CachingImageManagerRequestCallback callback)
     {
-        File file = new File(mContext.getCacheDir(), asset.assetIdentifer() + "-thumbnail");
+        File file = new File(mContext.getCacheDir(), asset.getAssetIdentifier() + "-thumbnail");
         if (file.exists())
         {
             callback.success(file);
@@ -64,7 +65,7 @@ public class CachingImageManager
 
     public void requestFullResolutionForAsset(Asset asset, CachingImageManagerRequestCallback callback)
     {
-        File file = new File(mContext.getCacheDir(), asset.assetIdentifer() + "-fullresolution");
+        File file = new File(mContext.getCacheDir(), asset.getAssetIdentifier() + "-fullresolution");
         if (file.exists())
         {
             callback.success(file);
@@ -156,4 +157,5 @@ public class CachingImageManager
             }
         }
     }
+
 }

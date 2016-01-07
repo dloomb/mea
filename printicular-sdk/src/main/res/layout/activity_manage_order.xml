@@ -25,6 +25,8 @@
 
             <include layout="@layout/template_manage_order_postal" />
 
+            <include layout="@layout/template_manage_order_store" />
+
             <include layout="@layout/template_manage_order_payment"/>
 
         </LinearLayout>

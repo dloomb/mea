@@ -10,7 +10,7 @@ public class OneDriveSource extends Source
 {
     public OneDriveSource()
     {
-        Title = "OneDrive";
-        ImageResourceId = R.drawable.onedrive_badge;
+        mTitle = "OneDrive";
+        mImageResourceId = R.drawable.onedrive_badge;
     }
 }

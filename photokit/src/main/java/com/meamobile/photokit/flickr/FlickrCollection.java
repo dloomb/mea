@@ -17,8 +17,8 @@ public class FlickrCollection extends Collection
     {
         FlickrCollection collection = new FlickrCollection();
 
-        collection.Source = new FlickrSource();
-        collection.Title = collection.Source.Title;
+        collection.mSource = new FlickrSource();
+        collection.mTitle = collection.mSource.getTitle();
 
         return collection;
     }

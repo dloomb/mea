@@ -17,8 +17,8 @@ public class OneDriveCollection extends Collection
     {
         OneDriveCollection collection = new OneDriveCollection();
 
-        collection.Source = new OneDriveSource();
-        collection.Title = collection.Source.Title;
+        collection.mSource = new OneDriveSource();
+        collection.mTitle = collection.mSource.getTitle();
 
         return collection;
     }

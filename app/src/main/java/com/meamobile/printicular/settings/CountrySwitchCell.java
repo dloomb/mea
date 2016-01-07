@@ -36,25 +36,28 @@ public class CountrySwitchCell extends RecyclerView.ViewHolder
     {
         String name = "Rest of World";
         int imageId = R.drawable.rest_of_world_country;
-        switch (country.getISO3Country())
+        if (country != null)
         {
-            case "NZL":
-                name = "New Zealand";
-                imageId = R.drawable.nz_country;
-                break;
+            switch (country.getISO3Country())
+            {
+                case "NZL":
+                    name = "New Zealand";
+                    imageId = R.drawable.nz_country;
+                    break;
 
-            case "USA":
-                name = "USA, PR, Canada and Mexico";
-                imageId = R.drawable.usa_can_mex_pr_country;
-                break;
+                case "USA":
+                    name = "USA, PR, Canada and Mexico";
+                    imageId = R.drawable.usa_can_mex_pr_country;
+                    break;
 
-            case "DEU":
-                name = "Germany";
-                imageId = R.drawable.germany_country;
-                break;
+                case "DEU":
+                    name = "Germany";
+                    imageId = R.drawable.germany_country;
+                    break;
+            }
+            mTextView.setText(name);
+            mImageView.setImageResource(imageId);
         }
-        mTextView.setText(name);
-        mImageView.setImageResource(imageId);
     }
 
     public View.OnClickListener getOnClickListener()

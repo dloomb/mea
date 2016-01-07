@@ -17,8 +17,8 @@ public class TwitterCollection extends Collection
     {
         TwitterCollection collection = new TwitterCollection();
 
-        collection.Source = new TwitterSource();
-        collection.Title = collection.Source.Title;
+        collection.mSource = new TwitterSource();
+        collection.mTitle = collection.mSource.getTitle();
 
         return collection;
     }

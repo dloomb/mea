@@ -10,8 +10,8 @@ public class TwitterSource extends Source
 {
     public TwitterSource()
     {
-        Title = "Twitter";
-        ImageResourceId = R.drawable.twitter_badge;
+        mTitle = "Twitter";
+        mImageResourceId = R.drawable.twitter_badge;
     }
 
 }

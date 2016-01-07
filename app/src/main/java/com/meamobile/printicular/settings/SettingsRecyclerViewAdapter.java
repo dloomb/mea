@@ -15,6 +15,8 @@ import java.util.ArrayList;
 import java.util.Locale;
 
 import com.cocosw.bottomsheet.BottomSheet;
+import com.meamobile.photokit.core.Collection;
+import com.meamobile.photokit.core.CollectionFactory;
 import com.meamobile.photokit.core.Source;
 import com.meamobile.photokit.facebook.FacebookSource;
 import com.meamobile.photokit.instagram.InstagramSource;
@@ -50,9 +52,17 @@ public class SettingsRecyclerViewAdapter extends RecyclerView.Adapter
         mContent.add(new SettingsRecyclerContent(HolderViewType.COUNTRY_SWITCHER, null));
 
         mContent.add(new SettingsRecyclerContent(HolderViewType.HEADER, "Accounts"));
-        mContent.add(new SettingsRecyclerContent(HolderViewType.SOURCE_ACCOUNTS, new InstagramSource()));
-        mContent.add(new SettingsRecyclerContent(HolderViewType.SOURCE_ACCOUNTS, new FacebookSource()));
-        mContent.add(new SettingsRecyclerContent(HolderViewType.SOURCE_ACCOUNTS, new PhotobucketSource()));
+
+        Collection rootCollection = CollectionFactory.getRootCollection();
+        int count = rootCollection.numberOfCollections();
+        for (int i = 0; i < count; i++)
+        {
+            Collection collection = rootCollection.collectionAtIndex(i);
+            if (collection.getType() != Collection.CollectionType.Local)
+            {
+                mContent.add(new SettingsRecyclerContent(HolderViewType.SOURCE_ACCOUNTS, collection.getSource()));
+            }
+        }
 
         mContent.add(new SettingsRecyclerContent(HolderViewType.HEADER, ""));
         mContent.add(new SettingsRecyclerContent(HolderViewType.FOOTER, null));
@@ -75,7 +85,7 @@ public class SettingsRecyclerViewAdapter extends RecyclerView.Adapter
 
             case SOURCE_ACCOUNTS:
                 View accounts = inflator.inflate(R.layout.template_settings_recycler_accounts, parent, false);
-                return new AccountsCell(accounts, mContext);
+                return new AccountsCell(accounts, mContext, this);
 
             case FOOTER:
                 View footer = inflator.inflate(R.layout.template_settings_recycler_footer, parent, false);

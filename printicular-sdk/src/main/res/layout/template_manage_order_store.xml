@@ -1,0 +1,53 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="25dp">
+
+    <TextView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="Store details"
+        android:textStyle="bold"
+        android:textColor="@color/text_dark"
+        android:id="@+id/titlePostDetails"
+        android:layout_marginBottom="10dp"/>
+
+    <ImageView
+        android:id="@+id/imageViewStoreLogo"
+        android:layout_width="wrap_content"
+        android:layout_height="40dp"
+        android:layout_below="@id/titlePostDetails"
+        android:src="@drawable/walgreens_store_title"
+        android:tint="#FFe31837"/>
+
+    <TextView
+        android:id="@+id/textViewAddressLine1"
+        android:textColor="@color/text_dark"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginLeft="5dp"
+        android:text="20 Astor Place"
+        android:layout_below="@id/imageViewStoreLogo"/>
+
+    <TextView
+        android:id="@+id/textViewAddressLine2"
+        android:textColor="@color/text_dark"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginLeft="5dp"
+        android:text="New York, NY 10003"
+        android:layout_below="@id/textViewAddressLine1"/>
+
+    <ImageButton
+        android:layout_width="35dp"
+        android:layout_height="35dp"
+        android:background="?android:attr/selectableItemBackground"
+        android:src="@drawable/vect_pencil"
+        android:tint="@color/text_dark"
+        android:layout_alignParentRight="true"
+        android:scaleType="fitCenter"
+        android:id="@+id/buttonPostalEdit"
+        />
+
+</RelativeLayout>

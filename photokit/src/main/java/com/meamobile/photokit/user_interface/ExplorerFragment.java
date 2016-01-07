@@ -9,10 +9,8 @@ import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.StaggeredGridLayoutManager;
 import android.util.DisplayMetrics;
 import android.view.LayoutInflater;
-import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.AdapterView;
 import android.widget.GridView;
 import android.widget.Toast;
 
@@ -28,6 +26,7 @@ public class ExplorerFragment extends Fragment {
     {
         void pushExplorerWithCollection(Collection collection);
         void setNavigationTitle(String title);
+        void setNavigationColor(int color);
         void setDisplaysBackButton(Boolean shouldDisplay);
 
         void onAssetSelect(Asset asset, int index);
@@ -106,12 +105,14 @@ public class ExplorerFragment extends Fragment {
     public void onFragmentWillAppear()
     {
         if (mCollection != null && mDelegate != null) {
-            if (mCollection.Title != null) {
+            if (mCollection.getTitle() != null) {
                 mDelegate.setDisplaysBackButton(true);
-                mDelegate.setNavigationTitle(mCollection.Title);
+                mDelegate.setNavigationTitle(mCollection.getTitle());
+                mDelegate.setNavigationColor(mCollection.getSource().getBrandColor());
             } else {
                 mDelegate.setDisplaysBackButton(false);
                 mDelegate.setNavigationTitle("Select a Source");
+                mDelegate.setNavigationColor(Source.BASE_BRAND_COLOR);
             }
         }
     }
@@ -193,20 +194,23 @@ public class ExplorerFragment extends Fragment {
     {
         final Collection selected = mCollection.collectionAtIndex(index);
 
-        if (selected.Source.isActive())
+        if (selected.getSource().isActive())
         {
             mDelegate.pushExplorerWithCollection(selected);
         }
         else
         {
-            selected.Source.activateSource(getActivity(), new Source.SourceActivationCallback() {
+            selected.getSource().activateSource(getActivity(), new Source.SourceActivationCallback()
+            {
                 @Override
-                public void success() {
+                public void success()
+                {
                     mDelegate.pushExplorerWithCollection(selected);
                 }
 
                 @Override
-                public void error(String error) {
+                public void error(String error)
+                {
                     Toast.makeText(getActivity(), error, Toast.LENGTH_SHORT);
                 }
             });

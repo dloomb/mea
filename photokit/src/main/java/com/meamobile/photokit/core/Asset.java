@@ -6,9 +6,9 @@ import android.os.Parcelable;
 
 import com.google.gson.Gson;
 
-import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Objects;
 
 public class Asset implements Parcelable
 {
@@ -19,22 +19,35 @@ public class Asset implements Parcelable
         Local
     }
 
-    public String Title;
-    public long TimeStamp;
-    public int Width;
-    public int Height;
+    protected String mTitle;
+    protected long mTimestamp;
+    protected int mWidth;
+    protected int mHeight;
 
     public Asset(){}
 
-    public String assetIdentifer()
+    public String getAssetIdentifier()
     {
-        return getClass().toString() + "-" + Title + "-" + TimeStamp;
+        return getClass().toString() + "-" + mTitle + "-" + mTimestamp;
     }
 
     public AssetType getType(){
         return AssetType.Invalid;
     }
 
+    @Override
+    public boolean equals(Object o)
+    {
+        boolean equals = super.equals(o);
+
+        if (!equals && o instanceof Asset)
+        {
+            Asset a = (Asset) o;
+            equals = a.getAssetIdentifier() == getAssetIdentifier();
+        }
+
+        return equals;
+    }
 
     ///-----------------------------------------------------------
     /// @name Parcelable
@@ -49,14 +62,7 @@ public class Asset implements Parcelable
     @Override
     public void writeToParcel(Parcel dest, int flags)
     {
-        Map<String, Object> data = new HashMap<String, Object>();
-        data.put("title", Title);
-        data.put("timestamp", TimeStamp);
-        data.put("width", Width);
-        data.put("height", Height);
 
-        String s = (new Gson()).toJson(data);
-        dest.writeString(s);
     }
 
     public static final Parcelable.Creator<Asset> CREATOR = new Parcelable.Creator<Asset>() {
@@ -71,11 +77,7 @@ public class Asset implements Parcelable
 
     private Asset(Parcel in)
     {
-        Map<String, Object> data = (new Gson()).fromJson(in.readString(), Map.class);
-        Title = (String) data.get("title");
-        TimeStamp = (long) data.get("timestamp");
-        Width = (int) data.get("width");
-        Height = (int) data.get("height");
+
     }
 
 }

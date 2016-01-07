@@ -29,8 +29,8 @@ public class FacebookCollection extends Collection
     {
         FacebookCollection collection = new FacebookCollection();
 
-        collection.Source = new FacebookSource();
-        collection.Title = collection.Source.Title;
+        collection.mSource = new FacebookSource();
+        collection.mTitle = collection.mSource.getTitle();
 
         return collection;
     }
@@ -40,7 +40,7 @@ public class FacebookCollection extends Collection
     public FacebookCollection(Map<String, Object> json)
     {
         mFacebookAlbumId = (String) json.get("id");
-        Title = (String) json.get("name");
+        mTitle = (String) json.get("name");
     }
 
 
@@ -64,7 +64,11 @@ public class FacebookCollection extends Collection
 
     }
 
-
+    @Override
+    public CollectionType getType()
+    {
+        return CollectionType.Facebook;
+    }
 
     protected void loadGraphPath(String path, String fields)
     {
@@ -103,7 +107,7 @@ public class FacebookCollection extends Collection
                                 if (mFacebookAlbumId == null)
                                 {
                                     FacebookCollection collection = new FacebookCollection(json);
-                                    collection.Source = Source;
+                                    collection.mSource = mSource;
                                     addCollection(collection);
                                 }
                                 else

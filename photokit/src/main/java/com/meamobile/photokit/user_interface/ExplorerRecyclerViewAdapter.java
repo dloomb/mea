@@ -7,7 +7,6 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.TextView;
 
 import com.meamobile.photokit.core.Asset;
 import com.meamobile.photokit.core.CachingImageManager;
@@ -23,7 +22,9 @@ import com.squareup.picasso.Picasso;
 
 public class ExplorerRecyclerViewAdapter extends RecyclerView.Adapter implements Collection.CollectionObserver
 {
-    private String[] mDataset;
+    private static final int VIEWTYPE_COLLECTION = 0;
+    private static final int VIEWTYPE_ASSEST = 1;
+
     private Activity mActivity;
     private Collection mCollection;
     private ExplorerFragmentDelegate mDelegate;
@@ -42,13 +43,15 @@ public class ExplorerRecyclerViewAdapter extends RecyclerView.Adapter implements
     @Override
     public RecyclerView.ViewHolder onCreateViewHolder(ViewGroup parent, int viewType)
     {
-        View v = LayoutInflater.from(parent.getContext())
+        final View v = LayoutInflater.from(parent.getContext())
                 .inflate(R.layout.template_explorer_asset_item, parent, false);
 
         CollectionCell cell = new CollectionCell(v);
 
-
-
+        if (viewType == VIEWTYPE_ASSEST)
+        {
+            cell.setupForAsset();
+        }
 
         return cell;
     }
@@ -74,6 +77,17 @@ public class ExplorerRecyclerViewAdapter extends RecyclerView.Adapter implements
     }
 
     @Override
+    public int getItemViewType(int position)
+    {
+        if (position < mCollection.numberOfCollections())
+        {
+            return VIEWTYPE_COLLECTION;
+        }
+
+        return VIEWTYPE_ASSEST;
+    }
+
+    @Override
     public void onAttachedToRecyclerView(RecyclerView recyclerView)
     {
         super.onAttachedToRecyclerView(recyclerView);
@@ -93,16 +107,16 @@ public class ExplorerRecyclerViewAdapter extends RecyclerView.Adapter implements
     protected void layoutCellForCollectionAtIndex(CollectionCell cell, int index)
     {
         Collection collection = mCollection.collectionAtIndex(index);
-        if (collection.CoverAsset != null)
+        if (collection.getCoverAsset() != null)
         {
-            requestAssetForCell(collection.CoverAsset, cell);
+            requestAssetForCell(collection.getCoverAsset(), cell);
         }
         else
         {
-            cell.getImageView().setImageResource(collection.Source.ImageResourceId);
+            cell.getImageView().setImageResource(collection.getSource().getImageResource());
         }
         cell.setSelected(false);
-        cell.setMainText(collection.Title);
+        cell.setMainText(collection.getTitle());
 
         StaggeredGridLayoutManager.LayoutParams layoutParams = (StaggeredGridLayoutManager.LayoutParams) cell.itemView.getLayoutParams();
         layoutParams.setFullSpan(true);
@@ -112,6 +126,7 @@ public class ExplorerRecyclerViewAdapter extends RecyclerView.Adapter implements
     {
         Asset asset = mCollection.assetAtIndex(index);
         cell.setSelected(mDelegate.isAssetSelected(asset, index));
+
         requestAssetForCell(asset, cell);
 
         StaggeredGridLayoutManager.LayoutParams layoutParams = (StaggeredGridLayoutManager.LayoutParams) cell.itemView.getLayoutParams();
@@ -155,6 +170,8 @@ public class ExplorerRecyclerViewAdapter extends RecyclerView.Adapter implements
                 Log.d("Image Error", "BAD");
             }
         });
+
+
     }
 
 

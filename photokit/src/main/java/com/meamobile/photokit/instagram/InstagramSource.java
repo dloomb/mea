@@ -4,6 +4,8 @@ import android.annotation.SuppressLint;
 import android.app.Activity;
 import android.content.Intent;
 import android.net.Uri;
+import android.os.Parcel;
+import android.os.Parcelable;
 import android.util.Log;
 
 import com.meamobile.photokit.core.JSONHttpClient;
@@ -20,43 +22,24 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
-@SuppressLint("ParcelCreator")
 public class InstagramSource extends Source
 {
-    private SourceActivationCallback mActivationCallback;
+    private static String TAG = "MEA.InstagramSource";
 
-    static private String TAG = "MEA.InstagramSource";
-
-    static private String CLIENT_ID = "e0fcbb928e4048cea293347393c766e2";
-    static private String CLIENT_SECRET = "475555bd27d44ddeadf7763def913f39";
-
-    static private String IG_INSTAGRAM_TOKEN_KEY = "com.meamobile.photokit.instagram.access_token";
-    private static final int IG_AUTHENTICATOR_REQUEST_CODE = 137;
+    private static String CLIENT_ID = "e0fcbb928e4048cea293347393c766e2";
+    private static String CLIENT_SECRET = "475555bd27d44ddeadf7763def913f39";
+    private static String INSTAGRAM_TOKEN_KEY = "com.meamobile.photokit.instagram.access_token";
+    private static String INSTAGRAM_USERNAME_KEY = "com.meamobile.photokit.instagram.username";
+    private static final int INSTAGRAM_AUTHENTICATOR_REQUEST_CODE = 137;
 
     private String mToken;
 
     public InstagramSource()
     {
-        this.ImageResourceId = R.drawable.instagram_badge;
-        this.Title = "Instagram";
+        this.mImageResourceId = R.drawable.instagram_badge;
+        this.mTitle = "Instagram";
 
-        loadAccessToken();
-    }
-
-    protected void loadAccessToken()
-    {
-        mToken = UserDefaults.getInstance().stringForKey(IG_INSTAGRAM_TOKEN_KEY);
-    }
-
-    protected void saveAccessToken(String token)
-    {
-        mToken = token;
-        UserDefaults.getInstance().setStringValueForKey(token, IG_INSTAGRAM_TOKEN_KEY);
-    }
-
-    public String getAccessToken()
-    {
-        return mToken;
+        loadInstagramSession();
     }
 
     @Override
@@ -79,26 +62,34 @@ public class InstagramSource extends Source
         i.putExtra(AuthenticatorActivity.AUTH_URL, authUrl);
         i.putExtra(AuthenticatorActivity.REDIRECT_URL, redirectUrl);
         i.putExtra(AuthenticatorActivity.TITLE, "Login to Instagram");
-        activity.startActivityForResult(i, IG_AUTHENTICATOR_REQUEST_CODE);
+        activity.startActivityForResult(i, INSTAGRAM_AUTHENTICATOR_REQUEST_CODE);
 
     }
 
-//    protected AuthenticatorDialogRedirectCallback getAuthenticatorDialogCallback(String redirectUrl)
-//    {
-//        final String finalRedirectUrl = redirectUrl;
-//        return new AuthenticatorDialogRedirectCallback() {
-//            @Override
-//            public void didHitRedirectUrl(AuthenticatorDialog dialog, String url) {
-//                String[] parts = url.split(finalRedirectUrl + "\\?code=");
-//                if (parts.length > 1) {
-//                    String code = parts[1];
-//                    dialog.dismiss();
-//                    postCodeForAuthentication(code);
-//                }
-//            }
-//        };
-//    }
-    
+    @Override
+    public int getBrandColor()
+    {
+        return 0xFF3f729b;
+    }
+
+    protected void loadInstagramSession()
+    {
+        mToken = UserDefaults.getInstance().stringForKey(INSTAGRAM_TOKEN_KEY);
+        mUsername = UserDefaults.getInstance().stringForKey(INSTAGRAM_USERNAME_KEY);
+    }
+
+    protected void saveInstagramSession()
+    {
+        UserDefaults.getInstance().setStringValueForKey(mToken, INSTAGRAM_TOKEN_KEY);
+        UserDefaults.getInstance().setStringValueForKey(mUsername, INSTAGRAM_USERNAME_KEY);
+    }
+
+    public String getAccessToken()
+    {
+        return mToken;
+    }
+
+
     protected AuthenticatorCallbackManager.OnResultListener getResultListener()
     {
         return new AuthenticatorCallbackManager.OnResultListener()
@@ -106,7 +97,7 @@ public class InstagramSource extends Source
             @Override
             public boolean handleResult(int requestCode, int resultCode, Intent data)
             {
-                if (requestCode == IG_AUTHENTICATOR_REQUEST_CODE)
+                if (requestCode == INSTAGRAM_AUTHENTICATOR_REQUEST_CODE)
                 {
                     AuthenticatorCallbackManager.getInstance().removeListener(this);
 
@@ -121,6 +112,9 @@ public class InstagramSource extends Source
                 }
                 return false;
             }
+
+            //ignored
+            @Override public void onResume() {}
         };
     }
 
@@ -137,22 +131,62 @@ public class InstagramSource extends Source
         params.add(new BasicNameValuePair("redirect_uri", redirectUrl));
         params.add(new BasicNameValuePair("code", code));
 
-        new JSONHttpClient().post("https://api.instagram.com/oauth/access_token", params, new JSONHttpClient.JSONHttpClientCallback() {
+        new JSONHttpClient().post("https://api.instagram.com/oauth/access_token", params, new JSONHttpClient.JSONHttpClientCallback()
+        {
             @Override
             public void success(Map<String, Object> response)
             {
-                    String token = (String) response.get("access_token");
-                    saveAccessToken(token);
+                try
+                {
+                    mToken = (String) response.get("access_token");
+                    mUsername = (String) ((Map) response.get("user")).get("username");
+                    saveInstagramSession();
                     handleSourceActivation(true, null);
+                }
+                catch (Exception e)
+                {
+                    handleSourceActivation(false, e.getLocalizedMessage());
+                }
+
             }
 
             @Override
-            public void error(String error) {
-
+            public void error(String error)
+            {
                 handleSourceActivation(false, error);
             }
         });
     }
 
+
+
+
+    ///-----------------------------------------------------------
+    /// @name Parcelable
+    ///-----------------------------------------------------------
+
+    public static final Parcelable.Creator<InstagramSource> CREATOR = new Parcelable.Creator<InstagramSource>() {
+        public InstagramSource createFromParcel(Parcel in) {
+            return new InstagramSource(in);
+        }
+        public InstagramSource[] newArray(int size) {
+            return new InstagramSource[size];
+        }
+    };
+
+    @Override
+    public void writeToParcel(Parcel dest, int flags)
+    {
+        super.writeToParcel(dest, flags);
+
+        dest.writeString(mToken);
+    }
+
+    protected InstagramSource(Parcel in)
+    {
+        super(in);
+
+        mToken = in.readString();
+    }
 
 }

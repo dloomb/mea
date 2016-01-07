@@ -10,7 +10,7 @@ public class DeviantArtSource extends Source
 {
     public DeviantArtSource()
     {
-        Title = "Deviant Art";
-        ImageResourceId = R.drawable.deviantart_badge;
+        mTitle = "Deviant Art";
+        mImageResourceId = R.drawable.deviantart_badge;
     }
 }

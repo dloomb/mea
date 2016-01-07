@@ -3,15 +3,19 @@ package com.meamobile.printicular;
 import android.app.AlertDialog;
 import android.content.Intent;
 import android.graphics.PorterDuff;
+import android.graphics.drawable.ColorDrawable;
 import android.location.Address;
+import android.os.Build;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
-import android.support.v7.app.ActionBarActivity;
+import android.support.v7.app.ActionBar;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
+import android.view.Window;
+import android.view.WindowManager;
 import android.widget.Button;
 import android.widget.LinearLayout;
 import android.widget.Toast;
@@ -22,8 +26,9 @@ import com.meamobile.photokit.core.Asset;
 import com.meamobile.photokit.core.Collection;
 import com.meamobile.photokit.core.Collection.CollectionType;
 import com.meamobile.photokit.core.CollectionFactory;
+import com.meamobile.photokit.core.Source;
 import com.meamobile.photokit.core.UserDefaults;
-import com.meamobile.photokit.user_interface.AuthenticatorCallbackManager;
+import com.meamobile.photokit.dropbox.DropboxSource;
 import com.meamobile.photokit.user_interface.ExplorerFragment;
 import com.meamobile.photokit.user_interface.ExplorerFragment.ExplorerFragmentDelegate;
 import com.meamobile.printicular.cart.CartFragment;
@@ -36,7 +41,7 @@ import java.util.EnumSet;
 import java.util.Locale;
 
 
-public class MainActivity extends ActionBarActivity implements ExplorerFragmentDelegate
+public class MainActivity extends AuthenticatableActivity implements ExplorerFragmentDelegate
 {
     public static String TAG = "MEA.ActivityMain";
 
@@ -45,11 +50,12 @@ public class MainActivity extends ActionBarActivity implements ExplorerFragmentD
     private Locale mCountryLocale;
     private PhotoKitCartManager mCart;
     private CartFragment mCartFragment;
+    private ExplorerFragment mRootFragment;
+    private Collection mRootCollection;
 
     //UI
     private Button mBtnNext, mBtnDeliver, mBtnPickup;
     private LinearLayout mBtnContainer;
-
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -66,7 +72,7 @@ public class MainActivity extends ActionBarActivity implements ExplorerFragmentD
         mCartFragment = (CartFragment) getSupportFragmentManager().findFragmentById(R.id.cartFragment);
 
         FacebookSdk.sdkInitialize(getApplicationContext());
-        mFacebookCallbackManager = CallbackManager.Factory.create();
+        DropboxSource.APP_KEY = getString(R.string.dropbox_app_key);
 
         pushRootExplorer();
     }
@@ -176,18 +182,6 @@ public class MainActivity extends ActionBarActivity implements ExplorerFragmentD
         return super.onOptionsItemSelected(item);
     }
 
-    @Override
-    protected void onActivityResult(final int requestCode, final int resultCode, final Intent data) {
-        super.onActivityResult(requestCode, resultCode, data);
-
-        boolean handled = mFacebookCallbackManager.onActivityResult(requestCode, resultCode, data);
-
-        if (!handled)
-        {
-            handled = AuthenticatorCallbackManager.getInstance().onActivityResult(requestCode, resultCode, data);
-        }
-
-    }
 
     @Override
     protected void onRestart()
@@ -258,7 +252,6 @@ public class MainActivity extends ActionBarActivity implements ExplorerFragmentD
     }
 
 
-
     ///-----------------------------------------------------------
     /// @name Explorer Fragment Navigation
     ///-----------------------------------------------------------
@@ -267,7 +260,7 @@ public class MainActivity extends ActionBarActivity implements ExplorerFragmentD
     {
         FragmentManager fragmentManager = getSupportFragmentManager();
         if (fragmentManager.getBackStackEntryCount() == 0) {
-            return null;
+            return mRootFragment;
         }
         String tag = fragmentManager.getBackStackEntryAt(fragmentManager.getBackStackEntryCount() - 1).getName();
         return fragmentManager.findFragmentByTag(tag);
@@ -288,11 +281,11 @@ public class MainActivity extends ActionBarActivity implements ExplorerFragmentD
             {
                 frag.onFragmentWillAppear();
             }
-            else
-            {
-                setTitle("Select a Source");
-                setDisplaysBackButton(false);
-            }
+//            else
+//            {
+//                setTitle("Select a Source");
+//                setDisplaysBackButton(false);
+//            }
         }
         else
         {
@@ -313,20 +306,25 @@ public class MainActivity extends ActionBarActivity implements ExplorerFragmentD
 
     protected void pushRootExplorer()
     {
-        Collection root = CollectionFactory.BaseCollectionWithSourceTypes(EnumSet.of(
+        Source.BASE_BRAND_COLOR = getResources().getColor(R.color.printicular_blue);
+
+        mRootCollection = CollectionFactory.initRootCollectionWithSourceTypes(EnumSet.of(
                 CollectionType.Local,
                 CollectionType.Instagram,
                 CollectionType.Facebook,
-                CollectionType.Photobucket
+                CollectionType.Dropbox,
+                CollectionType.Photobucket,
+                CollectionType.Flickr,
+                CollectionType.Google
         ));
 
-        ExplorerFragment fragment = ExplorerFragment.newInstance(root);
+        mRootFragment = ExplorerFragment.newInstance(mRootCollection);
         getSupportFragmentManager().beginTransaction()
-                .replace(R.id.fragmentContainer, fragment)
+                .replace(R.id.fragmentContainer, mRootFragment)
                 .commit();
 
         getSupportFragmentManager().executePendingTransactions();
-        fragment.onFragmentWillAppear();
+        mRootFragment.onFragmentWillAppear();
     }
 
 
@@ -347,6 +345,20 @@ public class MainActivity extends ActionBarActivity implements ExplorerFragmentD
     @Override
     public void setNavigationTitle(String title) {
         setTitle(title);
+    }
+
+    @Override
+    public void setNavigationColor(int color)
+    {
+        ActionBar bar = getSupportActionBar();
+        bar.setBackgroundDrawable(new ColorDrawable(color));
+
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP)
+        {
+            Window window = getWindow();
+            window.addFlags(WindowManager.LayoutParams.FLAG_DRAWS_SYSTEM_BAR_BACKGROUNDS);
+            window.setStatusBarColor(color);
+        }
     }
 
     @Override

@@ -17,8 +17,8 @@ public class AmazonCollection extends Collection
     {
         AmazonCollection collection = new AmazonCollection();
 
-        collection.Source = new AmazonSource();
-        collection.Title = collection.Source.Title;
+        collection.mSource = new AmazonSource();
+        collection.mTitle = collection.mSource.getTitle();
 
         return collection;
     }

@@ -9,7 +9,6 @@ import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
-import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 
@@ -50,12 +49,12 @@ public class FacebookAsset extends RemoteAsset
         Number width = (Number) source.get("width");
         Number height = (Number) source.get("height");
 
-        Title = (String) json.get("id");
-        TimeStamp = timestamp;
+        mTitle = (String) json.get("id");
+        mTimestamp = timestamp;
         FullResolutionUrlString = (String) source.get("source");
         ThumbnailUrlString = (String) thumb.get("source");
-        Width = width.intValue();
-        Height = height.intValue();
+        mWidth = width.intValue();
+        mHeight = height.intValue();
     }
 
 }

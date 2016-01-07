@@ -10,7 +10,7 @@ public class PinterestSource extends Source
 {
     public PinterestSource()
     {
-        Title = "Pinterest";
-        ImageResourceId = R.drawable.pinterest_badge;
+        mTitle = "Pinterest";
+        mImageResourceId = R.drawable.pinterest_badge;
     }
 }
