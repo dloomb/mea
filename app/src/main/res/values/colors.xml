@@ -2,16 +2,10 @@
 <resources>
     <item name="printicular_blue" type="color">#FF49a4db</item>
     <item name="printicular_hack_blue" type="color">#FF4db4e8</item>
-    <item name="printicular_wag_red" type="color">#FFF20017</item>
+    <item name="printicular_wag_red" type="color">#FFca2026</item>
     <item name="printicular_kodak_orange" type="color">#FFF49007</item>
     <item name="printicular_primary_green" type="color">#FF2ecc71</item>
     <item name="printicular_primary_lightgrey" type="color">#FFDDDDDD</item>
     <item name="printicular_primary_grey" type="color">#FFbdc3c7</item>
     <item name="printicular_primary_darkgrey" type="color">#FF95a5a6</item>
-
-    <integer-array name="androidcolors">
-        <item>@color/printicular_blue</item>
-        <item>@color/printicular_wag_red</item>
-    </integer-array>
-
 </resources>

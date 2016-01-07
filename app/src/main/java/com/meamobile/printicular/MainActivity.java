@@ -10,6 +10,7 @@ import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v7.app.ActionBar;
+import android.support.v7.widget.Toolbar;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -17,6 +18,8 @@ import android.view.View;
 import android.view.Window;
 import android.view.WindowManager;
 import android.widget.Button;
+import android.widget.FrameLayout;
+import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.Toast;
 
@@ -54,13 +57,17 @@ public class MainActivity extends AuthenticatableActivity implements ExplorerFra
     private Collection mRootCollection;
 
     //UI
-    private Button mBtnNext, mBtnDeliver, mBtnPickup;
+    private FrameLayout mFrameLayoutDeliver, mFrameLayoutPickup;
+    private ImageView mBtnNext, mImageViewDeliver, mImageViewPickup;
     private LinearLayout mBtnContainer;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+
+        Toolbar myToolbar = (Toolbar) findViewById(R.id.toolbar);
+        setSupportActionBar(myToolbar);
 
         //Setup UserDefaults Singleton
         UserDefaults.getInstance().setContext(this);
@@ -83,45 +90,46 @@ public class MainActivity extends AuthenticatableActivity implements ExplorerFra
 
         int red = getResources().getColor(R.color.printicular_wag_red);
         int blue = getResources().getColor(R.color.printicular_hack_blue);
-        int grey = getResources().getColor(R.color.printicular_primary_lightgrey);
+        int grey = getResources().getColor(R.color.printicular_primary_grey);
         int orange = getResources().getColor(R.color.printicular_kodak_orange);
 
-        mBtnNext = (Button) findViewById(R.id.nextButton);
-        mBtnPickup = (Button) findViewById(R.id.pickupButton);
-        mBtnDeliver = (Button) findViewById(R.id.deliveryButton);
+//        mBtnNext = (Button) findViewById(R.id.deliveryButton);
+        mFrameLayoutDeliver = (FrameLayout) findViewById(R.id.frameLayoutDeliver);
+        mFrameLayoutPickup = (FrameLayout) findViewById(R.id.frameLayoutPickup);
+        mImageViewDeliver = (ImageView) findViewById(R.id.imageViewDeliver);
+        mImageViewPickup = (ImageView) findViewById(R.id.imageViewPickup);
         mBtnContainer = (LinearLayout) findViewById(R.id.buttonContainer);
 
-        mBtnNext.setVisibility(View.INVISIBLE);
+//        mBtnNext.setVisibility(View.INVISIBLE);
         mBtnContainer.setVisibility(View.INVISIBLE);
 
         switch (mCountryLocale.getISO3Country())
         {
             case "NZL":
                 mBtnContainer.setVisibility(View.VISIBLE);
-                mBtnPickup.getBackground().setColorFilter(blue, PorterDuff.Mode.MULTIPLY);
-                mBtnPickup.setText("Warehouse Stationery");
-                mBtnDeliver.getBackground().setColorFilter(grey, PorterDuff.Mode.MULTIPLY);
+                mFrameLayoutPickup.setBackgroundColor(blue);
+                mFrameLayoutDeliver.setBackgroundColor(grey);
+                mImageViewPickup.setImageResource(R.drawable.print_to_ws);
                 break;
 
             case "USA":
                 mBtnContainer.setVisibility(View.VISIBLE);
-                mBtnPickup.getBackground().setColorFilter(red, PorterDuff.Mode.MULTIPLY);
-                mBtnPickup.setText("Walgreens");
-                mBtnDeliver.getBackground().setColorFilter(blue, PorterDuff.Mode.MULTIPLY);
+                mFrameLayoutPickup.setBackgroundColor(red);
+                mFrameLayoutDeliver.setBackgroundColor(blue);
+                mImageViewPickup.setImageResource(R.drawable.print_to_wag);
                 break;
 
             case "DEU":
                 mBtnContainer.setVisibility(View.VISIBLE);
-                mBtnPickup.getBackground().setColorFilter(orange, PorterDuff.Mode.MULTIPLY);
-                mBtnPickup.setText("Kodak");
-                mBtnDeliver.getBackground().setColorFilter(grey, PorterDuff.Mode.MULTIPLY);
+                mFrameLayoutPickup.setBackgroundColor(red);
+                mFrameLayoutDeliver.setBackgroundColor(blue);
+                mImageViewPickup.setImageResource(R.drawable.print_to_dm);
                 break;
 
             default:
                 mBtnContainer.setVisibility(View.VISIBLE);
-                mBtnPickup.getBackground().setColorFilter(red, PorterDuff.Mode.MULTIPLY);
-                mBtnPickup.setText("Pickup");
-                mBtnDeliver.getBackground().setColorFilter(blue, PorterDuff.Mode.MULTIPLY);
+                mFrameLayoutPickup.setBackgroundColor(blue);
+                mFrameLayoutDeliver.setBackgroundColor(grey);
                 break;
         }
     }
