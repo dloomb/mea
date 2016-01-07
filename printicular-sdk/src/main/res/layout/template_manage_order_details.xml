@@ -13,44 +13,44 @@
         android:layout_marginBottom="10dp"/>
 
     <TextView
+        android:id="@+id/textViewQuantity"
         android:textColor="@color/text_dark"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:text="Quantity (45 Prints)"
-        android:id="@+id/textViewQuantity"
         android:layout_below="@id/titleOrderDetails"/>
 
     <TextView
+        android:id="@+id/textViewShipping"
         android:textColor="@color/text_dark"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:text="Shipping $4.95"
-        android:id="@+id/textViewShipping"
         android:layout_below="@id/textViewQuantity"/>
 
     <TextView
+        android:id="@+id/textViewTotal"
         android:textColor="@color/text_dark"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:text="TOTAL $60.50"
         android:textStyle="bold"
-        android:id="@+id/textViewTotal"
         android:layout_below="@id/textViewShipping"
         android:layout_marginTop="5dp"/>
 
     <Button
+        android:id="@+id/buttonIncrement"
         android:layout_alignParentRight="true"
         android:layout_width="40dp"
         android:layout_height="40dp"
-        android:text="+"
-        android:id="@+id/buttonIncrement"/>
+        android:text="+"/>
 
     <Button
+        android:id="@+id/buttonDecrement"
         android:layout_width="40dp"
         android:layout_height="40dp"
-        android:text="-"
-        android:id="@+id/buttonDecrement"
-        android:layout_toLeftOf="@id/buttonIncrement"/>
+        android:layout_toLeftOf="@id/buttonIncrement"
+        android:text="-"/>
 
 
 </RelativeLayout>

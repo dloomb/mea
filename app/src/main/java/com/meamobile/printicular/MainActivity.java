@@ -58,7 +58,7 @@ public class MainActivity extends AuthenticatableActivity implements ExplorerFra
 
     //UI
     private FrameLayout mFrameLayoutDeliver, mFrameLayoutPickup;
-    private ImageView mBtnNext, mImageViewDeliver, mImageViewPickup;
+    private ImageView mImageViewDeliver, mImageViewPickup;
     private LinearLayout mBtnContainer;
 
     @Override
@@ -93,14 +93,12 @@ public class MainActivity extends AuthenticatableActivity implements ExplorerFra
         int grey = getResources().getColor(R.color.printicular_primary_grey);
         int orange = getResources().getColor(R.color.printicular_kodak_orange);
 
-//        mBtnNext = (Button) findViewById(R.id.deliveryButton);
         mFrameLayoutDeliver = (FrameLayout) findViewById(R.id.frameLayoutDeliver);
         mFrameLayoutPickup = (FrameLayout) findViewById(R.id.frameLayoutPickup);
         mImageViewDeliver = (ImageView) findViewById(R.id.imageViewDeliver);
         mImageViewPickup = (ImageView) findViewById(R.id.imageViewPickup);
         mBtnContainer = (LinearLayout) findViewById(R.id.buttonContainer);
 
-//        mBtnNext.setVisibility(View.INVISIBLE);
         mBtnContainer.setVisibility(View.INVISIBLE);
 
         switch (mCountryLocale.getISO3Country())

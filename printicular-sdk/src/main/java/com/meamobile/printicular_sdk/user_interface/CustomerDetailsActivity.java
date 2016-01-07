@@ -1,14 +1,13 @@
 package com.meamobile.printicular_sdk.user_interface;
 
 import android.graphics.PorterDuff;
-import android.support.v7.app.ActionBarActivity;
 import android.os.Bundle;
 import android.widget.Button;
 
 import com.meamobile.printicular_sdk.R;
 
 
-public class CustomerDetailsActivity extends BaseActivity
+public class CustomerDetailsActivity extends CheckoutActivity
 {
 
     @Override
