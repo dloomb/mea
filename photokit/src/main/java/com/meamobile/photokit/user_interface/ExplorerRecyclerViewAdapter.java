@@ -30,7 +30,7 @@ public class ExplorerRecyclerViewAdapter extends RecyclerView.Adapter implements
     private ExplorerFragmentDelegate mDelegate;
     private CachingImageManager mImageCache;
     private RecyclerView mRecyclerView;
-
+    private float mDensity;
 
     public ExplorerRecyclerViewAdapter(Activity activity, Collection collection, ExplorerFragmentDelegate delegate) {
         mActivity = activity;
@@ -38,15 +38,17 @@ public class ExplorerRecyclerViewAdapter extends RecyclerView.Adapter implements
         mDelegate = delegate;
 
         mImageCache = new CachingImageManager(activity);
+
+        mDensity = activity.getResources().getDisplayMetrics().density;
     }
 
     @Override
     public RecyclerView.ViewHolder onCreateViewHolder(ViewGroup parent, int viewType)
     {
         final View v = LayoutInflater.from(parent.getContext())
-                .inflate(R.layout.template_explorer_asset_item, parent, false);
+                .inflate(R.layout.template_explorer_view_holder, parent, false);
 
-        CollectionCell cell = new CollectionCell(v);
+        ExplorerViewHolder cell = new ExplorerViewHolder(v);
 
         if (viewType == VIEWTYPE_ASSEST)
         {
@@ -59,21 +61,36 @@ public class ExplorerRecyclerViewAdapter extends RecyclerView.Adapter implements
     @Override
     public void onBindViewHolder(RecyclerView.ViewHolder holder, int position)
     {
-        CollectionCell cell = (CollectionCell)holder;
+        ExplorerViewHolder explorerHolder = (ExplorerViewHolder)holder;
 
         if (position < mCollection.numberOfCollections())
         {
-            layoutCellForCollectionAtIndex(cell, position);
-            return;
+            onBindCollectionViewHolder(explorerHolder, position);
         }
-
-        int index = position - mCollection.numberOfCollections();
-        layoutCellForAssetAtIndex(cell, index);
+        else if (position < mCollection.numberOfAll())
+        {
+            int index = position - mCollection.numberOfCollections();
+            onBindAssetViewHolder(explorerHolder, index);
+        }
+        else
+        {
+            onBindBlankViewHolder(explorerHolder);
+        }
     }
 
     @Override
-    public int getItemCount() {
-        return mCollection.numberOfAll();
+    public int getItemCount()
+    {
+        int collections = mCollection.numberOfCollections();
+        int assets = mCollection.numberOfAssets();
+        int span = getSpanCount();
+
+        if (assets % span != 0)
+        {
+            assets = (int) (Math.ceil((double)assets / span) * span);
+        }
+
+        return collections + assets;
     }
 
     @Override
@@ -104,39 +121,64 @@ public class ExplorerRecyclerViewAdapter extends RecyclerView.Adapter implements
     /// @name View Recycling
     ///-----------------------------------------------------------
 
-    protected void layoutCellForCollectionAtIndex(CollectionCell cell, int index)
+    protected void onBindCollectionViewHolder(ExplorerViewHolder holder, int index)
     {
         Collection collection = mCollection.collectionAtIndex(index);
         if (collection.getCoverAsset() != null)
         {
-            requestAssetForCell(collection.getCoverAsset(), cell);
+            requestAssetForCell(collection.getCoverAsset(), holder);
         }
         else
         {
-            cell.getImageView().setImageResource(collection.getSource().getImageResource());
+            holder.getImageView().setImageResource(collection.getSource().getImageResource());
         }
-        cell.setSelected(false);
-        cell.setMainText(collection.getTitle());
+        holder.setSelected(false);
+        holder.setMainText(collection.getTitle());
 
-        StaggeredGridLayoutManager.LayoutParams layoutParams = (StaggeredGridLayoutManager.LayoutParams) cell.itemView.getLayoutParams();
+        StaggeredGridLayoutManager.LayoutParams layoutParams = (StaggeredGridLayoutManager.LayoutParams) holder.itemView.getLayoutParams();
         layoutParams.setFullSpan(true);
     }
 
-    protected void layoutCellForAssetAtIndex(CollectionCell cell, int index)
+    protected void onBindAssetViewHolder(ExplorerViewHolder holder, int index)
     {
         Asset asset = mCollection.assetAtIndex(index);
-        cell.setSelected(mDelegate.isAssetSelected(asset, index));
+        holder.setSelected(mDelegate.isAssetSelected(asset, index));
 
-        requestAssetForCell(asset, cell);
+        requestAssetForCell(asset, holder);
 
-        StaggeredGridLayoutManager.LayoutParams layoutParams = (StaggeredGridLayoutManager.LayoutParams) cell.itemView.getLayoutParams();
+        StaggeredGridLayoutManager.LayoutParams layoutParams = (StaggeredGridLayoutManager.LayoutParams) holder.itemView.getLayoutParams();
         layoutParams.setFullSpan(false);
+
+//        int span = getSpanCount();
+//        int whole = (int)Math.ceil(mDensity * 6);
+//        int threeThird = (int)Math.ceil(mDensity * 4);
+//        int third = (int)Math.ceil(mDensity * 4);
+//        int half = (int)Math.ceil(mDensity * 3);
+//
+//        if (index % span == 0) //First Column
+//        {
+//            holder.itemView.setPadding(threeThird, whole, third, 0);
+//        }
+//        else if ((index + 1) % span == 0) //Last Column
+//        {
+//            holder.itemView.setPadding(third, whole, threeThird, 0);
+//        }
+//        else
+//        {
+//            holder.itemView.setPadding(half, whole, half, 0);
+//        }
+    }
+
+    protected void onBindBlankViewHolder(ExplorerViewHolder holder)
+    {
+        holder.setSelected(false);
+        holder.getImageView().setImageDrawable(null);
     }
 
 
-    private void requestAssetForCell(Asset asset, CollectionCell cell)
+    private void requestAssetForCell(Asset asset, ExplorerViewHolder cell)
     {
-        final CollectionCell _cell = cell;
+        final ExplorerViewHolder _cell = cell;
         final int tag = _cell.getReuseTag();
 
         _cell.setReuseTag(tag);
@@ -181,7 +223,7 @@ public class ExplorerRecyclerViewAdapter extends RecyclerView.Adapter implements
 
 
     @Override
-    public void collectionDidAddAsset(Collection collection, Asset added) {
+    public void collectionDidAddAssetAtIndex(Collection collection, Asset added, int index) {
         mActivity.runOnUiThread(new Runnable() {
             @Override
             public void run() {
@@ -191,7 +233,7 @@ public class ExplorerRecyclerViewAdapter extends RecyclerView.Adapter implements
     }
 
     @Override
-    public void collectionDidAddCollection(Collection collection, Collection added) {
+    public void collectionDidAddCollectionAtIndex(Collection collection, Collection added, int index) {
         mActivity.runOnUiThread(new Runnable()
         {
             @Override

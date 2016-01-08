@@ -1,4 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <item name="mea_green" type="color">#FF99CC00</item>
+    <item name="explorer_background" type="color">#FFDDDDDD</item>
 </resources>

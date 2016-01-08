@@ -2,7 +2,6 @@ package com.meamobile.printicular;
 
 import android.app.AlertDialog;
 import android.content.Intent;
-import android.graphics.PorterDuff;
 import android.graphics.drawable.ColorDrawable;
 import android.location.Address;
 import android.os.Build;
@@ -17,10 +16,10 @@ import android.view.MenuItem;
 import android.view.View;
 import android.view.Window;
 import android.view.WindowManager;
-import android.widget.Button;
 import android.widget.FrameLayout;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import com.facebook.CallbackManager;
@@ -48,18 +47,20 @@ public class MainActivity extends AuthenticatableActivity implements ExplorerFra
 {
     public static String TAG = "MEA.ActivityMain";
 
-    private long lastBackTap = 0;
+    private long mLastBackTap = 0;
     private CallbackManager mFacebookCallbackManager;
     private Locale mCountryLocale;
     private PhotoKitCartManager mCart;
     private CartFragment mCartFragment;
     private ExplorerFragment mRootFragment;
     private Collection mRootCollection;
+    private int mNavigationColor;
 
     //UI
     private FrameLayout mFrameLayoutDeliver, mFrameLayoutPickup;
     private ImageView mImageViewDeliver, mImageViewPickup;
     private LinearLayout mBtnContainer;
+    private TextView mCartTextView;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -98,8 +99,10 @@ public class MainActivity extends AuthenticatableActivity implements ExplorerFra
         mImageViewDeliver = (ImageView) findViewById(R.id.imageViewDeliver);
         mImageViewPickup = (ImageView) findViewById(R.id.imageViewPickup);
         mBtnContainer = (LinearLayout) findViewById(R.id.buttonContainer);
+        mCartTextView = (TextView) findViewById(R.id.textViewCart);
 
         mBtnContainer.setVisibility(View.INVISIBLE);
+        mCartTextView.setBackgroundColor(mNavigationColor);
 
         switch (mCountryLocale.getISO3Country())
         {
@@ -296,7 +299,7 @@ public class MainActivity extends AuthenticatableActivity implements ExplorerFra
         else
         {
             long now = System.currentTimeMillis();
-            long diff = now - lastBackTap;
+            long diff = now - mLastBackTap;
 
             if (diff < 2000)
             {
@@ -305,7 +308,7 @@ public class MainActivity extends AuthenticatableActivity implements ExplorerFra
             else
             {
                 Toast.makeText(this, "Tap again to exit", Toast.LENGTH_SHORT).show();
-                lastBackTap = now;
+                mLastBackTap = now;
             }
         }
     }
@@ -356,6 +359,8 @@ public class MainActivity extends AuthenticatableActivity implements ExplorerFra
     @Override
     public void setNavigationColor(int color)
     {
+        mNavigationColor = color;
+
         ActionBar bar = getSupportActionBar();
         bar.setBackgroundDrawable(new ColorDrawable(color));
 
@@ -364,6 +369,11 @@ public class MainActivity extends AuthenticatableActivity implements ExplorerFra
             Window window = getWindow();
             window.addFlags(WindowManager.LayoutParams.FLAG_DRAWS_SYSTEM_BAR_BACKGROUNDS);
             window.setStatusBarColor(color);
+        }
+
+        if (mCartTextView != null)
+        {
+            mCartTextView.setBackgroundColor(color);
         }
     }
 

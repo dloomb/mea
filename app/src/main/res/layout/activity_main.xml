@@ -22,7 +22,8 @@
         android:layout_height="match_parent"
         android:layout_below="@id/toolbar"
         android:layout_marginBottom="190dp"
-        android:clipChildren="false"/>
+        android:clipChildren="false"
+        android:background="#FFF"/>
 
 
     <RelativeLayout
@@ -32,13 +33,14 @@
         android:layout_height="190dp">
 
         <TextView
+            android:id="@+id/textViewCart"
             android:layout_width="match_parent"
             android:layout_height="40dp"
             android:text="@string/textview_text_cart"
             android:textSize="18sp"
+            android:textColor="#FFF"
             android:padding="8dp"
-            android:background="#ddd"
-            android:id="@+id/cartTextView"/>
+            android:background="@color/printicular_blue"/>
 
         <fragment
             android:layout_width="match_parent"
@@ -46,7 +48,7 @@
             android:name="com.meamobile.printicular.cart.CartFragment"
             android:id="@+id/cartFragment"
             android:layout_marginTop="5dp"
-            android:layout_below="@id/cartTextView"
+            android:layout_below="@id/textViewCart"
             tools:layout="@layout/fragment_cart" />
 
 

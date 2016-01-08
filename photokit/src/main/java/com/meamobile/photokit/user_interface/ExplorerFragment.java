@@ -2,9 +2,12 @@ package com.meamobile.photokit.user_interface;
 
 import android.app.Activity;
 import android.content.Intent;
+import android.graphics.NinePatch;
+import android.graphics.drawable.NinePatchDrawable;
 import android.net.Uri;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
+import android.support.v4.content.ContextCompat;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.StaggeredGridLayoutManager;
 import android.util.DisplayMetrics;
@@ -138,9 +141,9 @@ public class ExplorerFragment extends Fragment {
 
         ExplorerRecyclerViewAdapter adapter = new ExplorerRecyclerViewAdapter(getActivity(), mCollection, mDelegate);
         mRecyclerView.setAdapter(adapter);
-        mCollection.setCollectionObserver(adapter);
-
         ItemClickSupport.addTo(mRecyclerView).setOnItemClickListener(getOnItemClickListener());
+
+        mCollection.setCollectionObserver(adapter);
 
         StaggeredGridLayoutManager layout = new StaggeredGridLayoutManager(2, StaggeredGridLayoutManager.VERTICAL);
 

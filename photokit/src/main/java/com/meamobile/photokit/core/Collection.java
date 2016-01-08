@@ -45,9 +45,9 @@ public class Collection implements Parcelable
 
     public interface CollectionObserver
     {
-        public void collectionDidAddAsset(Collection collection, Asset added);
-        public void collectionDidAddCollection(Collection collection, Collection added);
-        public void collectionRefresh(Collection collection);
+        void collectionDidAddAssetAtIndex(Collection collection, Asset added, int index);
+        void collectionDidAddCollectionAtIndex(Collection collection, Collection added, int index);
+        void collectionRefresh(Collection collection);
     }
 
     private Date mLastLoaded;
@@ -99,11 +99,12 @@ public class Collection implements Parcelable
 
     public void addCollection(Collection collection)
     {
+        int i = mCollections.size();
         mCollections.add(collection);
 
         if (mObserver != null)
         {
-            mObserver.collectionDidAddCollection(this, collection);
+            mObserver.collectionDidAddCollectionAtIndex(this, collection, i);
         }
     }
 
@@ -126,8 +127,13 @@ public class Collection implements Parcelable
     //---------------------------------
 
     public void addAsset(Asset asset) {
+        int i = mAssets.size();
         mAssets.add(asset);
-        mObserver.collectionDidAddAsset(this, asset);
+
+        if (mObserver != null)
+        {
+            mObserver.collectionDidAddAssetAtIndex(this, asset, i);
+        }
     }
 
     public Asset assetAtIndex(int index)

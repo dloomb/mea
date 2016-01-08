@@ -10,7 +10,7 @@ import android.widget.TextView;
 
 import com.meamobile.photokit.R;
 
-public class CollectionCell extends RecyclerView.ViewHolder
+public class ExplorerViewHolder extends RecyclerView.ViewHolder
 {
     private ImageView mImageView;
     private ImageView mSelectionView;
@@ -20,7 +20,7 @@ public class CollectionCell extends RecyclerView.ViewHolder
     private boolean mSelected;
     private int mTag = 0;
 
-    public CollectionCell(View v) {
+    public ExplorerViewHolder(View v) {
         super(v);
 
         mImageView = (ImageView) v.findViewById(R.id.imageView);
@@ -33,7 +33,7 @@ public class CollectionCell extends RecyclerView.ViewHolder
     public void setupForAsset()
     {
         ViewGroup.LayoutParams layout = mImageView.getLayoutParams();
-        layout.width = ViewGroup.LayoutParams.MATCH_PARENT;;
+        layout.width = ViewGroup.LayoutParams.MATCH_PARENT;
         layout.height = ViewGroup.LayoutParams.MATCH_PARENT;
 
         itemView.post(new Runnable() {@Override public void run()

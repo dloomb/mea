@@ -2,15 +2,15 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context="com.meamobile.photokit.user_interface.ExplorerFragment"
-    android:clipChildren="false">
+    tools:context="com.meamobile.photokit.user_interface.ExplorerFragment">
 
     <android.support.v7.widget.RecyclerView
         android:id="@+id/recyclerView"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:layout_marginBottom="5dp"
-        android:layout_marginRight="5dp"
-        android:clipChildren="false"/>
+        android:paddingRight="5dp"
+        android:paddingBottom="5dp"
+        android:clipChildren="false"
+        android:clipToPadding="false"/>
 
 </LinearLayout>

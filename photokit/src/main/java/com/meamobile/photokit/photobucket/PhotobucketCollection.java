@@ -42,7 +42,6 @@ public class PhotobucketCollection extends Collection
 
     private PhotobucketCollection(Map json, PhotobucketSource source) throws UnsupportedEncodingException
     {
-//        int id = ((Number) json.get("id")).intValue();
         String parent = (String) json.get("parent");
 
         mTitle = (String) json.get("name");
