@@ -23,7 +23,7 @@ import com.meamobile.photokit.core.Collection;
 import com.meamobile.photokit.R;
 import com.meamobile.photokit.core.Source;
 
-public class ExplorerFragment extends Fragment {
+public class ExplorerFragment extends Fragment implements ItemClickSupport.OnItemClickListener{
 
     public interface ExplorerFragmentDelegate
     {
@@ -120,16 +120,16 @@ public class ExplorerFragment extends Fragment {
         }
     }
 
-    @Override
-    public void onActivityResult(int requestCode, int resultCode, Intent data)
-    {
-        super.onActivityResult(requestCode, resultCode, data);
-    }
-
-    public void onAuthenticatorResult()
-    {
-
-    }
+//    @Override
+//    public void onActivityResult(int requestCode, int resultCode, Intent data)
+//    {
+//        super.onActivityResult(requestCode, resultCode, data);
+//    }
+//
+//    public void onAuthenticatorResult()
+//    {
+//
+//    }
 
     //--------------------------
     //        GridView
@@ -141,7 +141,7 @@ public class ExplorerFragment extends Fragment {
 
         ExplorerRecyclerViewAdapter adapter = new ExplorerRecyclerViewAdapter(getActivity(), mCollection, mDelegate);
         mRecyclerView.setAdapter(adapter);
-        ItemClickSupport.addTo(mRecyclerView).setOnItemClickListener(getOnItemClickListener());
+        ItemClickSupport.addTo(mRecyclerView).setOnItemClickListener(this);
 
         mCollection.setCollectionObserver(adapter);
 
@@ -167,24 +167,18 @@ public class ExplorerFragment extends Fragment {
 
     }
 
-    protected ItemClickSupport.OnItemClickListener getOnItemClickListener()
+    @Override
+    public void onItemClicked(RecyclerView recyclerView, int position, View v)
     {
-        return new ItemClickSupport.OnItemClickListener()
+        int collectionsCount = mCollection.numberOfCollections();
+        if (position < collectionsCount)
         {
-            @Override
-            public void onItemClicked(RecyclerView recyclerView, int position, View v)
-            {
-                int collectionsCount = mCollection.numberOfCollections();
-                if (position < collectionsCount)
-                {
-                    didSelectCollectionAtIndex(position);
-                }
-                else
-                {
-                    didSelectAssetAtIndex(position - collectionsCount, v);
-                }
-            }
-        };
+            didSelectCollectionAtIndex(position);
+        }
+        else
+        {
+            didSelectAssetAtIndex(position - collectionsCount, v);
+        }
     }
 
 

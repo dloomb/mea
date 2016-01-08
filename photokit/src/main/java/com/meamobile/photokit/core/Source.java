@@ -55,7 +55,7 @@ public class Source implements Parcelable, AuthenticatorCallbackManager.OnResult
                 @Override
                 public void run()
                 {
-                    if (_success || _error != null)
+                    if (_success && _error == null)
                     {
                         mActivationCallback.success();
                     }

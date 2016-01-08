@@ -279,7 +279,7 @@ public class MainActivity extends AuthenticatableActivity implements ExplorerFra
     {
         Fragment fragment = getCurrentFragment();
 
-        if (fragment instanceof ExplorerFragment)
+        if (fragment instanceof ExplorerFragment && fragment != mRootFragment)
         {
             FragmentManager manager = getSupportFragmentManager();
             manager.popBackStack();
@@ -290,11 +290,6 @@ public class MainActivity extends AuthenticatableActivity implements ExplorerFra
             {
                 frag.onFragmentWillAppear();
             }
-//            else
-//            {
-//                setTitle("Select a Source");
-//                setDisplaysBackButton(false);
-//            }
         }
         else
         {
@@ -385,8 +380,6 @@ public class MainActivity extends AuthenticatableActivity implements ExplorerFra
     @Override
     public void onAssetSelect(Asset asset, int index)
     {
-        int cartIndex = mCart.indexOfAsset(asset);
-
         if (mCart.isAssetSelected(asset))
         {
             mCart.removeAssetFromCart(asset);

@@ -28,7 +28,7 @@ public class FlickrSource extends Source
     private static final int FLICKR_AUTHENTICATOR_REQUEST_CODE = 441;
     private static final String FLICKR_TOKEN_KEY = "com.meamobile.photokit.flickr.token";
     private static final String FLICKR_TOKEN_SECRET_KEY = "com.meamobile.photokit.flickr.token_secret";
-    private static final String FLICKR_USERNAME_KEY = "com.meamobile.photokit.flickr.token";
+    private static final String FLICKR_USERNAME_KEY = "com.meamobile.photokit.flickr.username";
     private static final String PROTECTED_RESOURCE_URL = "https://api.flickr.com/services/rest/";
 
 
