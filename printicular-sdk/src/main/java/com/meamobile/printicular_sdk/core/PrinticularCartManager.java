@@ -1,7 +1,11 @@
 package com.meamobile.printicular_sdk.core;
 
+import android.location.Address;
+
 import com.meamobile.printicular_sdk.core.models.Image;
 import com.meamobile.printicular_sdk.core.models.LineItem;
+import com.meamobile.printicular_sdk.core.models.PrintService;
+import com.meamobile.printicular_sdk.core.models.Store;
 
 import java.util.ArrayList;
 import java.util.LinkedHashMap;
@@ -10,11 +14,15 @@ import java.util.Map;
 
 public class PrinticularCartManager
 {
-    protected static PrinticularCartManager mInstance;
+    protected static PrinticularCartManager sInstance;
 
     protected List<Image> mImages;
     protected List<LineItem> mLineItems;
     protected Map<Image, ArrayList> mData;
+
+    private PrintService mCurrentPrintService;
+    private Store mCurrentStore;
+    private Address mCurrentAddress;
 
     protected PrinticularCartManager()
     {
@@ -25,13 +33,23 @@ public class PrinticularCartManager
 
     public static PrinticularCartManager getInstance()
     {
-        if (mInstance == null)
+        if (sInstance == null)
         {
-            mInstance = new PrinticularCartManager();
+            sInstance = new PrinticularCartManager();
         }
 
-        return mInstance;
+        return sInstance;
     }
+
+    protected void loadRecentlyUsedStore()
+    {
+
+    }
+
+
+    ///-----------------------------------------------------------
+    /// @name Image Handling
+    ///-----------------------------------------------------------
 
     public int getImageCount()
     {
@@ -61,14 +79,12 @@ public class PrinticularCartManager
 
             }
         }
-
     }
 
     public void removeImageFromCart(Image image)
     {
         if (cartContainsImage(image))
         {
-//            List<LineItem> items = mData.get(image);
             mData.remove(image);
         }
     }
@@ -77,5 +93,46 @@ public class PrinticularCartManager
     {
         return mData.containsKey(image);
     }
+
+
+
+
+
+    ///-----------------------------------------------------------
+    /// @name Property Access
+    ///-----------------------------------------------------------
+
+    public void setCurrentPrintService(PrintService printService)
+    {
+        mCurrentPrintService = printService;
+        loadRecentlyUsedStore();
+    }
+
+    public PrintService getCurrentPrintService()
+    {
+        return mCurrentPrintService;
+    }
+
+    public void setCurrentStore(Store store)
+    {
+        mCurrentStore = store;
+    }
+
+    public Store getCurrentStore()
+    {
+        return mCurrentStore;
+    }
+
+    public void setCurrentAddress(Address address)
+    {
+        mCurrentAddress = address;
+    }
+
+    public Address getCurrentAddress()
+    {
+        return mCurrentAddress;
+    }
+
+
 
 }

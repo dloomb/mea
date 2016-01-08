@@ -35,8 +35,10 @@ import com.meamobile.photokit.user_interface.ExplorerFragment;
 import com.meamobile.photokit.user_interface.ExplorerFragment.ExplorerFragmentDelegate;
 import com.meamobile.printicular.cart.CartFragment;
 import com.meamobile.printicular.cart.PhotoKitCartManager;
+import com.meamobile.printicular_sdk.core.PrinticularCartManager;
 import com.meamobile.printicular_sdk.core.PrinticularServiceManager;
 import com.meamobile.printicular_sdk.core.PrinticularServiceManager.PrinticularEnvironment;
+import com.meamobile.printicular_sdk.core.models.PrintService;
 import com.meamobile.printicular_sdk.user_interface.ManageOrderActivity;
 
 import java.util.EnumSet;
@@ -255,6 +257,17 @@ public class MainActivity extends AuthenticatableActivity implements ExplorerFra
     {
         if (checkCartValidity())
         {
+            PrintService service = PrinticularServiceManager.getInstance().getPrintServiceWithId(3); // Should eventually be pulled based on Territory Model
+
+            switch (mCountryLocale.getISO3Country())
+            {
+                case "NZL":
+                    service = PrinticularServiceManager.getInstance().getPrintServiceWithId(3);
+                    break;
+            }
+
+            PrinticularCartManager.getInstance().setCurrentPrintService(service);
+
             Intent i = new Intent(MainActivity.this, ManageOrderActivity.class);
             startActivity(i);
         }
@@ -312,15 +325,17 @@ public class MainActivity extends AuthenticatableActivity implements ExplorerFra
     {
         Source.BASE_BRAND_COLOR = getResources().getColor(R.color.printicular_blue);
 
-        mRootCollection = CollectionFactory.initRootCollectionWithSourceTypes(EnumSet.of(
-                CollectionType.Local,
-                CollectionType.Instagram,
-                CollectionType.Facebook,
-                CollectionType.Dropbox,
-                CollectionType.Photobucket,
-                CollectionType.Flickr,
-                CollectionType.Google
-        ));
+//        mRootCollection = CollectionFactory.initRootCollectionWithSourceTypes(EnumSet.of(
+//                CollectionType.Local,
+//                CollectionType.Instagram,
+//                CollectionType.Facebook,
+//                CollectionType.Dropbox,
+//                CollectionType.Photobucket,
+//                CollectionType.Flickr,
+//                CollectionType.Google
+//        ));
+
+        mRootCollection = CollectionFactory.initRootCollectionWithSourceTypes(CollectionType.All);
 
         mRootFragment = ExplorerFragment.newInstance(mRootCollection);
         getSupportFragmentManager().beginTransaction()

@@ -22,12 +22,12 @@ public class PhotoKitCartManager extends PrinticularCartManager
 
     public static PhotoKitCartManager getInstance()
     {
-        if (mInstance == null)
+        if (sInstance == null)
         {
-            mInstance = new PhotoKitCartManager();
+            sInstance = new PhotoKitCartManager();
         }
 
-        return (PhotoKitCartManager) mInstance;
+        return (PhotoKitCartManager) sInstance;
     }
 
     public void addAssetToCart(Asset asset)
@@ -35,7 +35,7 @@ public class PhotoKitCartManager extends PrinticularCartManager
         Image image = new Image();
         mImageMap.put(asset.getAssetIdentifier(), image);
         mAssetMap.put(asset.getAssetIdentifier(), asset);
-        mInstance.addImageToCart(image);
+        sInstance.addImageToCart(image);
     }
 
     public void removeAssetFromCart(Asset asset)
@@ -44,7 +44,7 @@ public class PhotoKitCartManager extends PrinticularCartManager
         Image image = mImageMap.get(id);
         mImageMap.remove(id);
         mAssetMap.remove(id);
-        mInstance.removeImageFromCart(image);
+        sInstance.removeImageFromCart(image);
     }
 
     public boolean isAssetSelected(Asset asset)

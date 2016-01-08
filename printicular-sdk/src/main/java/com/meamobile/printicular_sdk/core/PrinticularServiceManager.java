@@ -22,7 +22,7 @@ public class PrinticularServiceManager
         PRODUCTION
     }
 
-    private static PrinticularServiceManager mInstance = null;
+    private static PrinticularServiceManager sInstance = null;
     private static String LOG_KEY = "MEA.PrinticularServiceManager";
 
     private Context mContext;
@@ -35,11 +35,11 @@ public class PrinticularServiceManager
 
     public static PrinticularServiceManager getInstance()
     {
-        if(mInstance == null)
+        if(sInstance == null)
         {
-            mInstance = new PrinticularServiceManager();
+            sInstance = new PrinticularServiceManager();
         }
-        return mInstance;
+        return sInstance;
     }
 
     public void initialize(Context context, PrinticularEnvironment environment)
@@ -200,7 +200,10 @@ public class PrinticularServiceManager
     }
 
 
-
+    public PrintService getPrintServiceWithId(int id)
+    {
+        return mPrintServices.get(id);
+    }
 
 
     ///-----------------------------------------------------------

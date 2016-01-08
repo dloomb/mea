@@ -13,15 +13,18 @@ import android.widget.RelativeLayout;
 import android.widget.TextView;
 
 import com.meamobile.printicular_sdk.R;
+import com.meamobile.printicular_sdk.core.PrinticularCartManager;
 import com.meamobile.printicular_sdk.core.models.PrintService.FulfillmentType;
+import com.meamobile.printicular_sdk.core.models.Store;
 
 public class ManageOrderActivity extends CheckoutActivity
 {
     private FulfillmentType mFulfillmentType = FulfillmentType.PICKUP;
-
+    private PrinticularCartManager mCartManager;
 
     //UI
-    private RelativeLayout mRelativeLayoutPostalDetails, mRelativeLayoutStoreDetails;
+    private StoreDetailsViewHolder mStoreDetailsViewHolder;
+    private RelativeLayout mRelativeLayoutPostalDetails;
     private LinearLayout mLinearLayoutPaymentDetails;
     private TextView mTextViewQuantity, mTextViewShipping, mTextViewTotal;
 
@@ -32,6 +35,8 @@ public class ManageOrderActivity extends CheckoutActivity
     {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_manage_order);
+
+        mCartManager = PrinticularCartManager.getInstance();
 
         ImageButton postEdit = (ImageButton) findViewById(R.id.buttonPostalEdit);
         postEdit.setOnClickListener(new View.OnClickListener()
@@ -57,8 +62,9 @@ public class ManageOrderActivity extends CheckoutActivity
         mTextViewShipping = (TextView) findViewById(R.id.textViewShipping);
         mTextViewTotal = (TextView) findViewById(R.id.textViewTotal);
 
+        mStoreDetailsViewHolder = new StoreDetailsViewHolder(findViewById(R.id.storeDetails));
+
         mRelativeLayoutPostalDetails = (RelativeLayout) findViewById(R.id.postalDetails);
-        mRelativeLayoutStoreDetails = (RelativeLayout) findViewById(R.id.storeDetails);
         mLinearLayoutPaymentDetails = (LinearLayout) findViewById(R.id.paymentDetails);
     }
 
@@ -92,16 +98,24 @@ public class ManageOrderActivity extends CheckoutActivity
     {
         if (mFulfillmentType == FulfillmentType.PICKUP)
         {
-            mRelativeLayoutStoreDetails.setVisibility(View.VISIBLE);
+            mStoreDetailsViewHolder.itemView.setVisibility(View.VISIBLE);
             mRelativeLayoutPostalDetails.setVisibility(View.GONE);
             mLinearLayoutPaymentDetails.setVisibility(View.GONE);
         }
         else
         {
-            mRelativeLayoutStoreDetails.setVisibility(View.GONE);
+            mStoreDetailsViewHolder.itemView.setVisibility(View.GONE);
             mRelativeLayoutPostalDetails.setVisibility(View.VISIBLE);
             mLinearLayoutPaymentDetails.setVisibility(View.VISIBLE);
         }
+
+        displayCurrentSelectedStore();
+    }
+
+    private void displayCurrentSelectedStore()
+    {
+        Store store = mCartManager.getCurrentStore();
+        mStoreDetailsViewHolder.setStore(store);
     }
 
 }
