@@ -51,8 +51,8 @@ public class FacebookAsset extends RemoteAsset
 
         mTitle = (String) json.get("id");
         mTimestamp = timestamp;
-        FullResolutionUrlString = (String) source.get("source");
-        ThumbnailUrlString = (String) thumb.get("source");
+        mFullResolutionUrlString = (String) source.get("source");
+        mThumbnailUrlString = (String) thumb.get("source");
         mWidth = width.intValue();
         mHeight = height.intValue();
     }

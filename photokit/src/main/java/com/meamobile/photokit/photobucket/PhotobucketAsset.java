@@ -16,8 +16,8 @@ public class PhotobucketAsset extends RemoteAsset
 
         mTitle = (String) json.get("name");
         mTimestamp = uploaded;
-        FullResolutionUrlString = (String) json.get("url");
-        ThumbnailUrlString = (String) json.get("thumb");
+        mFullResolutionUrlString = (String) json.get("url");
+        mThumbnailUrlString = (String) json.get("thumb");
         mWidth = 0;
         mHeight = 0;
     }

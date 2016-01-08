@@ -56,7 +56,7 @@ public class CachingImageManager
                 loadLocalAssetThumbnailWithContentResolver((LocalAsset) asset, file, callback);
                 break;
             case Remote:
-                downloadImageFromUrl(((RemoteAsset)asset).ThumbnailUrlString, file, callback);
+                downloadImageFromUrl(((RemoteAsset)asset).getThumbnailUrlString(), file, callback);
                 break;
         }
 
@@ -75,7 +75,7 @@ public class CachingImageManager
         switch (asset.getType())
         {
             case Remote:
-                downloadImageFromUrl(((RemoteAsset)asset).FullResolutionUrlString, file, callback);
+                downloadImageFromUrl(((RemoteAsset)asset).getFullResolutionUrlString(), file, callback);
                 break;
         }
     }

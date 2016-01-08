@@ -2,17 +2,19 @@ package com.meamobile.photokit.core;
 
 
 import android.app.Activity;
+import android.content.Intent;
 import android.os.Handler;
 import android.os.Looper;
 import android.os.Parcel;
 import android.os.Parcelable;
 
 import com.google.gson.Gson;
+import com.meamobile.photokit.user_interface.AuthenticatorCallbackManager;
 
 import java.util.HashMap;
 import java.util.Map;
 
-public class Source implements Parcelable
+public class Source implements Parcelable, AuthenticatorCallbackManager.OnResultListener
 {
     public static int BASE_BRAND_COLOR = 0xFFAAAAAA;
 
@@ -128,6 +130,19 @@ public class Source implements Parcelable
     };
 
 
+
+    ///-----------------------------------------------------------
+    /// @name Authentication Callback
+    ///-----------------------------------------------------------
+
+    @Override
+    public boolean handleResult(int requestCode, int resultCode, Intent data)
+    {
+        return false;
+    }
+
+    @Override
+    public void onResume() {}
 
 
 }

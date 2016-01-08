@@ -20,8 +20,8 @@ public class InstagramAsset extends RemoteAsset
 
         mTitle = (String) json.get("id");
         mTimestamp = created.longValue();
-        FullResolutionUrlString = (String) standard.get("url");
-        ThumbnailUrlString = (String) thumb.get("url");;
+        mFullResolutionUrlString = (String) standard.get("url");
+        mThumbnailUrlString = (String) thumb.get("url");;
         mWidth = width.intValue();
         mHeight = height.intValue();
     }

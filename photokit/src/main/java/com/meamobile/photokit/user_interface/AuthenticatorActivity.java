@@ -110,12 +110,15 @@ public class AuthenticatorActivity extends ActionBarActivity
     protected void setupWebView()
     {
         WebSettings settings = mWebView.getSettings();
-//        settings.setJavaScriptEnabled(true);
+        settings.setJavaScriptEnabled(true);
         settings.setLoadWithOverviewMode(true);
         settings.setUseWideViewPort(true);
         settings.setSupportZoom(true);
         settings.setBuiltInZoomControls(true);
-        settings.setDisplayZoomControls(false);
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.HONEYCOMB)
+        {
+            settings.setDisplayZoomControls(false);
+        }
 
         mWebView.setInitialScale(1);
     }

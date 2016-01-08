@@ -27,8 +27,8 @@ public class DropboxAsset extends RemoteAsset
         String url = links.get(0).url;
         url = url.replace("?dl=0", "?dl=1");
 
-        FullResolutionUrlString = url;
-        ThumbnailUrlString = FullResolutionUrlString;
+        mFullResolutionUrlString = url;
+        mThumbnailUrlString = mFullResolutionUrlString;
     }
 
 }

@@ -56,7 +56,7 @@ public class InstagramSource extends Source
 
         String authUrl = "https://api.instagram.com/oauth/authorize?client_id=" + CLIENT_ID + "&response_type=code&redirect_uri=" + redirectUrl;
 
-        AuthenticatorCallbackManager.getInstance().addListener(getResultListener());
+        AuthenticatorCallbackManager.getInstance().addListener(this);
 
         Intent i = new Intent(activity, AuthenticatorActivity.class);
         i.putExtra(AuthenticatorActivity.AUTH_URL, authUrl);
@@ -89,34 +89,6 @@ public class InstagramSource extends Source
         return mToken;
     }
 
-
-    protected AuthenticatorCallbackManager.OnResultListener getResultListener()
-    {
-        return new AuthenticatorCallbackManager.OnResultListener()
-        {
-            @Override
-            public boolean handleResult(int requestCode, int resultCode, Intent data)
-            {
-                if (requestCode == INSTAGRAM_AUTHENTICATOR_REQUEST_CODE)
-                {
-                    AuthenticatorCallbackManager.getInstance().removeListener(this);
-
-                    if (resultCode == Activity.RESULT_OK)
-                    {
-                        String redirectUrl = data.getStringExtra(AuthenticatorActivity.REDIRECT_URL);
-                        Log.d(TAG, "Auth Success: " + redirectUrl);
-                        postCodeForAuthentication(redirectUrl);
-                    }
-
-                    return true;
-                }
-                return false;
-            }
-
-            //ignored
-            @Override public void onResume() {}
-        };
-    }
 
     protected void postCodeForAuthentication(String url)
     {
@@ -189,4 +161,27 @@ public class InstagramSource extends Source
         mToken = in.readString();
     }
 
+    ///-----------------------------------------------------------
+    /// @name Authenticator Callback
+    ///-----------------------------------------------------------
+
+
+    @Override
+    public boolean handleResult(int requestCode, int resultCode, Intent data)
+    {
+        if (requestCode == INSTAGRAM_AUTHENTICATOR_REQUEST_CODE)
+        {
+            AuthenticatorCallbackManager.getInstance().removeListener(this);
+
+            if (resultCode == Activity.RESULT_OK)
+            {
+                String redirectUrl = data.getStringExtra(AuthenticatorActivity.REDIRECT_URL);
+                Log.d(TAG, "Auth Success: " + redirectUrl);
+                postCodeForAuthentication(redirectUrl);
+            }
+
+            return true;
+        }
+        return false;
+    }
 }

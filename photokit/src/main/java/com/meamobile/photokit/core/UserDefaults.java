@@ -31,7 +31,16 @@ public class UserDefaults
     {
         SharedPreferences prefs = mContext.getSharedPreferences("USER_DEFAULTS", Context.MODE_PRIVATE);
         SharedPreferences.Editor e = prefs.edit();
-        e.putString(key,value);
+
+        if(value == null)
+        {
+            e.remove(key);
+        }
+        else
+        {
+            e.putString(key,value);
+        }
+
         e.commit();
     }
 
