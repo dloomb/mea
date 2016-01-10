@@ -4,25 +4,17 @@ package com.meamobile.photokit.core;
 import android.content.ContentResolver;
 import android.content.Context;
 import android.graphics.Bitmap;
-import android.graphics.drawable.Drawable;
-import android.os.storage.StorageManager;
 import android.provider.MediaStore;
 import android.util.Log;
 
-import com.meamobile.photokit.dropbox.DropboxAsset;
 import com.meamobile.photokit.local.LocalAsset;
-import com.squareup.picasso.Callback;
-import com.squareup.picasso.Picasso;
-import com.squareup.picasso.Target;
 
-import org.apache.http.client.HttpClient;
 import org.apache.http.util.ByteArrayBuffer;
 
 import java.io.BufferedInputStream;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.InputStream;
-import java.net.MalformedURLException;
 import java.net.URL;
 import java.net.URLConnection;
 

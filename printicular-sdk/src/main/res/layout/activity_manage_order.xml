@@ -27,7 +27,6 @@
             android:layout_height="wrap_content"
             android:orientation="vertical">
 
-
             <include layout="@layout/template_manage_order_details"/>
 
             <include layout="@layout/template_manage_order_postal" />

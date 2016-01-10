@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
-<manifest package="com.meamobile.printicular_sdk"
-          xmlns:android="http://schemas.android.com/apk/res/android">
+<manifest xmlns:android="http://schemas.android.com/apk/res/android"
+    package="com.meamobile.printicular_sdk">
 
     <application
         android:allowBackup="true"
@@ -9,14 +9,15 @@
 
         <activity
             android:name=".user_interface.ManageOrderActivity"
-            android:label="@string/activity_manage_order_title">
-        </activity>
+            android:label="@string/activity_manage_order_title"></activity>
 
         <activity
             android:name=".user_interface.CustomerDetailsActivity"
-            android:label="@string/activity_customer_details_title">
-        </activity>
+            android:label="@string/activity_customer_details_title"></activity>
 
+        <activity
+            android:name=".user_interface.store_search.StoreSearchActivity"
+            android:label="@string/activity_customer_details_title"></activity>
     </application>
 
 </manifest>

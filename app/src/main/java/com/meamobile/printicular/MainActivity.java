@@ -41,8 +41,8 @@ import com.meamobile.printicular_sdk.core.PrinticularServiceManager.PrinticularE
 import com.meamobile.printicular_sdk.core.models.PrintService;
 import com.meamobile.printicular_sdk.user_interface.ManageOrderActivity;
 
-import java.util.EnumSet;
 import java.util.Locale;
+import java.util.Map;
 
 
 public class MainActivity extends AuthenticatableActivity implements ExplorerFragmentDelegate

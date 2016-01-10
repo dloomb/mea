@@ -16,6 +16,7 @@ import com.meamobile.printicular_sdk.R;
 import com.meamobile.printicular_sdk.core.PrinticularCartManager;
 import com.meamobile.printicular_sdk.core.models.PrintService.FulfillmentType;
 import com.meamobile.printicular_sdk.core.models.Store;
+import com.meamobile.printicular_sdk.user_interface.store_search.StoreSearchActivity;
 
 public class ManageOrderActivity extends CheckoutActivity
 {
@@ -63,6 +64,12 @@ public class ManageOrderActivity extends CheckoutActivity
         mTextViewTotal = (TextView) findViewById(R.id.textViewTotal);
 
         mStoreDetailsViewHolder = new StoreDetailsViewHolder(findViewById(R.id.storeDetails));
+        mStoreDetailsViewHolder.itemView.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                onStoreDetialsPressed(v);
+            }
+        });
 
         mRelativeLayoutPostalDetails = (RelativeLayout) findViewById(R.id.postalDetails);
         mLinearLayoutPaymentDetails = (LinearLayout) findViewById(R.id.paymentDetails);
@@ -72,6 +79,12 @@ public class ManageOrderActivity extends CheckoutActivity
     protected void onPostalDetailsPressed(View v)
     {
 
+    }
+
+    protected void onStoreDetialsPressed(View v)
+    {
+        Intent i = new Intent(ManageOrderActivity.this, StoreSearchActivity.class);
+        startActivity(i);
     }
 
     @Override
