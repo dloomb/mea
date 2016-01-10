@@ -40,10 +40,14 @@ import com.meamobile.printicular_sdk.core.PrinticularServiceManager;
 import com.meamobile.printicular_sdk.core.PrinticularServiceManager.PrinticularEnvironment;
 import com.meamobile.printicular_sdk.core.models.PrintService;
 import com.meamobile.printicular_sdk.user_interface.ManageOrderActivity;
+import com.meamobile.printicular_sdk.user_interface.store_search.StoreSearchActivity;
 
 import java.util.Locale;
 import java.util.Map;
 
+
+import android.os.Handler;
+import android.os.Looper;
 
 public class MainActivity extends AuthenticatableActivity implements ExplorerFragmentDelegate
 {
@@ -208,6 +212,12 @@ public class MainActivity extends AuthenticatableActivity implements ExplorerFra
     {
         super.onResume();
         determineLocation();
+
+        new Handler(Looper.getMainLooper()).postDelayed(new Runnable() {@Override public void run()
+        {
+            Intent i = new Intent(MainActivity.this, StoreSearchActivity.class);
+            startActivity(i);
+        }}, 2 * 1000);
     }
 
     ///-----------------------------------------------------------
