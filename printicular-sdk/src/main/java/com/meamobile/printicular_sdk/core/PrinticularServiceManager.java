@@ -2,9 +2,12 @@ package com.meamobile.printicular_sdk.core;
 
 
 import android.content.Context;
+import android.location.Location;
 import android.os.Bundle;
+import android.text.TextUtils;
 import android.util.Log;
 
+import com.google.android.gms.maps.model.LatLng;
 import com.meamobile.printicular_sdk.core.models.AccessToken;
 import com.meamobile.printicular_sdk.core.APIClient.APIClientCallback;
 import com.meamobile.printicular_sdk.core.models.*;
@@ -200,10 +203,72 @@ public class PrinticularServiceManager
     }
 
 
-    public PrintService getPrintServiceWithId(int id)
+    public PrintService getPrintServiceWithId(long id)
     {
         return mPrintServices.get(id);
     }
+
+
+
+    ///-----------------------------------------------------------
+    /// @name Stores
+    ///-----------------------------------------------------------
+
+    public interface StoreSearchCallback
+    {
+        void success(Map<Long, Store>stores);
+        void error(String error);
+    }
+
+    public void searchForStores(PrintService printService, LatLng location, String[] productIds, StoreSearchCallback callback)
+    {
+        final StoreSearchCallback _callback = callback;
+
+        long printServiceId = printService.getId();
+
+        Bundle parameters = new Bundle();
+        parameters.putDouble("sort[latitude]", location.latitude);
+        parameters.putDouble("sort[longitude]", location.longitude);
+
+        if (productIds != null && productIds.length > 0)
+        {
+            String productIdsString = TextUtils.join(",", productIds);
+            parameters.putString("filter[products]", productIdsString);
+        }
+
+        APIClient client = new APIClient(getBaseUrlForEnvironment());
+        mCurrentRequestAttempts = 0;
+
+        APIClientCallback internalCallback;
+        internalCallback = new APIClientCallback()
+        {
+            @Override
+            public void success(Map<String, Object> response)
+            {
+                Log.d(LOG_KEY, "Store Search Success.");
+                Map stores = getStoresFromResponse(response);
+                if (_callback != null) { _callback.success(stores); }
+            }
+
+            @Override
+            public void error(String reason)
+            {
+                mCurrentRequestAttempts++;
+                if (mCurrentRequestAttempts > 5)
+                {
+                    Log.e(LOG_KEY, "Store Search Failed: " + reason);
+                    if (_callback != null) { _callback.error(reason); }
+                    return;
+                }
+
+                Log.e(LOG_KEY, "Store Search Failed, retrying...");
+            }
+        };
+
+        client.get("printServices/" + printServiceId + "/stores", parameters, internalCallback, mAccessToken);
+    }
+
+
 
 
     ///-----------------------------------------------------------
@@ -229,6 +294,12 @@ public class PrinticularServiceManager
         Map objects = (Map) Model.hydrate(response);
         mPrintServices = (Map) objects.get("print_services");
         mPrintServicesTimeStamp = new Date();
+    }
+
+    private Map<Long, Store> getStoresFromResponse(Map<String, Object> response)
+    {
+        Map objects = (Map) Model.hydrate(response);
+        return (Map<Long, Store>) objects.get("stores");
     }
 
 

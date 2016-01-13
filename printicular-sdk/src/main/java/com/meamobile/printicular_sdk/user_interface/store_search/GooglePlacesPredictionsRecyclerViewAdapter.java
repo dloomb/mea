@@ -12,11 +12,11 @@ import com.meamobile.printicular_sdk.R;
 
 import java.util.List;
 
-public class StoreSearchResultsRecyclerViewAdapter extends RecyclerView.Adapter
+public class GooglePlacesPredictionsRecyclerViewAdapter extends RecyclerView.Adapter
 {
     private List<AutocompletePrediction> mPredictions;
 
-    public StoreSearchResultsRecyclerViewAdapter()
+    public GooglePlacesPredictionsRecyclerViewAdapter()
     {
 
     }
