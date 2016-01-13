@@ -8,11 +8,12 @@ import android.view.ViewGroup;
 import com.meamobile.printicular_sdk.R;
 import com.meamobile.printicular_sdk.core.models.Store;
 
+import java.util.Collection;
 import java.util.List;
 
 public class StoreResultsRecyclerViewAdapter extends RecyclerView.Adapter
 {
-    private List<Store> mStores;
+    private Collection<Store> mStores;
 
     @Override
     public RecyclerView.ViewHolder onCreateViewHolder(ViewGroup parent, int viewType)
@@ -24,7 +25,7 @@ public class StoreResultsRecyclerViewAdapter extends RecyclerView.Adapter
     @Override
     public void onBindViewHolder(RecyclerView.ViewHolder holder, int position)
     {
-
+int i = 0;
     }
 
     @Override
@@ -33,9 +34,10 @@ public class StoreResultsRecyclerViewAdapter extends RecyclerView.Adapter
         return mStores == null ? 0 : mStores.size();
     }
 
-    public void setStores(List<Store> stores)
+    public void setStores(Collection<Store> stores)
     {
         mStores = stores;
+        notifyDataSetChanged();
     }
 
     class StoreRecyclerViewHolder extends RecyclerView.ViewHolder

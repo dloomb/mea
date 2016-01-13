@@ -88,14 +88,18 @@ public class StoreSearchActivity
         mLastSearchTextChangeTimestamp = new Date().getTime();
 
         mPlacesRecyclerAdapter = new GooglePlacesPredictionsRecyclerViewAdapter();
-        mStoreRecyclerAdapter = new StoreResultsRecyclerViewAdapter();
 
         mPlacesRecyclerView = (RecyclerView) findViewById(R.id.recyclerViewPlaces);
         mPlacesRecyclerView.setAdapter(mPlacesRecyclerAdapter);
         mPlacesRecyclerView.setLayoutManager(new StaggeredGridLayoutManager(1, StaggeredGridLayoutManager.VERTICAL));
         ItemClickSupport.addTo(mPlacesRecyclerView).setOnItemClickListener(this);
 
-        mStoresRecyclerView = (RecyclerView) findViewById(R.id.recyclerViewPlaces);
+        mStoreRecyclerAdapter = new StoreResultsRecyclerViewAdapter();
+
+        mStoresRecyclerView = (RecyclerView) findViewById(R.id.recyclerViewStores);
+        mStoresRecyclerView.setAdapter(mStoreRecyclerAdapter);
+        mStoresRecyclerView.setLayoutManager(new StaggeredGridLayoutManager(1, StaggeredGridLayoutManager.VERTICAL));
+        ItemClickSupport.addTo(mStoresRecyclerView).setOnItemClickListener(this);
 
         mEditTextSearch = (EditText) findViewById(R.id.editTextSearch);
         mEditTextSearch.setImeActionLabel(getString(R.string.search), EditorInfo.IME_ACTION_SEARCH);
@@ -255,6 +259,7 @@ public class StoreSearchActivity
             @Override
             public void success(Map<Long, Store> stores) {
                 mStoreResutls = stores;
+                mStoreRecyclerAdapter.setStores(mStoreResutls.values());
             }
 
             @Override
