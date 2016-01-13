@@ -1,11 +1,13 @@
-package com.meamobile.photokit.user_interface;
+package com.meamobile.printicular_sdk.user_interface;
 
 import android.support.v7.widget.RecyclerView;
 import android.view.View;
 
-import com.meamobile.photokit.R;
+import com.meamobile.printicular_sdk.R;
 
-public class ItemClickSupport {
+
+public class ItemClickSupport
+{
     private final RecyclerView mRecyclerView;
     private OnItemClickListener mOnItemClickListener;
     private OnItemLongClickListener mOnItemLongClickListener;
@@ -48,12 +50,12 @@ public class ItemClickSupport {
 
     private ItemClickSupport(RecyclerView recyclerView) {
         mRecyclerView = recyclerView;
-        mRecyclerView.setTag(R.id.photokit_item_click_support, this);
+        mRecyclerView.setTag(R.id.printicualr_sdk_item_click_support, this);
         mRecyclerView.addOnChildAttachStateChangeListener(mAttachListener);
     }
 
     public static ItemClickSupport addTo(RecyclerView view) {
-        ItemClickSupport support = (ItemClickSupport) view.getTag(R.id.photokit_item_click_support);
+        ItemClickSupport support = (ItemClickSupport) view.getTag(R.id.printicualr_sdk_item_click_support);
         if (support == null) {
             support = new ItemClickSupport(view);
         }
@@ -61,7 +63,7 @@ public class ItemClickSupport {
     }
 
     public static ItemClickSupport removeFrom(RecyclerView view) {
-        ItemClickSupport support = (ItemClickSupport) view.getTag(R.id.photokit_item_click_support);
+        ItemClickSupport support = (ItemClickSupport) view.getTag(R.id.printicualr_sdk_item_click_support);
         if (support != null) {
             support.detach(view);
         }
@@ -80,7 +82,7 @@ public class ItemClickSupport {
 
     private void detach(RecyclerView view) {
         view.removeOnChildAttachStateChangeListener(mAttachListener);
-        view.setTag(R.id.photokit_item_click_support, null);
+        view.setTag(R.id.printicualr_sdk_item_click_support, null);
     }
 
     public interface OnItemClickListener {

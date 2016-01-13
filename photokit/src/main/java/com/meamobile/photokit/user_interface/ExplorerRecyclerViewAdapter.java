@@ -45,7 +45,7 @@ public class ExplorerRecyclerViewAdapter extends RecyclerView.Adapter implements
     @Override
     public RecyclerView.ViewHolder onCreateViewHolder(ViewGroup parent, int viewType)
     {
-        final View v = LayoutInflater.from(parent.getContext())
+        View v = LayoutInflater.from(parent.getContext())
                 .inflate(R.layout.template_explorer_view_holder, parent, false);
 
         ExplorerViewHolder cell = new ExplorerViewHolder(v);

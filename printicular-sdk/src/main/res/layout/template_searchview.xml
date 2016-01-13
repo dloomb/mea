@@ -1,0 +1,40 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@+id/relativeLayoutSearchContainer"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:layout_below="@id/toolbar"
+    android:paddingTop="8dp"
+    android:paddingRight="8dp"
+    android:paddingLeft="8dp">
+
+    <View
+        android:id="@+id/viewBackground"
+        android:layout_width="match_parent"
+        android:layout_height="50dp"
+        android:background="#FFF"/>
+
+    <View
+        android:layout_width="match_parent"
+        android:layout_height="1dp"
+        android:layout_below="@id/viewBackground"
+        android:background="#DDD"/>
+
+    <ImageView
+        android:id="@+id/imageViewMagnifyingGlass"
+        android:layout_width="50dp"
+        android:layout_height="50dp"
+        android:padding="10dp"
+        android:tint="#999"
+        android:src="@drawable/vect_magnifying_glass"/>
+
+    <EditText
+        android:id="@+id/editTextSearch"
+        android:layout_width="match_parent"
+        android:layout_height="50dp"
+        android:layout_toRightOf="@id/imageViewMagnifyingGlass"
+        android:background="#FFF"
+        android:hint="@string/enter_city_state_zip"
+        android:inputType="textPostalAddress">
+    </EditText>
+</RelativeLayout>

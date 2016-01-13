@@ -1,7 +1,11 @@
 <resources>
+    <string name="google_places_client_id">AIzaSyAQ-S988QEwPobod5tMLmjscpLytQlE6jo</string>
+
     <string name="app_name">Printicular SDK Android</string>
     <string name="activity_manage_order_title">Manage Order</string>
     <string name="activity_customer_details_title">Enter Details</string>
     <string name="activity_store_search_title">Find your nearest store</string>
+    <string name="enter_city_state_zip">Enter your City &amp; State or Zip</string>
+    <string name="search">search</string>
 
 </resources>

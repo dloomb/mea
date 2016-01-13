@@ -7,25 +7,25 @@
         android:label="@string/app_name"
         android:supportsRtl="true">
 
+        <meta-data
+            android:name="com.google.android.geo.API_KEY"
+            android:value="@string/google_places_client_id"/>
+
         <activity
             android:name=".user_interface.ManageOrderActivity"
-            android:label="@string/activity_manage_order_title"></activity>
+            android:label="@string/activity_manage_order_title">
+        </activity>
 
         <activity
             android:name=".user_interface.CustomerDetailsActivity"
-            android:label="@string/activity_customer_details_title"></activity>
+            android:label="@string/activity_customer_details_title">
+        </activity>
 
         <activity
             android:name=".user_interface.store_search.StoreSearchActivity"
-            android:label="@string/activity_customer_details_title">
-
-            <intent-filter>
-                <action android:name="android.intent.action.SEARCH" />
-            </intent-filter>
-            <meta-data android:name="android.app.searchable"
-                       android:resource="@xml/searchable"/>
-
+            android:label="@string/activity_store_search_title">
         </activity>
+
     </application>
 
 </manifest>
