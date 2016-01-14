@@ -7,25 +7,34 @@ import android.view.ViewGroup;
 
 import com.meamobile.printicular_sdk.R;
 import com.meamobile.printicular_sdk.core.models.Store;
+import com.meamobile.printicular_sdk.user_interface.common.StoreDetailsViewHolder;
 
 import java.util.Collection;
 import java.util.List;
 
 public class StoreResultsRecyclerViewAdapter extends RecyclerView.Adapter
 {
-    private Collection<Store> mStores;
+    private List<Store> mStores;
 
     @Override
     public RecyclerView.ViewHolder onCreateViewHolder(ViewGroup parent, int viewType)
     {
-        View v = LayoutInflater.from(parent.getContext()).inflate(R.layout.template_store_search_store_result_view_holder, parent, false);
-        return new StoreRecyclerViewHolder(v);
+        View v = LayoutInflater.from(parent.getContext()).inflate(R.layout.template_store_view_holder, parent, false);
+        StoreDetailsViewHolder holder = new StoreDetailsViewHolder(v);
+
+        holder.setStoreDetailsHeadingVisibility(View.GONE);
+        holder.setAccessoryVisibility(View.GONE);
+        holder.setMargins(1,0,1,0);
+
+        return holder;
     }
 
     @Override
     public void onBindViewHolder(RecyclerView.ViewHolder holder, int position)
     {
-int i = 0;
+        Store store = mStores.get(position);
+        StoreDetailsViewHolder viewHolder = (StoreDetailsViewHolder) holder;
+        viewHolder.setStore(store);
     }
 
     @Override
@@ -34,19 +43,10 @@ int i = 0;
         return mStores == null ? 0 : mStores.size();
     }
 
-    public void setStores(Collection<Store> stores)
+    public void setStores(List<Store> stores)
     {
         mStores = stores;
         notifyDataSetChanged();
     }
 
-    class StoreRecyclerViewHolder extends RecyclerView.ViewHolder
-    {
-
-        public StoreRecyclerViewHolder(View itemView)
-        {
-            super(itemView);
-
-        }
-    }
 }

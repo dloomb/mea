@@ -5,6 +5,7 @@ import android.text.style.CharacterStyle;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.FrameLayout;
 import android.widget.TextView;
 
 import com.google.android.gms.location.places.AutocompletePrediction;
@@ -15,10 +16,11 @@ import java.util.List;
 public class GooglePlacesPredictionsRecyclerViewAdapter extends RecyclerView.Adapter
 {
     private List<AutocompletePrediction> mPredictions;
+    private RecyclerView mRecyclerView;
 
-    public GooglePlacesPredictionsRecyclerViewAdapter()
+    public GooglePlacesPredictionsRecyclerViewAdapter(RecyclerView recyclerView)
     {
-
+        mRecyclerView = recyclerView;
     }
 
     @Override
@@ -45,6 +47,20 @@ public class GooglePlacesPredictionsRecyclerViewAdapter extends RecyclerView.Ada
     {
         mPredictions = predictions;
         notifyDataSetChanged();
+        layoutRecyclerView();
+    }
+
+    protected void layoutRecyclerView()
+    {
+        ViewGroup.LayoutParams params = mRecyclerView.getLayoutParams();
+        if (mPredictions == null || mPredictions.size() == 0)
+        {
+            params.height = 0;
+        }
+        else
+        {
+            params.height = ViewGroup.LayoutParams.MATCH_PARENT;
+        }
     }
 
     class StoreSearchGoolgePlacesResultViewHolder extends RecyclerView.ViewHolder

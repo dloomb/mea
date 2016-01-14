@@ -1,6 +1,7 @@
 package com.meamobile.printicular_sdk.user_interface.store_search;
 
 import android.os.Bundle;
+import android.support.v7.widget.GridLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.StaggeredGridLayoutManager;
 import android.text.Editable;
@@ -43,6 +44,7 @@ import com.meamobile.printicular_sdk.user_interface.ItemClickSupport;
 import com.meamobile.printicular_sdk.user_interface.ItemClickSupport.OnItemClickListener;
 import com.meamobile.printicular_sdk.user_interface.UserInterfaceUtil;
 
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 import java.util.Map;
@@ -87,18 +89,17 @@ public class StoreSearchActivity
 
         mLastSearchTextChangeTimestamp = new Date().getTime();
 
-        mPlacesRecyclerAdapter = new GooglePlacesPredictionsRecyclerViewAdapter();
-
         mPlacesRecyclerView = (RecyclerView) findViewById(R.id.recyclerViewPlaces);
+        mPlacesRecyclerAdapter = new GooglePlacesPredictionsRecyclerViewAdapter(mPlacesRecyclerView);
         mPlacesRecyclerView.setAdapter(mPlacesRecyclerAdapter);
-        mPlacesRecyclerView.setLayoutManager(new StaggeredGridLayoutManager(1, StaggeredGridLayoutManager.VERTICAL));
+        mPlacesRecyclerView.setLayoutManager(new GridLayoutManager(this, 1));
         ItemClickSupport.addTo(mPlacesRecyclerView).setOnItemClickListener(this);
 
         mStoreRecyclerAdapter = new StoreResultsRecyclerViewAdapter();
 
         mStoresRecyclerView = (RecyclerView) findViewById(R.id.recyclerViewStores);
         mStoresRecyclerView.setAdapter(mStoreRecyclerAdapter);
-        mStoresRecyclerView.setLayoutManager(new StaggeredGridLayoutManager(1, StaggeredGridLayoutManager.VERTICAL));
+        mStoresRecyclerView.setLayoutManager(new GridLayoutManager(this, 1));
         ItemClickSupport.addTo(mStoresRecyclerView).setOnItemClickListener(this);
 
         mEditTextSearch = (EditText) findViewById(R.id.editTextSearch);
@@ -133,12 +134,15 @@ public class StoreSearchActivity
     @Override
     public void onItemClicked(RecyclerView recyclerView, int position, View v)
     {
-        mSelectedAutocompletePrediction = mAutocompletePredictions.get(position);
-        mEditTextSearch.setText(mSelectedAutocompletePrediction.getFullText(null));
-        mPlacesRecyclerAdapter.setGooglePlacesPredictions(null);
-        UserInterfaceUtil.HideKeyboard(this);
+        if (recyclerView == mPlacesRecyclerView)
+        {
+            mSelectedAutocompletePrediction = mAutocompletePredictions.get(position);
+            mEditTextSearch.setText(mSelectedAutocompletePrediction.getFullText(null));
+            mPlacesRecyclerAdapter.setGooglePlacesPredictions(null);
+            UserInterfaceUtil.HideKeyboard(this);
 
-        getLatLngFromUserSelection();
+            getLatLngFromUserSelection();
+        }
     }
 
 
@@ -171,17 +175,13 @@ public class StoreSearchActivity
 
         if (s.length() > 3)
         {
-            new Handler(Looper.getMainLooper()).postDelayed(new Runnable()
+            new Handler(Looper.getMainLooper()).postDelayed(new Runnable() {@Override public void run()
             {
-                @Override
-                public void run()
+                if (timestamp == mLastSearchTextChangeTimestamp)
                 {
-                    if (timestamp == mLastSearchTextChangeTimestamp)
-                    {
-                        runGooglePlacesSearch();
-                    }
+                    runGooglePlacesSearch();
                 }
-            }, 200);
+            }}, 200);
         }
     }
 
@@ -258,8 +258,13 @@ public class StoreSearchActivity
         mServiceManager.searchForStores(currentPrintService, latLng, null, new PrinticularServiceManager.StoreSearchCallback() {
             @Override
             public void success(Map<Long, Store> stores) {
-                mStoreResutls = stores;
-                mStoreRecyclerAdapter.setStores(mStoreResutls.values());
+
+                final Map<Long, Store> _stores = stores;
+                new Handler(Looper.getMainLooper()).post(new Runnable() {@Override public void run()
+                {
+                    mStoreResutls = _stores;
+                    mStoreRecyclerAdapter.setStores(new ArrayList<Store>(mStoreResutls.values()));
+                }});
             }
 
             @Override

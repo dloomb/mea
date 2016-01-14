@@ -1,0 +1,88 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@+id/relativeLayoutOuter"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:clickable="true"
+    android:background="#FFF"
+    android:padding="8dp">
+
+    <RelativeLayout
+        android:id="@+id/relativeLayoutInner"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:paddingLeft="10dp"
+        android:paddingRight="10dp">
+
+        <TextView
+            android:id="@+id/textViewTitle"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Store details"
+            android:textAppearance="@style/list_section_title"
+            android:layout_marginBottom="10dp"/>
+
+        <ImageView
+            android:id="@+id/imageViewStoreLogo"
+            android:layout_width="wrap_content"
+            android:layout_height="40dp"
+            android:layout_below="@id/textViewTitle"
+            android:src="@drawable/walgreens_store_title"
+            android:contentDescription="@string/app_name"
+            android:tint="#FFca2026"/>
+
+        <TextView
+            android:id="@+id/textViewAddressLine1"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_below="@id/imageViewStoreLogo"
+            android:textAppearance="@style/list_section_text_medium"
+            android:text="20 Astor Place"/>
+
+        <TextView
+            android:id="@+id/textViewAddressLine2"
+            android:textColor="@color/text_dark"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_below="@id/textViewAddressLine1"
+            android:text="New York, NY 10003"
+            android:textAppearance="@style/list_section_text_medium"/>
+
+        <ImageView
+            android:id="@+id/imageViewAccessory"
+            android:layout_width="35dp"
+            android:layout_height="35dp"
+            android:layout_centerVertical="true"
+            android:src="@drawable/vect_pencil"
+            android:tint="@color/accessory_button_dark"
+            android:layout_alignParentRight="true"
+            android:scaleType="fitCenter"/>
+
+        <TextView
+            android:id="@+id/textViewPickupTime"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="5dp"
+            android:layout_below="@id/textViewAddressLine2"
+            android:textColor="#FF49a4db"
+            android:text="Pickup time 10:11 am Today"
+            android:textAppearance="@style/list_section_text_medium"/>
+
+    </RelativeLayout>
+
+    <View
+        android:layout_width="match_parent"
+        android:layout_height="1dp"
+        android:layout_marginTop="10dp"
+        android:layout_marginLeft="50dp"
+        android:background="@color/accessory_button_dark"
+        android:layout_below="@id/relativeLayoutContent"
+        android:visibility="gone"/>
+
+    <View
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:background="?android:attr/selectableItemBackground"/>
+
+</RelativeLayout>

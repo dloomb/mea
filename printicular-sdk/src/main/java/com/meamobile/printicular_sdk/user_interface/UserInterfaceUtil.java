@@ -14,6 +14,7 @@ public class UserInterfaceUtil
         if (v != null) {
             InputMethodManager imm = (InputMethodManager)activity.getSystemService(Context.INPUT_METHOD_SERVICE);
             imm.hideSoftInputFromWindow(v.getWindowToken(), 0);
+            v.clearFocus();
         }
     }
 

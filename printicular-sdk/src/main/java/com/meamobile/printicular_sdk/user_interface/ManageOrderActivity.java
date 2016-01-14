@@ -16,6 +16,7 @@ import com.meamobile.printicular_sdk.R;
 import com.meamobile.printicular_sdk.core.PrinticularCartManager;
 import com.meamobile.printicular_sdk.core.models.PrintService.FulfillmentType;
 import com.meamobile.printicular_sdk.core.models.Store;
+import com.meamobile.printicular_sdk.user_interface.common.StoreDetailsViewHolder;
 import com.meamobile.printicular_sdk.user_interface.store_search.StoreSearchActivity;
 
 public class ManageOrderActivity extends CheckoutActivity
