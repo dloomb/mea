@@ -24,7 +24,7 @@ public class StoreResultsRecyclerViewAdapter extends RecyclerView.Adapter
 
         holder.setStoreDetailsHeadingVisibility(View.GONE);
         holder.setAccessoryVisibility(View.GONE);
-        holder.setMargins(1,0,1,0);
+        holder.setMargins(4,0,4,0);
 
         return holder;
     }

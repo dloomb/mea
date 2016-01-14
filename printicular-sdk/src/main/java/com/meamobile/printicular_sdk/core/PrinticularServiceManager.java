@@ -45,6 +45,11 @@ public class PrinticularServiceManager
         return sInstance;
     }
 
+    public Context getContext()
+    {
+        return mContext;
+    }
+
     public void initialize(Context context, PrinticularEnvironment environment)
     {
         mContext = context;

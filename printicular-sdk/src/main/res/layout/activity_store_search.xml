@@ -23,7 +23,10 @@
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:layout_below="@id/includeSearchView"
-        android:padding="8dp"
+        android:paddingTop="3dp"
+        android:paddingRight="8dp"
+        android:paddingLeft="8dp"
+        android:paddingBottom="3dp"
         android:clipToPadding="false"/>
 
     <android.support.v7.widget.RecyclerView
