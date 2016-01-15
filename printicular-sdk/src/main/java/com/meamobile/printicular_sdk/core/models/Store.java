@@ -14,8 +14,16 @@ public class Store extends Model
             mPostCode,
             mPhone,
             mStoreCode,
-            mRetailerId;
+            mRetailerId,
+            mRetailerStoreId,
+            mChecksum;
 
+    private double
+            mLatitude,
+            mLongitude;
+
+    private boolean
+            mActive;
 
     @Override
     public void populate(Map data)
@@ -34,13 +42,25 @@ public class Store extends Model
             mPhone = (String) attributes.get("phone");
             mStoreCode = (String) attributes.get("store_code");
             mRetailerId = (String) attributes.get("reatiler_id");
+            mRetailerStoreId = (String) attributes.get("retailer_store_id");
+            mChecksum = (String) attributes.get("checksum");
+
+            mLatitude = Double.parseDouble((String) attributes.get("latitude"));
+            mLongitude = Double.parseDouble((String) attributes.get("longitude"));
+
+            mActive = ((Number) attributes.get("active")).intValue() == 1;
         }
     }
 
 
     public int getStoreLogoImageResourceId()
     {
-        return R.drawable.walgreens_store_title;
+        return R.drawable.warehouse_stationery_no_bg;
+    }
+
+    public int getStoreColorResourceId()
+    {
+        return R.color.store_color_warehouse_stationery;
     }
 
     public String getName()

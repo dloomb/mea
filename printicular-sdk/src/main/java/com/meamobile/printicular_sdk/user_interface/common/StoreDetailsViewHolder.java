@@ -59,6 +59,9 @@ public class StoreDetailsViewHolder extends RecyclerView.ViewHolder
             mImageViewStoreLogo.setImageResource(store.getStoreLogoImageResourceId());
             mTextViewLineOne.setText(store.getAddress());
             mTextViewLineTwo.setText(store.getPostCode() + " " + store.getCity());
+
+            int color = itemView.getContext().getResources().getColor(store.getStoreColorResourceId());
+            mRelativeLayoutOuter.setBackgroundColor(color);
         }
     }
 

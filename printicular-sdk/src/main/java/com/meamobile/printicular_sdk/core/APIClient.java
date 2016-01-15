@@ -1,6 +1,8 @@
 package com.meamobile.printicular_sdk.core;
 
 
+import android.net.Uri;
+import android.net.UrlQuerySanitizer;
 import android.os.Bundle;
 
 import com.google.gson.Gson;
@@ -13,15 +15,22 @@ import org.apache.http.client.entity.UrlEncodedFormEntity;
 import org.apache.http.client.methods.HttpGet;
 import org.apache.http.client.methods.HttpPost;
 import org.apache.http.client.methods.HttpUriRequest;
+import org.apache.http.client.utils.URLEncodedUtils;
 import org.apache.http.impl.client.DefaultHttpClient;
 import org.apache.http.message.BasicNameValuePair;
 
 import java.io.BufferedReader;
 import java.io.InputStreamReader;
 import java.io.UnsupportedEncodingException;
+import java.net.MalformedURLException;
+import java.net.URI;
+import java.net.URISyntaxException;
+import java.net.URL;
+import java.net.URLEncoder;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 public class APIClient
 {
@@ -108,12 +117,31 @@ public class APIClient
 
     public void get(String url, Bundle parameters, APIClientCallback callback, AccessToken accessToken)
     {
+        if (parameters != null)
+        {
+            Uri.Builder builder = new Uri.Builder();
+
+            Set<String> keys = parameters.keySet();
+
+            for (String key: keys)
+            {
+                builder.appendQueryParameter(key, parameters.getString(key));
+            }
+            String query = builder.build().getQuery();
+
+            if (query != null && query.length() != 0)
+            {
+                url += "?" + query;
+            }
+        }
+
         HttpGet get = new HttpGet(mBaseUrl + url);
 
         if (accessToken != null)
         {
             get.addHeader("Authorization", "Bearer " + accessToken.toString());
         }
+
 
         request(get, callback);
     }

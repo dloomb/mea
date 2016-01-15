@@ -12,10 +12,11 @@ import java.util.Map;
 
 public class Model
 {
-    private long mId;
-    private String mType;
-    private Date mCreatedAt, mUpdatedAt;
+    protected long mId;
+    protected String mType;
+    protected Date mCreatedAt, mUpdatedAt;
     protected Map<String, Object> mRelationshipMap;
+    protected Map<String, Object> mMeta;
 
     public Model(){}
 
@@ -40,6 +41,8 @@ public class Model
                 mUpdatedAt = parseDate(updated);
             }
         }
+
+        mMeta = (Map) data.get("meta");
 
         mRelationshipMap = (Map) data.get("relationships");
     }

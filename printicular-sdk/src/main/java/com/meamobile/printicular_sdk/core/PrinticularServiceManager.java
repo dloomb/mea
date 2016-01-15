@@ -227,8 +227,8 @@ public class PrinticularServiceManager
         long printServiceId = printService.getId();
 
         Bundle parameters = new Bundle();
-        parameters.putDouble("sort[latitude]", location.latitude);
-        parameters.putDouble("sort[longitude]", location.longitude);
+        parameters.putString("sort[latitude]", location.latitude + "");
+        parameters.putString("sort[longitude]", location.longitude + "");
 
         if (productIds != null && productIds.length > 0)
         {
