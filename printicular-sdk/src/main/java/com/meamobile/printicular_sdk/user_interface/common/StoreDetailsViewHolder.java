@@ -1,14 +1,19 @@
 package com.meamobile.printicular_sdk.user_interface.common;
 
+import android.support.v7.widget.GridLayoutManager;
 import android.support.v7.widget.RecyclerView;
+import android.support.v7.widget.StaggeredGridLayoutManager;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.GridLayout;
 import android.widget.ImageButton;
 import android.widget.ImageView;
+import android.widget.LinearLayout;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 
 import com.meamobile.printicular_sdk.R;
+import com.meamobile.printicular_sdk.core.PrinticularServiceManager;
 import com.meamobile.printicular_sdk.core.models.Store;
 
 import org.w3c.dom.Text;
@@ -77,7 +82,8 @@ public class StoreDetailsViewHolder extends RecyclerView.ViewHolder
 
     public void setMargins(int t, int l, int b, int r)
     {
-//        RelativeLayout.LayoutParams params = (RelativeLayout.LayoutParams) mRelativeLayoutOuter.getLayoutParams();
-//        params.setMargins(l,t,r,b);
+        int d = (int)PrinticularServiceManager.getInstance().getContext().getResources().getDisplayMetrics().density;
+        GridLayoutManager.LayoutParams params = (GridLayoutManager.LayoutParams) mRelativeLayoutOuter.getLayoutParams();
+        params.setMargins(l * d, t * d, r * d, b * d);
     }
 }
