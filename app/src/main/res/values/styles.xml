@@ -4,7 +4,7 @@
         <item name="android:actionBarStyle" >@style/Printicular.ActionBar</item>
         <item name="actionBarStyle">@style/Printicular.ActionBar</item>
         <item name="colorPrimary">@color/printicular_blue</item>
-        <item name="colorPrimaryDark">@color/printicular_blue</item>
+        <item name="colorPrimaryDark">@color/printicular_dark_blue</item>
         <item name="colorAccent">@color/printicular_blue</item>
     </style>
 

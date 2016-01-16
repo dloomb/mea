@@ -3,6 +3,7 @@ package com.meamobile.printicular_sdk.user_interface;
 import android.content.Intent;
 import android.graphics.PorterDuff;
 import android.os.Bundle;
+import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
@@ -64,7 +65,7 @@ public class ManageOrderActivity extends CheckoutActivity
         mTextViewShipping = (TextView) findViewById(R.id.textViewShipping);
         mTextViewTotal = (TextView) findViewById(R.id.textViewTotal);
 
-        mStoreDetailsViewHolder = new StoreDetailsViewHolder(findViewById(R.id.storeDetails));
+        mStoreDetailsViewHolder = new StoreDetailsViewHolder(findViewById(R.id.relativeLayoutOuter));
         mStoreDetailsViewHolder.itemView.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {

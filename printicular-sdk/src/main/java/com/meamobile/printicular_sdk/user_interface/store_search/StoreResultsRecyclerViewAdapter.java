@@ -9,7 +9,10 @@ import com.meamobile.printicular_sdk.R;
 import com.meamobile.printicular_sdk.core.models.Store;
 import com.meamobile.printicular_sdk.user_interface.common.StoreDetailsViewHolder;
 
+import java.util.Arrays;
 import java.util.Collection;
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.List;
 
 public class StoreResultsRecyclerViewAdapter extends RecyclerView.Adapter

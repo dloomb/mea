@@ -213,11 +213,12 @@ public class MainActivity extends AuthenticatableActivity implements ExplorerFra
         super.onResume();
         determineLocation();
 
-        new Handler(Looper.getMainLooper()).postDelayed(new Runnable() {@Override public void run()
-        {
-            Intent i = new Intent(MainActivity.this, StoreSearchActivity.class);
-            startActivity(i);
-        }}, 2 * 1000);
+        //For Testing A Activity
+//        new Handler(Looper.getMainLooper()).postDelayed(new Runnable() {@Override public void run()
+//        {
+//            Intent i = new Intent(MainActivity.this, StoreSearchActivity.class);
+//            startActivity(i);
+//        }}, 2 * 1000);
     }
 
     ///-----------------------------------------------------------

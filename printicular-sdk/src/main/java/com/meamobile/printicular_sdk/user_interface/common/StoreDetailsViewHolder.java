@@ -2,13 +2,8 @@ package com.meamobile.printicular_sdk.user_interface.common;
 
 import android.support.v7.widget.GridLayoutManager;
 import android.support.v7.widget.RecyclerView;
-import android.support.v7.widget.StaggeredGridLayoutManager;
 import android.view.View;
-import android.view.ViewGroup;
-import android.widget.GridLayout;
-import android.widget.ImageButton;
 import android.widget.ImageView;
-import android.widget.LinearLayout;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 
@@ -16,23 +11,27 @@ import com.meamobile.printicular_sdk.R;
 import com.meamobile.printicular_sdk.core.PrinticularServiceManager;
 import com.meamobile.printicular_sdk.core.models.Store;
 
-import org.w3c.dom.Text;
+import java.text.DecimalFormat;
 
 public class StoreDetailsViewHolder extends RecyclerView.ViewHolder
 {
     private RelativeLayout
             mRelativeLayoutOuter,
-            mRelativeLayoutInner;
+            mRelativeLayoutInner,
+            mRelativeLayoutSpecial;
+
+    private View mViewBrandDetail;
 
     private ImageView
             mImageViewStoreLogo,
-            mImageViewAccessory;
+            mImageViewAccessory,
+            mImageViewSpecial;
 
     private TextView
             mTextViewTitle,
             mTextViewLineOne,
             mTextViewLineTwo,
-            mTextViewPickupTime;
+            mTextViewSpecial;
 
     public StoreDetailsViewHolder(View itemView)
     {
@@ -40,12 +39,16 @@ public class StoreDetailsViewHolder extends RecyclerView.ViewHolder
 
         mRelativeLayoutOuter = (RelativeLayout) itemView.findViewById(R.id.relativeLayoutOuter);
         mRelativeLayoutInner = (RelativeLayout) itemView.findViewById(R.id.relativeLayoutInner);
+        mRelativeLayoutSpecial = (RelativeLayout) itemView.findViewById(R.id.relativeLayoutSpecialText);
+
+        mViewBrandDetail = itemView.findViewById(R.id.viewBrandDetail);
 
         mImageViewStoreLogo = (ImageView) itemView.findViewById(R.id.imageViewStoreLogo);
         mTextViewTitle = (TextView) itemView.findViewById(R.id.textViewTitle);
         mTextViewLineOne = (TextView) itemView.findViewById(R.id.textViewAddressLine1);
         mTextViewLineTwo = (TextView) itemView.findViewById(R.id.textViewAddressLine2);
-        mTextViewPickupTime = (TextView) itemView.findViewById(R.id.textViewPickupTime);
+        mTextViewSpecial = (TextView) itemView.findViewById(R.id.textViewSpecial);
+        mImageViewSpecial = (ImageView) itemView.findViewById(R.id.imageViewSpecial);
         mImageViewAccessory = (ImageView) itemView.findViewById(R.id.imageViewAccessory);
     }
 
@@ -56,7 +59,7 @@ public class StoreDetailsViewHolder extends RecyclerView.ViewHolder
             mImageViewStoreLogo.setVisibility(View.GONE);
             mTextViewLineOne.setText("Pleases select a store");
             mTextViewLineTwo.setVisibility(View.GONE);
-            mTextViewPickupTime.setVisibility(View.GONE);
+            mTextViewSpecial.setVisibility(View.GONE);
             mImageViewAccessory.setImageResource(R.drawable.vect_chevron_right);
         }
         else
@@ -66,7 +69,20 @@ public class StoreDetailsViewHolder extends RecyclerView.ViewHolder
             mTextViewLineTwo.setText(store.getPostCode() + " " + store.getCity());
 
             int color = itemView.getContext().getResources().getColor(store.getStoreColorResourceId());
-            mRelativeLayoutOuter.setBackgroundColor(color);
+            mViewBrandDetail.setBackgroundColor(color);
+
+            Object distance = store.getMeta("distance");
+            if (distance != null)
+            {
+                DecimalFormat df = new DecimalFormat("#.00");
+                mRelativeLayoutSpecial.setVisibility(View.VISIBLE);
+                mTextViewSpecial.setText(df.format(distance) + " km away");
+            }
+            else
+            {
+                mRelativeLayoutSpecial.setVisibility(View.GONE);
+            }
+
         }
     }
 

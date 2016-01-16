@@ -3,7 +3,6 @@ package com.meamobile.printicular_sdk.user_interface.store_search;
 import android.os.Bundle;
 import android.support.v7.widget.GridLayoutManager;
 import android.support.v7.widget.RecyclerView;
-import android.support.v7.widget.StaggeredGridLayoutManager;
 import android.text.Editable;
 import android.text.TextWatcher;
 import android.util.Log;
@@ -45,6 +44,7 @@ import com.meamobile.printicular_sdk.user_interface.ItemClickSupport.OnItemClick
 import com.meamobile.printicular_sdk.user_interface.UserInterfaceUtil;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.Date;
 import java.util.List;
 import java.util.Map;
@@ -63,7 +63,7 @@ public class StoreSearchActivity
     private AutocompletePrediction mSelectedAutocompletePrediction;
 
     private StoreResultsRecyclerViewAdapter mStoreRecyclerAdapter;
-    private Map<Long, Store> mStoreResutls;
+    private List<Store> mStoreResults;
 
     private PrinticularServiceManager mServiceManager = PrinticularServiceManager.getInstance();
     private PrinticularCartManager mCartManager = PrinticularCartManager.getInstance();
@@ -142,6 +142,12 @@ public class StoreSearchActivity
             UserInterfaceUtil.HideKeyboard(this);
 
             getLatLngFromUserSelection();
+        }
+        else
+        {
+            Store s = mStoreResults.get(position);
+            mCartManager.setCurrentStore(s);
+            finish();
         }
     }
 
@@ -259,11 +265,12 @@ public class StoreSearchActivity
             @Override
             public void success(Map<Long, Store> stores) {
 
-                final Map<Long, Store> _stores = stores;
+                mStoreResults = new ArrayList<Store>(stores.values());
+                Collections.sort(mStoreResults, Store.DistanceSortComparator());
+
                 new Handler(Looper.getMainLooper()).post(new Runnable() {@Override public void run()
                 {
-                    mStoreResutls = _stores;
-                    mStoreRecyclerAdapter.setStores(new ArrayList<Store>(mStoreResutls.values()));
+                    mStoreRecyclerAdapter.setStores(new ArrayList<Store>(mStoreResults));
                 }});
             }
 

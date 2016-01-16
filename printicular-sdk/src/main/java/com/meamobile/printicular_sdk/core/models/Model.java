@@ -72,6 +72,19 @@ public class Model
         return mUpdatedAt;
     }
 
+    public Object getMeta(String key)
+    {
+        if (mMeta != null)
+        {
+            return mMeta.get(key);
+        }
+        return null;
+    }
+
+    public Map<String, Object> getMeta()
+    {
+        return mMeta;
+    }
 
     ///-----------------------------------------------------------
     /// @name Helpers

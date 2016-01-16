@@ -2,10 +2,26 @@ package com.meamobile.printicular_sdk.core.models;
 
 import com.meamobile.printicular_sdk.R;
 
+import java.util.Comparator;
 import java.util.Map;
 
 public class Store extends Model
 {
+    public static Comparator<Store> DistanceSortComparator()
+    {
+        return new Comparator<Store>()
+        {
+            @Override
+            public int compare(Store o1, Store o2)
+            {
+                Double d1 = (Double) o1.getMeta("distance");
+                Double d2 = (Double) o2.getMeta("distance");
+
+                return d1.compareTo(d2);
+            }
+        };
+    }
+
     private String
             mName,
             mAddress,
@@ -55,7 +71,7 @@ public class Store extends Model
 
     public int getStoreLogoImageResourceId()
     {
-        return R.drawable.warehouse_stationery_no_bg;
+        return R.drawable.warehouse_stationery_inverse_no_bg;
     }
 
     public int getStoreColorResourceId()

@@ -1,6 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <item name="printicular_blue" type="color">#FF49a4db</item>
+    <item name="printicular_dark_blue" type="color">#FF4494c6</item>
     <item name="printicular_hack_blue" type="color">#FF4db4e8</item>
     <item name="printicular_wag_red" type="color">#FFca2026</item>
     <item name="printicular_kodak_orange" type="color">#FFF49007</item>

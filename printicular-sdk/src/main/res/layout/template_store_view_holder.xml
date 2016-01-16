@@ -6,16 +6,19 @@
     android:layout_height="wrap_content"
     android:clickable="true"
     android:background="#FFF"
-    android:padding="8dp"
     android:layout_marginTop="4dp"
     android:layout_marginBottom="4dp">
+
+
+
+
 
     <RelativeLayout
         android:id="@+id/relativeLayoutInner"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:paddingLeft="10dp"
-        android:paddingRight="10dp">
+        android:layout_marginLeft="8dp"
+        android:padding="8dp">
 
         <TextView
             android:id="@+id/textViewTitle"
@@ -27,13 +30,13 @@
 
         <ImageView
             android:id="@+id/imageViewStoreLogo"
-            android:layout_width="150dp"
+            android:layout_width="match_parent"
             android:layout_height="40dp"
             android:layout_below="@id/textViewTitle"
-            android:src="@drawable/warehouse_stationery_no_bg"
+            android:layout_marginBottom="5dp"
+            android:src="@drawable/warehouse_stationery_inverse_no_bg"
             android:contentDescription="@string/app_name"
-            android:scaleType="fitStart"
-            android:tint="#FFF"/>
+            android:scaleType="fitEnd"/>
 
         <TextView
             android:id="@+id/textViewAddressLine1"
@@ -41,17 +44,45 @@
             android:layout_height="wrap_content"
             android:layout_below="@id/imageViewStoreLogo"
             android:textAppearance="@style/list_section_text_medium"
-            android:textColor="#FFF"
             android:text="20 Astor Place"/>
 
         <TextView
             android:id="@+id/textViewAddressLine2"
-            android:textColor="#FFF"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_below="@id/textViewAddressLine1"
             android:text="New York, NY 10003"
             android:textAppearance="@style/list_section_text_medium"/>
+
+        <RelativeLayout
+            android:id="@+id/relativeLayoutSpecialText"
+            android:layout_width="match_parent"
+            android:layout_height="21dp"
+            android:layout_marginTop="5dp"
+            android:layout_below="@id/textViewAddressLine2">
+
+            <ImageView
+                android:id="@+id/imageViewSpecial"
+                android:layout_width="20dp"
+                android:layout_height="20dp"
+                android:layout_marginBottom="2dp"
+                android:layout_alignParentBottom="true"
+                android:src="@drawable/vect_placemark"
+                android:scaleType="fitStart"
+                android:tint="#FF49a4db"/>
+
+            <TextView
+                android:id="@+id/textViewSpecial"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_alignParentBottom="true"
+                android:layout_toRightOf="@id/imageViewSpecial"
+                android:textColor="#FF49a4db"
+                android:text="2.5 KM Away"
+                android:textAppearance="@style/list_section_text_medium"/>
+
+        </RelativeLayout>
+
 
         <ImageView
             android:id="@+id/imageViewAccessory"
@@ -63,30 +94,23 @@
             android:layout_alignParentRight="true"
             android:scaleType="fitCenter"/>
 
-        <TextView
-            android:id="@+id/textViewPickupTime"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="5dp"
-            android:layout_below="@id/textViewAddressLine2"
-            android:textColor="#FF49a4db"
-            android:text="Pickup time 10:11 am Today"
-            android:textAppearance="@style/list_section_text_medium"/>
-
     </RelativeLayout>
 
     <View
-        android:layout_width="match_parent"
-        android:layout_height="1dp"
-        android:layout_marginTop="10dp"
-        android:layout_marginLeft="50dp"
-        android:background="@color/accessory_button_dark"
-        android:layout_below="@id/relativeLayoutContent"
-        android:visibility="gone"/>
+        android:id="@+id/viewBrandDetail"
+        android:layout_width="8dp"
+        android:layout_height="100dp"
+        android:layout_alignTop="@id/relativeLayoutInner"
+        android:layout_alignBottom="@id/relativeLayoutInner"
+        android:background="@color/store_color_warehouse_stationery"/>
 
     <View
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"
+        android:layout_width="1dp"
+        android:layout_height="1dp"
+        android:layout_alignTop="@id/relativeLayoutInner"
+        android:layout_alignBottom="@id/relativeLayoutInner"
+        android:layout_alignLeft="@id/relativeLayoutInner"
+        android:layout_alignRight="@id/relativeLayoutInner"
         android:background="?android:attr/selectableItemBackground"/>
 
 </RelativeLayout>

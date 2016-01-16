@@ -2,7 +2,6 @@ package com.meamobile.printicular_sdk.core;
 
 
 import android.content.Context;
-import android.location.Location;
 import android.os.Bundle;
 import android.text.TextUtils;
 import android.util.Log;
@@ -15,6 +14,7 @@ import com.meamobile.printicular_sdk.core.models.*;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.Map;
+
 
 public class PrinticularServiceManager
 {
@@ -73,6 +73,49 @@ public class PrinticularServiceManager
     ///-----------------------------------------------------------
     /// @name OAuth
     ///-----------------------------------------------------------
+
+//    public Observable<Boolean> rxValidateAccessToken()
+//    {
+//        return Observable.create(
+//
+//            new Observable.OnSubscribe<Boolean>()
+//            {
+//                @Override
+//                public void call(Subscriber<? super Boolean> subscriber)
+//                {
+//                    if (mAccessToken == null)
+//                    {
+//                        try
+//                        {
+//                            mAccessToken = AccessToken.loadToken(mContext);
+//                        }
+//                        catch (Exception e)
+//                        {
+//                            mAccessToken = null;
+//                        }
+//                    }
+//
+//                    if (mAccessToken != null && !mAccessToken.hasExpired())
+//                    {
+//                        Log.d(LOG_KEY, "OAuth Success, Reusing token.");
+//                        subscriber.onNext(true);
+//                        subscriber.onCompleted();
+//                        return;
+//                    }
+//
+//                    APIClient client = new APIClient(getBaseUrlForEnvironment());
+//
+//                    final Bundle params = new Bundle();
+//                    params.putString("grant_type", "client_credentials");
+//                    params.putString("client_id", "UN0Re26fy7V0Rc368QW7");
+//                    params.putString("client_secret", "deKAAuZJTi74eUjMVjaTFMoWfvH43jxluR3CQifB");
+//                    params.putString("scope", "warehouse-stationery");
+//
+//                    mCurrentRequestAttempts = 0;
+//                }
+//            }
+//        );
+//    }
 
     public interface AccessTokenCallback
     {

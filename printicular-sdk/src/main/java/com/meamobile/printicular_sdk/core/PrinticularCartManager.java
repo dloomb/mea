@@ -41,11 +41,6 @@ public class PrinticularCartManager
         return sInstance;
     }
 
-    protected void loadRecentlyUsedStore()
-    {
-
-    }
-
 
     ///-----------------------------------------------------------
     /// @name Image Handling
@@ -105,7 +100,6 @@ public class PrinticularCartManager
     public void setCurrentPrintService(PrintService printService)
     {
         mCurrentPrintService = printService;
-        loadRecentlyUsedStore();
     }
 
     public PrintService getCurrentPrintService()
