@@ -57,17 +57,38 @@ public class Store extends Model
             mPostCode = (String) attributes.get("postcode");
             mPhone = (String) attributes.get("phone");
             mStoreCode = (String) attributes.get("store_code");
-            mRetailerId = (String) attributes.get("reatiler_id");
+            mRetailerId = (String) attributes.get("retailer_id");
             mRetailerStoreId = (String) attributes.get("retailer_store_id");
             mChecksum = (String) attributes.get("checksum");
 
-            mLatitude = Double.parseDouble((String) attributes.get("latitude"));
-            mLongitude = Double.parseDouble((String) attributes.get("longitude"));
+            mLatitude =  (Double) safeParse(attributes.get("latitude"), "DOUBLE");
+            mLongitude = (Double) safeParse(attributes.get("longitude"), "DOUBLE");
 
-            mActive = ((Number) attributes.get("active")).intValue() == 1;
+            mActive = (boolean) safeParse(attributes.get("active"), "BOOLEAN"); // ((Number) attributes.get("active")).intValue() == 1;
         }
     }
 
+    @Override
+    public Map<String, Object> evaporate() {
+        Map <String, Object> data = super.evaporate();
+
+        Map<String, Object> attributes = (Map<String, Object>) data.get("attributes");
+        attributes.put("name", mName);
+        attributes.put("address", mAddress);
+        attributes.put("city", mCity);
+        attributes.put("state", mState);
+        attributes.put("postcode", mPostCode);
+        attributes.put("phone", mPhone);
+        attributes.put("store_code", mStoreCode);
+        attributes.put("retailer_id", mRetailerId);
+        attributes.put("retailer_store_id", mRetailerStoreId);
+        attributes.put("checksum", mChecksum);
+        attributes.put("latitude", mLatitude);
+        attributes.put("longitude", mLongitude);
+        attributes.put("active", mActive);
+
+        return data;
+    }
 
     public int getStoreLogoImageResourceId()
     {

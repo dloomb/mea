@@ -11,6 +11,8 @@ import com.meamobile.photokit.local.LocalAsset;
 import java.io.File;
 import java.io.FileOutputStream;
 
+import rx.Observable;
+
 public class CachingImageManager
 {
     public interface CachingImageManagerRequestCallback
@@ -26,59 +28,52 @@ public class CachingImageManager
         mContext = context;
     }
 
-    public void requestThumbnailForAsset(Asset asset, CachingImageManagerRequestCallback callback)
+    public Observable<File> requestThumbnailForAsset(Asset asset)
     {
         File file = new File(mContext.getCacheDir(), asset.getAssetIdentifier() + "-thumbnail");
         if (file.exists())
         {
-            callback.success(file);
-            return;
+            return Observable.just(file);
         }
 
         switch (asset.getType())
         {
             case Local:
-                loadLocalAssetThumbnailWithContentResolver((LocalAsset) asset, file, callback);
-                break;
+                return loadLocalAssetThumbnailWithContentResolver((LocalAsset) asset, file);
             case Remote:
-                downloadImageFromUrl(((RemoteAsset)asset).getThumbnailUrlString(), file, callback);
-                break;
+                return downloadImageFromUrl(((RemoteAsset)asset).getThumbnailUrlString(), file);
         }
 
-
+        return Observable.error(new RuntimeException("Invalid Asset Type given"));
     }
 
-    public void requestFullResolutionForAsset(Asset asset, CachingImageManagerRequestCallback callback)
+    public Observable<File> requestFullResolutionForAsset(Asset asset)
     {
         File file = new File(mContext.getCacheDir(), asset.getAssetIdentifier() + "-fullresolution");
         if (file.exists())
         {
-            callback.success(file);
-            return;
+            return Observable.just(file);
         }
 
         switch (asset.getType())
         {
             case Remote:
-                downloadImageFromUrl(((RemoteAsset)asset).getFullResolutionUrlString(), file, callback);
-                break;
+                return downloadImageFromUrl(((RemoteAsset)asset).getFullResolutionUrlString(), file);
         }
+
+        return Observable.error(new RuntimeException("Invalid Asset Type given"));
     }
 
 
 
-    protected void downloadImageFromUrl(String urlString, File output, CachingImageManagerRequestCallback callback)
+    protected Observable<File> downloadImageFromUrl(String urlString, File output)
     {
         JSONHttpClient client = new JSONHttpClient();
-        client.getFile(urlString, output)
-                .subscribe(callback::success,
-                error -> {
-                    callback.error(error.getLocalizedMessage());
-                });
+        return client.getFile(urlString, output);
     }
 
 
-    protected void loadLocalAssetThumbnailWithContentResolver(LocalAsset asset, File file, CachingImageManagerRequestCallback callback)
+    protected Observable<File> loadLocalAssetThumbnailWithContentResolver(LocalAsset asset, File file)
     {
         ContentResolver resolver = mContext.getContentResolver();
 
@@ -96,14 +91,13 @@ public class CachingImageManager
 
             out = new FileOutputStream(file);
             thumb.compress(asset.getCompressionFormat(), 100, out);
-
             out.close();
+
+            return Observable.just(file);
         }
         catch(Exception e)
         {
             e.printStackTrace();
-            callback.error(e.getLocalizedMessage());
-
             try {
                 if (out != null) {
                     out.close();
@@ -111,6 +105,9 @@ public class CachingImageManager
             } catch (Exception e1) {
                 e.printStackTrace();
             }
+
+            return Observable.error(e);
+
         }
     }
 

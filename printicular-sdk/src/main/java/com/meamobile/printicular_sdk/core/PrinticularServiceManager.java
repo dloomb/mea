@@ -2,6 +2,7 @@ package com.meamobile.printicular_sdk.core;
 
 
 import android.content.Context;
+import android.content.SharedPreferences;
 import android.text.TextUtils;
 import android.util.Log;
 
@@ -13,12 +14,15 @@ import java.util.Calendar;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.UUID;
 
 import rx.Observable;
 
 
 public class PrinticularServiceManager
 {
+    private static String TAG = "MEA.PrinticularServiceManager";
+
     public enum PrinticularEnvironment
     {
         STAGING,
@@ -27,9 +31,11 @@ public class PrinticularServiceManager
     }
 
     private static PrinticularServiceManager sInstance = null;
-    private static String TAG = "MEA.PrinticularServiceManager";
+    private static final String SAVED_UNIQUE_IDENTIFIER_KEY = "com.meamobile.printicular_sdk.unique_identifier";
+
 
     private Context mContext;
+    private String mUniqueIdenfier;
     private PrinticularEnvironment mEnvironment;
     private long mCurrentRequestAttempts;
     private AccessToken mAccessToken;
@@ -56,7 +62,7 @@ public class PrinticularServiceManager
         mContext = context;
         mEnvironment = environment;
 
-        Observable.concat(rxValidateAccessToken(), rxRefreshPrintServices())
+        Observable.concat(validateAccessToken(), refreshPrintServices())
                 .retry(5)
                 .doOnError(e -> {
                     Log.e(TAG, e.getLocalizedMessage());
@@ -70,7 +76,7 @@ public class PrinticularServiceManager
     /// @name OAuth
     ///-----------------------------------------------------------
 
-    public Observable<AccessToken> rxValidateAccessToken()
+    public Observable<AccessToken> validateAccessToken()
     {
         if (mAccessToken == null)
         {
@@ -118,7 +124,7 @@ public class PrinticularServiceManager
     /// @name PrintService
     ///-----------------------------------------------------------
 
-    public Observable<Map<Long, PrintService>> rxRefreshPrintServices()
+    public Observable<Map<Long, PrintService>> refreshPrintServices()
     {
         //If we already have an Array of PrintServices and they are recent, return them.
         if (mPrintServices != null && mPrintServicesTimeStamp != null && mPrintServicesTimeStamp.after(new Date()))
@@ -152,7 +158,7 @@ public class PrinticularServiceManager
     /// @name Stores
     ///-----------------------------------------------------------
 
-    public Observable<Map<Long, Store>> rxSearchForStores(PrintService printService, LatLng location, String[] productIds)
+    public Observable<Map<Long, Store>> searchForStores(PrintService printService, LatLng location, String[] productIds)
     {
         long printServiceId = printService.getId();
 
@@ -176,11 +182,48 @@ public class PrinticularServiceManager
     }
 
 
+    ///-----------------------------------------------------------
+    /// @name Addresses
+    ///-----------------------------------------------------------
+
+    public Observable<Map<Long, Address>> fetchSavedAddresses()
+    {
+        APIClient client = new APIClient(getBaseUrlForEnvironment());
+
+        Map<String, String> params = new HashMap<>();
+        params.put("deviceToken", getUniqueIdentifer());
+
+        return client.get("users/0/addresses", null, mAccessToken)
+                .flatMap(response -> {
+                    Map objects = (Map) Model.hydrate(response);
+                    return Observable.just((Map<Long, Address>) objects.get("address"));
+                });
+    }
 
 
     ///-----------------------------------------------------------
     /// @name Private Helpers
     ///-----------------------------------------------------------
+
+    public String getUniqueIdentifer()
+    {
+        if (mUniqueIdenfier != null)
+        {
+            return mUniqueIdenfier;
+        }
+
+        SharedPreferences prefs = mContext.getSharedPreferences(SAVED_UNIQUE_IDENTIFIER_KEY, Context.MODE_PRIVATE);
+        mUniqueIdenfier = prefs.getString(SAVED_UNIQUE_IDENTIFIER_KEY, null);
+
+        if (mUniqueIdenfier == null)
+        {
+            mUniqueIdenfier = UUID.randomUUID().toString();
+            SharedPreferences.Editor e = prefs.edit();
+            e.putString(SAVED_UNIQUE_IDENTIFIER_KEY, mUniqueIdenfier);
+            e.apply();
+        }
+        return mUniqueIdenfier;
+    }
 
     private void setAccessTokenFromResponse(Map<String, Object> response)
     {

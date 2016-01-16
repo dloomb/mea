@@ -1,5 +1,7 @@
 package com.meamobile.printicular_sdk.core.models;
 
+import com.google.gson.Gson;
+
 import org.apache.commons.lang3.text.WordUtils;
 
 import java.text.ParseException;
@@ -28,8 +30,6 @@ public class Model
         Map attributes = (Map) data.get("attributes");
         if (attributes != null)
         {
-            SimpleDateFormat dateFormat = new SimpleDateFormat("");
-
             String created = (String) attributes.get("created_at");
             if (created != null && created != "null")
             {
@@ -91,7 +91,48 @@ public class Model
     ///-----------------------------------------------------------
 
 
-    private Date parseDate(String input)
+    protected Object safeParse(Object input, String wantedClass)
+    {
+        if (input instanceof String)
+        {
+            switch (wantedClass)
+            {
+                case "STRING":
+                    return input;
+
+                case "DOUBLE":
+                    return Double.parseDouble((String) input);
+            }
+        }
+
+        if (input instanceof Number)
+        {
+            switch (wantedClass)
+            {
+                case "STRING":
+                    return ((Number) input).toString();
+
+                case "DOUBLE":
+                    return ((Number) input).doubleValue();
+
+                case "BOOLEAN":
+                    return ((Number) input).intValue() > 0;
+            }
+        }
+
+        if (input instanceof Boolean)
+        {
+            switch (wantedClass)
+            {
+                case "BOOLEAN":
+                    return input;
+            }
+        }
+
+        return null;
+    }
+
+    protected Date parseDate(String input)
     {
         SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd kk:mm:ss zzz");
         Date date = null;
@@ -118,12 +159,17 @@ public class Model
         return date;
     }
 
+    protected String dateToString(Date date) {
+        SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd kk:mm:ss zzz");
+        return sdf.format(date);
+    }
+
 
     ///-----------------------------------------------------------
     /// @name Hydration
     ///-----------------------------------------------------------
 
-    public static Object hydrate(Map<String, Object> json)
+    public static Map<String, Map> hydrate(Map<String, Object> json)
     {
         try
         {
@@ -207,4 +253,44 @@ public class Model
 
         return "com.meamobile.printicular_sdk.core.models." + out;
     }
+
+
+
+    ///-----------------------------------------------------------
+    /// @name Evaporate
+    ///-----------------------------------------------------------
+
+    public Map<String, Object> evaporate()
+    {
+        Map<String, Object> data = new HashMap<>();
+
+        data.put("id", mId);
+        data.put("type", mType);
+
+        Map<String, Object> attributes = new HashMap<>();
+        attributes.put("created_at", dateToString(mCreatedAt));
+        attributes.put("upadted_at", dateToString(mUpdatedAt));
+
+        data.put("attributes", attributes);
+
+        if (mMeta != null)
+        {
+            data.put("meta", mMeta);
+        }
+
+        if (mRelationshipMap != null)
+        {
+            data.put("relationships", mRelationshipMap);
+        }
+
+        return data;
+    }
+
+    public String toJsonString()
+    {
+        Map evaporated = evaporate();
+        return new Gson().toJson(evaporated);
+    }
+
+
 }

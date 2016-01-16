@@ -23,6 +23,7 @@ import com.meamobile.photokit.instagram.InstagramSource;
 import com.meamobile.photokit.photobucket.PhotobucketSource;
 import com.meamobile.printicular.LocationUtil;
 import com.meamobile.printicular.R;
+import com.meamobile.printicular_sdk.core.PrinticularServiceManager;
 
 public class SettingsRecyclerViewAdapter extends RecyclerView.Adapter
 {
@@ -195,7 +196,8 @@ public class SettingsRecyclerViewAdapter extends RecyclerView.Adapter
 
     public void layoutFooterAtIndex(SettingsViewHolderFooter footer, SettingsRecyclerContent content)
     {
-        footer.mTextViewSecondary.setText("v1.0 (111)\nABCDEF-123456-XYZ123");
+        PrinticularServiceManager m = PrinticularServiceManager.getInstance();
+        footer.mTextViewSecondary.setText("v1.0 (111)\n" + m.getUniqueIdentifer());
     }
 
 

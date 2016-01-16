@@ -47,7 +47,6 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Date;
 import java.util.List;
-import java.util.Map;
 
 public class StoreSearchActivity
         extends CheckoutActivity
@@ -147,6 +146,7 @@ public class StoreSearchActivity
         {
             Store s = mStoreResults.get(position);
             mCartManager.setCurrentStore(s);
+            mCartManager.saveStore(s);
             finish();
         }
     }
@@ -261,7 +261,7 @@ public class StoreSearchActivity
         PrintService currentPrintService = mCartManager.getCurrentPrintService();
         currentPrintService = mServiceManager.getPrintServiceWithId(3);
 
-        mServiceManager.rxSearchForStores(currentPrintService, latLng, null)
+        mServiceManager.searchForStores(currentPrintService, latLng, null)
                 .subscribe(
                         x -> {
                             mStoreResults = new ArrayList<>(x.values());

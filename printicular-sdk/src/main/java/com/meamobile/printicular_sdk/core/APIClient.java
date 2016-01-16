@@ -94,9 +94,8 @@ public class APIClient
                             InputStream inputStream = connection.getInputStream();
                             String json = readStream(inputStream);
                             inputStream.close();
-                            Map<String, Object> map = new Gson().fromJson(json, new TypeToken<Map<String, Object>>()
-                            {
-                            }.getType());
+                            Map<String, Object> map = new Gson().fromJson(json, new TypeToken<Map<String, Object>>() {}.getType());
+                            connection.disconnect();
 
                             subscriber.onNext(map);
                             subscriber.onCompleted();
@@ -104,6 +103,7 @@ public class APIClient
                         }
                         catch (IOException e)
                         {
+                            connection.disconnect();
                             e.printStackTrace();
                             subscriber.onError(e);
                         }

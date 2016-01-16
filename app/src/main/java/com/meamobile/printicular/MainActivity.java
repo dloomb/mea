@@ -2,6 +2,7 @@ package com.meamobile.printicular;
 
 import android.app.AlertDialog;
 import android.content.Intent;
+import android.graphics.Color;
 import android.graphics.drawable.ColorDrawable;
 import android.location.Address;
 import android.os.Build;
@@ -56,11 +57,13 @@ public class MainActivity extends AuthenticatableActivity implements ExplorerFra
     private long mLastBackTap = 0;
     private CallbackManager mFacebookCallbackManager;
     private Locale mCountryLocale;
-    private PhotoKitCartManager mCart;
     private CartFragment mCartFragment;
     private ExplorerFragment mRootFragment;
     private Collection mRootCollection;
     private int mNavigationColor;
+
+    private PrinticularServiceManager mServiceManager = PrinticularServiceManager.getInstance();
+    private PhotoKitCartManager mCartManager = PhotoKitCartManager.getInstance();
 
     //UI
     private FrameLayout mFrameLayoutDeliver, mFrameLayoutPickup;
@@ -79,10 +82,6 @@ public class MainActivity extends AuthenticatableActivity implements ExplorerFra
         //Setup UserDefaults Singleton
         UserDefaults.getInstance().setContext(this);
 
-        PrinticularServiceManager.getInstance()
-                .initialize(this, PrinticularEnvironment.STAGING);
-
-        mCart = PhotoKitCartManager.getInstance();
         mCartFragment = (CartFragment) getSupportFragmentManager().findFragmentById(R.id.cartFragment);
 
         FacebookSdk.sdkInitialize(getApplicationContext());
@@ -199,12 +198,14 @@ public class MainActivity extends AuthenticatableActivity implements ExplorerFra
 
 
     @Override
-    protected void onRestart()
+    protected void onStart()
     {
-        super.onRestart();
+        super.onStart();
 
-        PrinticularServiceManager.getInstance()
-                .initialize(this, PrinticularEnvironment.STAGING);
+        mServiceManager.initialize(this, PrinticularEnvironment.STAGING);
+
+        mCartManager.setContext(this);
+        mCartManager.setCurrentStore(mCartManager.loadSavedStore());
     }
 
     @Override
@@ -240,7 +241,7 @@ public class MainActivity extends AuthenticatableActivity implements ExplorerFra
 
     private boolean checkCartValidity()
     {
-        if (mCart.getImageCount() == 0)
+        if (mCartManager.getImageCount() == 0)
         {
             new AlertDialog.Builder(this)
                     .setTitle("Oops you haven't selected any images")
@@ -387,6 +388,11 @@ public class MainActivity extends AuthenticatableActivity implements ExplorerFra
 
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP)
         {
+            float[] hsv = new float[3];
+            Color.colorToHSV(color, hsv);
+            hsv[2] = hsv[2] * 0.9f;
+            color = Color.HSVToColor(hsv);
+
             Window window = getWindow();
             window.addFlags(WindowManager.LayoutParams.FLAG_DRAWS_SYSTEM_BAR_BACKGROUNDS);
             window.setStatusBarColor(color);
@@ -406,13 +412,13 @@ public class MainActivity extends AuthenticatableActivity implements ExplorerFra
     @Override
     public void onAssetSelect(Asset asset, int index)
     {
-        if (mCart.isAssetSelected(asset))
+        if (mCartManager.isAssetSelected(asset))
         {
-            mCart.removeAssetFromCart(asset);
+            mCartManager.removeAssetFromCart(asset);
         }
         else
         {
-            mCart.addAssetToCart(asset);
+            mCartManager.addAssetToCart(asset);
         }
 
         mCartFragment.onDataChanged(index);
@@ -421,6 +427,6 @@ public class MainActivity extends AuthenticatableActivity implements ExplorerFra
     @Override
     public boolean isAssetSelected(Asset asset, int index)
     {
-        return mCart.isAssetSelected(asset);
+        return mCartManager.isAssetSelected(asset);
     }
 }

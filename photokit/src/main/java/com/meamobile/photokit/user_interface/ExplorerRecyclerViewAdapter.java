@@ -19,6 +19,9 @@ import java.io.File;
 
 import com.squareup.picasso.Picasso;
 
+import rx.android.schedulers.AndroidSchedulers;
+import rx.schedulers.Schedulers;
+
 
 public class ExplorerRecyclerViewAdapter extends RecyclerView.Adapter implements Collection.CollectionObserver
 {
@@ -184,36 +187,23 @@ public class ExplorerRecyclerViewAdapter extends RecyclerView.Adapter implements
         _cell.setReuseTag(tag);
         _cell.getImageView().setImageResource(R.drawable.printicular_logo);
 
-        mImageCache.requestThumbnailForAsset(asset, new CachingImageManager.CachingImageManagerRequestCallback()
-        {
-            @Override
-            public void success(File path)
-            {
-                Log.d("Image Success", "GOOD");
-                final File _path = path;
-                mActivity.runOnUiThread(new Runnable()
-                {
-                    @Override
-                    public void run()
-                    {
-                        if (tag == _cell.getReuseTag())
-                        {
-                            Picasso.with(mActivity)
-                                    .load(_path)
-                                    .placeholder(R.drawable.printicular_logo)
-                                    .into(_cell.getImageView());
+        mImageCache.requestThumbnailForAsset(asset)
+                .subscribeOn(Schedulers.io())
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribe(
+                        file -> {
+                            if (tag == _cell.getReuseTag())
+                            {
+                                Picasso.with(mActivity)
+                                        .load(file)
+                                        .placeholder(R.drawable.printicular_logo)
+                                        .into(_cell.getImageView());
+                            }
+                        },
+                        error -> {
+                            Log.d("Image Error", error.getLocalizedMessage());
                         }
-                    }
-                });
-            }
-            @Override
-            public void error(String error)
-            {
-                Log.d("Image Error", "BAD");
-            }
-        });
-
-
+                );
     }
 
 

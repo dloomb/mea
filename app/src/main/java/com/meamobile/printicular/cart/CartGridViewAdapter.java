@@ -17,6 +17,9 @@ import com.squareup.picasso.Picasso;
 
 import java.io.File;
 
+import rx.android.schedulers.AndroidSchedulers;
+import rx.schedulers.Schedulers;
+
 public class CartGridViewAdapter extends BaseAdapter {
     private Activity mActivity;
     private PhotoKitCartManager mCart;
@@ -56,32 +59,23 @@ public class CartGridViewAdapter extends BaseAdapter {
 
         Asset asset = mCart.assetAtIndex(position);
 
-        mImageCache.requestThumbnailForAsset(asset, new CachingImageManager.CachingImageManagerRequestCallback() {
-            @Override
-            public void success(File path) {
-                Log.d("Image Success", "GOOD");
-                final File _path = path;
-                mActivity.runOnUiThread(new Runnable() {
-                    @Override
-                    public void run() {
-
-                        if (tag == (String) imageView.getTag())
-                        {
-                            Picasso.with(mActivity)
-                                    .load(_path)
-                                    .placeholder(com.meamobile.photokit.R.drawable.printicular_logo)
-                                    .into(imageView);
+        mImageCache.requestThumbnailForAsset(asset)
+                .subscribeOn(Schedulers.io())
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribe(
+                        file -> {
+                            if (tag == (String) imageView.getTag())
+                            {
+                                Picasso.with(mActivity)
+                                        .load(file)
+                                        .placeholder(com.meamobile.photokit.R.drawable.printicular_logo)
+                                        .into(imageView);
+                            }
+                        },
+                        error -> {
+                            Log.d("Image Error", "BAD");
                         }
-                    }
-                });
-
-            }
-
-            @Override
-            public void error(String error) {
-                Log.d("Image Error", "BAD");
-            }
-        });
+                );
 
         return itemView;
     }

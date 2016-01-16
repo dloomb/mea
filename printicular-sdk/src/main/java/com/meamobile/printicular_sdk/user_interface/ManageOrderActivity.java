@@ -56,7 +56,32 @@ public class ManageOrderActivity extends CheckoutActivity
         nextButton.getBackground().setColorFilter(getResources().getColor(R.color.button_red), PorterDuff.Mode.MULTIPLY);
 
         loadComponents();
+    }
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+
         setupUserInterface();
+    }
+
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        getMenuInflater().inflate(R.menu.menu_manage_order, menu);
+        return true;
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        int id = item.getItemId();
+
+        if (id == R.id.action_settings)
+        {
+            mFulfillmentType = (mFulfillmentType == FulfillmentType.PICKUP ? FulfillmentType.DELIVERY : FulfillmentType.PICKUP);
+            setupUserInterface();
+        }
+
+        return super.onOptionsItemSelected(item);
     }
 
     protected void loadComponents()
@@ -87,25 +112,6 @@ public class ManageOrderActivity extends CheckoutActivity
     {
         Intent i = new Intent(ManageOrderActivity.this, StoreSearchActivity.class);
         startActivity(i);
-    }
-
-    @Override
-    public boolean onCreateOptionsMenu(Menu menu) {
-        getMenuInflater().inflate(R.menu.menu_manage_order, menu);
-        return true;
-    }
-
-    @Override
-    public boolean onOptionsItemSelected(MenuItem item) {
-        int id = item.getItemId();
-
-        if (id == R.id.action_settings)
-        {
-            mFulfillmentType = (mFulfillmentType == FulfillmentType.PICKUP ? FulfillmentType.DELIVERY : FulfillmentType.PICKUP);
-            setupUserInterface();
-        }
-
-        return super.onOptionsItemSelected(item);
     }
 
 
