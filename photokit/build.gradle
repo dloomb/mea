@@ -1,9 +1,25 @@
+buildscript {
+    repositories {
+        mavenCentral()
+    }
+
+    dependencies {
+        classpath 'me.tatarka:gradle-retrolambda:3.2.4'
+    }
+}
+
+// Required because retrolambda is on maven central
+repositories {
+    mavenCentral()
+}
+
+
 apply plugin: 'com.android.library'
+apply plugin: 'me.tatarka.retrolambda'
 
 android {
     compileSdkVersion 23
     buildToolsVersion "21.1.2"
-    useLibrary  'org.apache.http.legacy'
 
     defaultConfig {
         minSdkVersion 10
@@ -20,6 +36,12 @@ android {
     }
     productFlavors {
     }
+
+    compileOptions {
+        sourceCompatibility JavaVersion.VERSION_1_8
+        targetCompatibility JavaVersion.VERSION_1_8
+    }
+
 }
 
 repositories {
@@ -40,4 +62,11 @@ dependencies {
     compile 'com.dropbox.core:dropbox-core-sdk:2.0-beta-4'
     compile 'com.github.scribejava:scribejava-core:2.1.0'
     compile 'com.github.scribejava:scribejava-apis:2.1.0'
+    compile 'io.reactivex:rxandroid:1.1.0'
+    compile 'io.reactivex:rxjava:1.0.10'
+}
+
+
+retrolambda {
+    jdk "/Library/Java/JavaVirtualMachines/jdk1.8.0_65.jdk/Contents/Home"
 }

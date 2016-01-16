@@ -1,6 +1,5 @@
 package com.meamobile.photokit.instagram;
 
-import android.annotation.SuppressLint;
 import android.app.Activity;
 import android.content.Intent;
 import android.net.Uri;
@@ -15,11 +14,7 @@ import com.meamobile.photokit.core.UserDefaults;
 import com.meamobile.photokit.user_interface.AuthenticatorActivity;
 import com.meamobile.photokit.user_interface.AuthenticatorCallbackManager;
 
-import org.apache.http.NameValuePair;
-import org.apache.http.message.BasicNameValuePair;
-
-import java.util.ArrayList;
-import java.util.List;
+import java.util.HashMap;
 import java.util.Map;
 
 public class InstagramSource extends Source
@@ -96,38 +91,31 @@ public class InstagramSource extends Source
 
         String redirectUrl = "ig" + CLIENT_ID + "://authorize";
 
-        List<NameValuePair> params = new ArrayList<NameValuePair>(5);
-        params.add(new BasicNameValuePair("client_id", CLIENT_ID));
-        params.add(new BasicNameValuePair("client_secret", CLIENT_SECRET));
-        params.add(new BasicNameValuePair("grant_type", "authorization_code"));
-        params.add(new BasicNameValuePair("redirect_uri", redirectUrl));
-        params.add(new BasicNameValuePair("code", code));
+        Map<String, String> params = new HashMap<>();
+        params.put("client_id", CLIENT_ID);
+        params.put("client_secret", CLIENT_SECRET);
+        params.put("grant_type", "authorization_code");
+        params.put("redirect_uri", redirectUrl);
+        params.put("code", code);
 
-        new JSONHttpClient().post("https://api.instagram.com/oauth/access_token", params, new JSONHttpClient.JSONHttpClientCallback()
-        {
-            @Override
-            public void success(Map<String, Object> response)
-            {
-                try
-                {
-                    mToken = (String) response.get("access_token");
-                    mUsername = (String) ((Map) response.get("user")).get("username");
-                    saveInstagramSession();
-                    handleSourceActivation(true, null);
-                }
-                catch (Exception e)
-                {
-                    handleSourceActivation(false, e.getLocalizedMessage());
-                }
+        new JSONHttpClient().post("https://api.instagram.com/oauth/access_token", params)
+                .subscribe(x -> {
 
-            }
+                    try
+                    {
+                        mToken = (String) x.get("access_token");
+                        mUsername = (String) ((Map) x.get("user")).get("username");
+                        saveInstagramSession();
+                        handleSourceActivation(true, null);
+                    }
+                    catch (Exception e)
+                    {
+                        handleSourceActivation(false, e.getLocalizedMessage());
+                    }
 
-            @Override
-            public void error(String error)
-            {
-                handleSourceActivation(false, error);
-            }
-        });
+                }, error -> {
+                    handleSourceActivation(false, error.getLocalizedMessage());
+                });
     }
 
 

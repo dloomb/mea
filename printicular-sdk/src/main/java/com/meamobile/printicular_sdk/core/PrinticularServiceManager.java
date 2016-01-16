@@ -2,18 +2,19 @@ package com.meamobile.printicular_sdk.core;
 
 
 import android.content.Context;
-import android.os.Bundle;
 import android.text.TextUtils;
 import android.util.Log;
 
 import com.google.android.gms.maps.model.LatLng;
 import com.meamobile.printicular_sdk.core.models.AccessToken;
-import com.meamobile.printicular_sdk.core.APIClient.APIClientCallback;
 import com.meamobile.printicular_sdk.core.models.*;
 
 import java.util.Calendar;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.Map;
+
+import rx.Observable;
 
 
 public class PrinticularServiceManager
@@ -26,7 +27,7 @@ public class PrinticularServiceManager
     }
 
     private static PrinticularServiceManager sInstance = null;
-    private static String LOG_KEY = "MEA.PrinticularServiceManager";
+    private static String TAG = "MEA.PrinticularServiceManager";
 
     private Context mContext;
     private PrinticularEnvironment mEnvironment;
@@ -55,17 +56,12 @@ public class PrinticularServiceManager
         mContext = context;
         mEnvironment = environment;
 
-        validateAccessToken(new AccessTokenCallback()
-        {
-            @Override
-            public void success()
-            {
-                refreshPrintServices(null);
-            }
-
-            @Override
-            public void error(String reason) {}
-        });
+        Observable.concat(rxValidateAccessToken(), rxRefreshPrintServices())
+                .retry(5)
+                .doOnError(e -> {
+                    Log.e(TAG, e.getLocalizedMessage());
+                })
+                .subscribe();
     }
 
 
@@ -74,59 +70,8 @@ public class PrinticularServiceManager
     /// @name OAuth
     ///-----------------------------------------------------------
 
-//    public Observable<Boolean> rxValidateAccessToken()
-//    {
-//        return Observable.create(
-//
-//            new Observable.OnSubscribe<Boolean>()
-//            {
-//                @Override
-//                public void call(Subscriber<? super Boolean> subscriber)
-//                {
-//                    if (mAccessToken == null)
-//                    {
-//                        try
-//                        {
-//                            mAccessToken = AccessToken.loadToken(mContext);
-//                        }
-//                        catch (Exception e)
-//                        {
-//                            mAccessToken = null;
-//                        }
-//                    }
-//
-//                    if (mAccessToken != null && !mAccessToken.hasExpired())
-//                    {
-//                        Log.d(LOG_KEY, "OAuth Success, Reusing token.");
-//                        subscriber.onNext(true);
-//                        subscriber.onCompleted();
-//                        return;
-//                    }
-//
-//                    APIClient client = new APIClient(getBaseUrlForEnvironment());
-//
-//                    final Bundle params = new Bundle();
-//                    params.putString("grant_type", "client_credentials");
-//                    params.putString("client_id", "UN0Re26fy7V0Rc368QW7");
-//                    params.putString("client_secret", "deKAAuZJTi74eUjMVjaTFMoWfvH43jxluR3CQifB");
-//                    params.putString("scope", "warehouse-stationery");
-//
-//                    mCurrentRequestAttempts = 0;
-//                }
-//            }
-//        );
-//    }
-
-    public interface AccessTokenCallback
+    public Observable<AccessToken> rxValidateAccessToken()
     {
-        void success();
-        void error(String reason);
-    }
-
-    public void validateAccessToken(AccessTokenCallback callback)
-    {
-        final AccessTokenCallback _callback = callback;
-
         if (mAccessToken == null)
         {
             try
@@ -139,115 +84,60 @@ public class PrinticularServiceManager
             }
         }
 
-        if (mAccessToken != null && mAccessToken.hasExpired() == false)
+        if (mAccessToken != null && !mAccessToken.hasExpired())
         {
-            Log.d(LOG_KEY, "OAuth Success, Reusing token.");
-            if(callback != null) _callback.success();
-            return;
+            Log.d(TAG, "OAuth Success, Reusing.");
+            return Observable.just(mAccessToken);
         }
 
-        final APIClient client = new APIClient(getBaseUrlForEnvironment());
+        APIClient client = new APIClient(getBaseUrlForEnvironment());
 
-        final Bundle params = new Bundle();
-        params.putString("grant_type", "client_credentials");
-        params.putString("client_id", "UN0Re26fy7V0Rc368QW7");
-        params.putString("client_secret", "deKAAuZJTi74eUjMVjaTFMoWfvH43jxluR3CQifB");
-        params.putString("scope", "warehouse-stationery");
+        Map<String, String> params = new HashMap<>();
+        params.put("grant_type", "client_credentials");
+        params.put("client_id", "UN0Re26fy7V0Rc368QW7");
+        params.put("client_secret", "deKAAuZJTi74eUjMVjaTFMoWfvH43jxluR3CQifB");
+        params.put("scope", "warehouse-stationery");
 
-        mCurrentRequestAttempts = 0;
-        APIClientCallback internalCallback;
-        internalCallback = new APIClientCallback()
-        {
-            @Override
-            public void success(Map<String, Object> response)
-            {
-                if (response.get("error") == null)
-                {
-                    Log.d(LOG_KEY, "OAuth Success");
-                    setAccessTokenFromResponse(response);
-                    if(_callback != null) _callback.success();
-                }
-                else
-                {
-                    this.error((String)response.get("error_description"));
-                }
-            }
-
-            @Override
-            public void error(String reason)
-            {
-                mCurrentRequestAttempts++;
-                if (mCurrentRequestAttempts > 5)
-                {
-                    Log.e(LOG_KEY, "OAuth Failed!");
-                    if(_callback != null) _callback.error("failed");
-                    return;
-                }
-
-                Log.e(LOG_KEY, "OAuth Failed, retrying...");
-                client.post("oauth/access_token", params, this, null);
-            }
-        };
-        client.post("oauth/access_token", params, internalCallback, null);
+        return client.post("oauth/access_token", params)
+                .flatMap(response -> {
+                    if (response.get("error") == null)
+                    {
+                        setAccessTokenFromResponse(response);
+                        Log.d(TAG, "OAuth Success");
+                        return Observable.just(mAccessToken);
+                    }
+                    else
+                    {
+                        return Observable.error(new RuntimeException((String) response.get("error_description")));
+                    }
+                });
     }
-
-
 
 
     ///-----------------------------------------------------------
     /// @name PrintService
     ///-----------------------------------------------------------
 
-    public interface RefreshPrintServiceCallback
-    {
-        void success(Map<Long, PrintService> services);
-        void error(String reason);
-    }
-
-    public void refreshPrintServices(final RefreshPrintServiceCallback callback)
+    public Observable<Map<Long, PrintService>> rxRefreshPrintServices()
     {
         //If we already have an Array of PrintServices and they are recent, return them.
         if (mPrintServices != null && mPrintServicesTimeStamp != null && mPrintServicesTimeStamp.after(new Date()))
         {
-            Log.d(LOG_KEY, "PrintService Refresh Success, Reusing.");
-            if (callback != null) callback.success(mPrintServices);
+            Log.d(TAG, "PrintService Refresh Success, Reusing.");
+            return Observable.just(mPrintServices);
         }
 
-        final RefreshPrintServiceCallback _callback = callback;
+        APIClient client = new APIClient(getBaseUrlForEnvironment());
 
-        final APIClient client = new APIClient(getBaseUrlForEnvironment());
-        mCurrentRequestAttempts = 0;
-        APIClientCallback internalCallback;
 
-        internalCallback = new APIClientCallback()
-        {
-            @Override
-            public void success(Map<String, Object> response)
-            {
-                Log.d(LOG_KEY, "PrintService Refresh Success.");
-                setPrintServicesFromResponse(response);
-                if (_callback != null) _callback.success(mPrintServices);
-            }
+        return client.get("printServices?include=products.prices", null, mAccessToken)
+                .flatMap(res -> {
+                    setPrintServicesFromResponse(res);
 
-            @Override
-            public void error(String reason)
-            {
-                mCurrentRequestAttempts++;
-                if (mCurrentRequestAttempts > 5)
-                {
-                    mPrintServices = null;
-                    mPrintServicesTimeStamp = null;
-                    Log.e(LOG_KEY, "PrintService Refresh Failed: " + reason);
-                    if(_callback != null) _callback.error("failed");
-                    return;
-                }
+                    Log.d(TAG, "PrintService Refresh Success");
 
-                Log.e(LOG_KEY, "PrintService Refresh Failed, retrying...");
-                client.get("printServices?include=products.prices", null, this, mAccessToken);
-            }
-        };
-
-        client.get("printServices?include=products.prices", null, internalCallback, mAccessToken);
+                    return Observable.just(mPrintServices);
+                });
     }
 
 
@@ -262,58 +152,27 @@ public class PrinticularServiceManager
     /// @name Stores
     ///-----------------------------------------------------------
 
-    public interface StoreSearchCallback
+    public Observable<Map<Long, Store>> rxSearchForStores(PrintService printService, LatLng location, String[] productIds)
     {
-        void success(Map<Long, Store>stores);
-        void error(String error);
-    }
-
-    public void searchForStores(PrintService printService, LatLng location, String[] productIds, StoreSearchCallback callback)
-    {
-        final StoreSearchCallback _callback = callback;
-
         long printServiceId = printService.getId();
 
-        Bundle parameters = new Bundle();
-        parameters.putString("sort[latitude]", location.latitude + "");
-        parameters.putString("sort[longitude]", location.longitude + "");
+        Map<String, String> parameters = new HashMap<>();
+        parameters.put("sort[latitude]", location.latitude + "");
+        parameters.put("sort[longitude]", location.longitude + "");
 
         if (productIds != null && productIds.length > 0)
         {
             String productIdsString = TextUtils.join(",", productIds);
-            parameters.putString("filter[products]", productIdsString);
+            parameters.put("filter[products]", productIdsString);
         }
 
         APIClient client = new APIClient(getBaseUrlForEnvironment());
-        mCurrentRequestAttempts = 0;
 
-        APIClientCallback internalCallback;
-        internalCallback = new APIClientCallback()
-        {
-            @Override
-            public void success(Map<String, Object> response)
-            {
-                Log.d(LOG_KEY, "Store Search Success.");
-                Map stores = getStoresFromResponse(response);
-                if (_callback != null) { _callback.success(stores); }
-            }
-
-            @Override
-            public void error(String reason)
-            {
-                mCurrentRequestAttempts++;
-                if (mCurrentRequestAttempts > 5)
-                {
-                    Log.e(LOG_KEY, "Store Search Failed: " + reason);
-                    if (_callback != null) { _callback.error(reason); }
-                    return;
-                }
-
-                Log.e(LOG_KEY, "Store Search Failed, retrying...");
-            }
-        };
-
-        client.get("printServices/" + printServiceId + "/stores", parameters, internalCallback, mAccessToken);
+        return client.get("printServices/" + printServiceId + "/stores", parameters, mAccessToken)
+                .flatMap(response -> {
+                    Map<Long, Store> stores = getStoresFromResponse(response);
+                    return Observable.just(stores);
+                });
     }
 
 

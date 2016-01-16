@@ -261,24 +261,18 @@ public class StoreSearchActivity
         PrintService currentPrintService = mCartManager.getCurrentPrintService();
         currentPrintService = mServiceManager.getPrintServiceWithId(3);
 
-        mServiceManager.searchForStores(currentPrintService, latLng, null, new PrinticularServiceManager.StoreSearchCallback() {
-            @Override
-            public void success(Map<Long, Store> stores) {
+        mServiceManager.rxSearchForStores(currentPrintService, latLng, null)
+                .subscribe(
+                        x -> {
+                            mStoreResults = new ArrayList<>(x.values());
+                            Collections.sort(mStoreResults, Store.DistanceSortComparator());
+                            mStoreRecyclerAdapter.setStores(new ArrayList<Store>(mStoreResults));
+                        },
+                        error -> {
+                            //TODO Inform the user that the search failed
+                        });
 
-                mStoreResults = new ArrayList<Store>(stores.values());
-                Collections.sort(mStoreResults, Store.DistanceSortComparator());
 
-                new Handler(Looper.getMainLooper()).post(new Runnable() {@Override public void run()
-                {
-                    mStoreRecyclerAdapter.setStores(new ArrayList<Store>(mStoreResults));
-                }});
-            }
-
-            @Override
-            public void error(String error) {
-
-            }
-        });
     }
 
 

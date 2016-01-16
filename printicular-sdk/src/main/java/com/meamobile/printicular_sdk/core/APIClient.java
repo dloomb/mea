@@ -2,37 +2,32 @@ package com.meamobile.printicular_sdk.core;
 
 
 import android.net.Uri;
-import android.os.Bundle;
 
 import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
 import com.meamobile.printicular_sdk.core.models.AccessToken;
 
-import org.apache.http.HttpResponse;
-import org.apache.http.NameValuePair;
-import org.apache.http.client.entity.UrlEncodedFormEntity;
-import org.apache.http.client.methods.HttpGet;
-import org.apache.http.client.methods.HttpPost;
-import org.apache.http.client.methods.HttpUriRequest;
-import org.apache.http.impl.client.DefaultHttpClient;
-import org.apache.http.message.BasicNameValuePair;
 
+import java.io.BufferedOutputStream;
 import java.io.BufferedReader;
+import java.io.IOException;
+import java.io.InputStream;
 import java.io.InputStreamReader;
-import java.io.UnsupportedEncodingException;
-import java.util.ArrayList;
-import java.util.List;
+import java.io.OutputStream;
+import java.net.HttpURLConnection;
+import java.net.URL;
 import java.util.Map;
 import java.util.Set;
+
+import rx.Observable;
+import rx.Subscriber;
+import rx.android.schedulers.AndroidSchedulers;
+import rx.schedulers.Schedulers;
 
 
 public class APIClient
 {
-    public interface APIClientCallback
-    {
-        void success(Map<String, Object> response);
-        void error(String reason);
-    }
+    private static final String TAG = "MEA.APIClient";
 
     private String mBaseUrl;
 
@@ -41,147 +36,157 @@ public class APIClient
         mBaseUrl = baseUrl;
     }
 
-    public interface JSONHttpClientCallback
+    protected String readStream(InputStream in) throws IOException
     {
-        public void success(Map<String, Object> response);
-        public void error(String error);
-    }
-
-    protected void request(final HttpUriRequest request, APIClientCallback callback)
-    {
-        final HttpUriRequest _request = request;
-        final APIClientCallback _callback = callback;
-
-        new Thread(new Runnable() {
-
-            @Override
-            public void run()
-            {
-                DefaultHttpClient client = new DefaultHttpClient();
-                try
-                {
-                    HttpResponse response = client.execute(_request);
-                    BufferedReader reader = new BufferedReader(new InputStreamReader(response.getEntity().getContent(), "UTF-8"));
-                    Map<String, Object> object = new Gson().fromJson(reader, new TypeToken<Map<String, Object>>(){}.getType());
-                    _callback.success(object);
-                }
-                catch (Exception e)
-                {
-                    _callback.error(e.getLocalizedMessage());
-                }
-            }
-
-        }).start();
-    }
-//
-//    protected Observable<Map> rxRequest(HttpAsyncRequestProducer request, APIClientCallback callback)
-//    {
-//        CloseableHttpAsyncClient httpClient = HttpAsyncClients.createDefault();
-//
-//        return ObservableHttp.createRequest(request, httpClient)
-//                .toObservable()
-//                .flatMap(response -> {
-//
-//                    return response.getContent().map(bytes -> {
-//
-//                        String json = new String(bytes);
-//                        Map<String, Object> map = new Gson().fromJson(json, new TypeToken<Map<String, Object>>(){}.getType());
-//
-//                        return map;
-//                    });
-//                });
-//    }
-
-    public void post(String url, Bundle parameters, APIClientCallback callback, AccessToken accessToken)
-    {
-        HttpPost post = new HttpPost(mBaseUrl + url);
-
-        if(parameters != null)
+        StringBuilder sb = new StringBuilder();
+        BufferedReader reader = new BufferedReader(new InputStreamReader(in));
+        String nextLine = "";
+        while ((nextLine = reader.readLine()) != null)
         {
-            try
-            {
-                List<NameValuePair> params = new ArrayList<NameValuePair>();
-                for(String key : parameters.keySet()){
-                    Object value = parameters.get(key);
-                    params.add(new BasicNameValuePair(key, (String) value));
-                }
-
-                post.setEntity(new UrlEncodedFormEntity(params));
-            }
-            catch (UnsupportedEncodingException e)
-            {
-                callback.error("Error parsing json parameters");
-                return;
-            }
+            sb.append(nextLine);
         }
 
-        if (accessToken != null)
-        {
-            post.addHeader("Authorization", "Bearer " + accessToken.toString());
-        }
-
-        request(post, callback);
+        return sb.toString();
     }
 
-//    public Observable<Map> rxGet(String url, Bundle parameters, APIClientCallback callback, AccessToken accessToken)
-//    {
-//        if (parameters != null)
-//        {
-//            Uri.Builder builder = new Uri.Builder();
-//
-//            Set<String> keys = parameters.keySet();
-//
-//            for (String key: keys)
-//            {
-//                builder.appendQueryParameter(key, parameters.getString(key));
-//            }
-//            String query = builder.build().getQuery();
-//
-//            if (query != null && query.length() != 0)
-//            {
-//                url += "?" + query;
-//            }
-//        }
-//
-//        HttpGet get = new HttpGet(mBaseUrl + url);
-//
-//        if (accessToken != null)
-//        {
-//            get.addHeader("Authorization", "Bearer " + accessToken.toString());
-//        }
-//
-//        return rxRequest(HttpAsyncMethods.createGet(url), null);
-//    }
+    protected Observable<Map<String, Object>> request(HttpURLConnection connection, AccessToken accessToken)
+    {
+        return request(connection, accessToken, null);
+    }
 
-    public void get(String url, Bundle parameters, APIClientCallback callback, AccessToken accessToken)
+    protected Observable<Map<String, Object>> request(HttpURLConnection connection, AccessToken accessToken, String content)
+    {
+        return Observable.create(
+
+                new Observable.OnSubscribe<Map<String, Object>>()
+                {
+                    @Override
+                    public void call(Subscriber<? super Map<String, Object>> subscriber)
+                    {
+                        try
+                        {
+                            connection.setUseCaches(false);
+                            connection.setDoInput(true);
+
+
+                            if (accessToken != null)
+                            {
+                                String bearer = "Bearer " + accessToken.toString();
+                                connection.setRequestProperty("Authorization", bearer);
+                            }
+
+
+                            if (content != null)
+                            {
+                                connection.setDoOutput(true);
+
+                                byte[] bytes = content.getBytes();
+                                connection.setFixedLengthStreamingMode(bytes.length);
+                                OutputStream os = new BufferedOutputStream(connection.getOutputStream());
+                                os.write(content.getBytes());
+                                os.flush();
+                                os.close();
+                            }
+
+                            connection.connect();
+                            int responseCode = connection.getResponseCode();
+
+                            InputStream inputStream = connection.getInputStream();
+                            String json = readStream(inputStream);
+                            inputStream.close();
+                            Map<String, Object> map = new Gson().fromJson(json, new TypeToken<Map<String, Object>>()
+                            {
+                            }.getType());
+
+                            subscriber.onNext(map);
+                            subscriber.onCompleted();
+
+                        }
+                        catch (IOException e)
+                        {
+                            e.printStackTrace();
+                            subscriber.onError(e);
+                        }
+                    }
+                }
+
+        );
+    }
+
+
+
+
+    public Observable<Map<String, Object>> post(String urlString, Map parameters)
+    {
+        return post(urlString, parameters, null);
+    }
+
+    public Observable<Map<String, Object>> post(String urlString, Map parameters, AccessToken accessToken)
+    {
+        String content = new Gson().toJson(parameters);
+
+        try
+        {
+            URL url = new URL(mBaseUrl + urlString);
+            HttpURLConnection connection = (HttpURLConnection)url.openConnection();
+
+            connection.setRequestMethod("POST");
+            connection.setRequestProperty("Content-Type", "application/json");
+            connection.setRequestProperty("Content-Length", "" + content.length());
+            connection.setRequestProperty("Content-Language", "en-US");
+
+            return request(connection, accessToken, content)
+                    .subscribeOn(Schedulers.newThread())
+                    .observeOn(AndroidSchedulers.mainThread());
+        }
+        catch (Exception e)
+        {
+            e.printStackTrace();
+            return Observable.error(e);
+        }
+    }
+
+
+
+
+    public Observable<Map<String, Object>> get(String urlString, Map<String, String> parameters)
+    {
+        return get(urlString, parameters);
+    }
+
+    public Observable<Map<String, Object>> get(String urlString, Map<String, String> parameters, AccessToken accessToken)
     {
         if (parameters != null)
         {
             Uri.Builder builder = new Uri.Builder();
-
             Set<String> keys = parameters.keySet();
-
             for (String key: keys)
             {
-                builder.appendQueryParameter(key, parameters.getString(key));
+                builder.appendQueryParameter(key, parameters.get(key));
             }
             String query = builder.build().getQuery();
-
             if (query != null && query.length() != 0)
             {
-                url += "?" + query;
+                urlString += "?" + query;
             }
         }
 
-        HttpGet get = new HttpGet(mBaseUrl + url);
-
-        if (accessToken != null)
+        try
         {
-            get.addHeader("Authorization", "Bearer " + accessToken.toString());
+            URL url = new URL(mBaseUrl + urlString);
+            HttpURLConnection connection = (HttpURLConnection)url.openConnection();
+
+            connection.setRequestMethod("GET");
+
+            return request(connection, accessToken)
+                    .subscribeOn(Schedulers.newThread())
+                    .observeOn(AndroidSchedulers.mainThread());
         }
-
-
-        request(get, callback);
+        catch (Exception e)
+        {
+            e.printStackTrace();
+            return Observable.error(e);
+        }
     }
 
 

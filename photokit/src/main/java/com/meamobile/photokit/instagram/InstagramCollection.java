@@ -15,7 +15,7 @@ import java.util.Map;
 @SuppressLint("ParcelCreator")
 public class InstagramCollection extends Collection
 {
-    static private String LOG = "Collection.Instagram";
+    static private String TAG = "Collection.Instagram";
 
     public InstagramCollection(){}
 
@@ -50,42 +50,38 @@ public class InstagramCollection extends Collection
     {
         JSONHttpClient client = new JSONHttpClient();
 
-        client.get(url, new JSONHttpClient.JSONHttpClientCallback()
-        {
-            @Override
-            public void success(Map<String, Object> response)
-            {
-                List data = (List) response.get("data");
-                if (data != null)
-                {
-                    int size = data.size();
-                    for (int i = 0; i < size; i++)
-                    {
-                        Map json = (Map) data.get(i);
-                        InstagramAsset asset = new InstagramAsset(json);
-                        addAsset(asset);
-                    }
+        client.get(url, null)
+                .subscribe(
+                        x -> {
+                            List data = (List) x.get("data");
+                            if (data != null)
+                            {
+                                int size = data.size();
+                                for (int i = 0; i < size; i++)
+                                {
+                                    Map json = (Map) data.get(i);
+                                    InstagramAsset asset = new InstagramAsset(json);
+                                    addAsset(asset);
+                                }
 
-                    Log.d(LOG, "Instagram Assets Added, Count = " + numberOfAssets());
-                }
+                                Log.d(TAG, "Instagram Assets Added, Count = " + numberOfAssets());
+                            }
 
-                Map pagination = (Map) response.get("pagination");
-                if (pagination != null)
-                {
-                    String next = (String) pagination.get("next_url");
-                    if (next != null && next.contains("user"))
-                    {
-                        loadAssetsWithUrl(next);
-                    }
-                }
-            }
+                            Map pagination = (Map) x.get("pagination");
+                            if (pagination != null)
+                            {
+                                String next = (String) pagination.get("next_url");
+                                if (next != null && next.contains("user"))
+                                {
+                                    loadAssetsWithUrl(next);
+                                }
+                            }
+                        },
+                        error -> {
+                            Log.e(TAG, error.getLocalizedMessage());
+                        }
+                );
 
-            @Override
-            public void error(String error)
-            {
-                Log.e(LOG, error);
-            }
-        });
     }
 
 
