@@ -1,11 +1,12 @@
 <?xml version="1.0" encoding="utf-8"?>
-<RelativeLayout
+<LinearLayout
     xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     tools:context="com.meamobile.printicular_sdk.user_interface.CustomerDetailsActivity"
     android:layout_width="match_parent"
-    android:layout_height="match_parent">
+    android:layout_height="match_parent"
+    android:orientation="vertical">
 
     <android.support.v7.widget.Toolbar
         android:id="@+id/toolbar"
@@ -32,23 +33,56 @@
             <include layout="@layout/template_customer_details_entry_tab" />
 
             <RelativeLayout
+                android:id="@+id/relativeLayoutAutomaticSearch"
                 android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:id="@+id/fragmentContainer">
+                android:layout_height="wrap_content">
 
+                <include layout="@layout/template_searchview"/>
 
             </RelativeLayout>
+
+            <LinearLayout
+                android:id="@+id/linearLayoutManualSearch"
+                android:orientation="vertical"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:padding="8dp">
+
+                <EditText
+                    android:id="@+id/editTextLine1"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:hint="Address Line 1"/>
+
+                <EditText
+                    android:id="@+id/editTextLine2"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:hint="Address Line 2"/>
+
+                <EditText
+                    android:id="@+id/editTextCity"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:hint="City"/>
+
+                <EditText
+                    android:id="@+id/editTextState"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:hint="State"/>
+
+            </LinearLayout>
 
         </LinearLayout>
 
     </ScrollView>
 
     <Button
+        android:id="@+id/buttonNext"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:text="next"
-        android:textColor="#FFF"
-        android:layout_alignParentBottom="true"
-        android:id="@+id/buttonNext"/>
+        android:textColor="#FFF" />
 
-</RelativeLayout>
+</LinearLayout>

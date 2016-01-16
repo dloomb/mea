@@ -40,6 +40,7 @@ import com.meamobile.printicular_sdk.core.PrinticularCartManager;
 import com.meamobile.printicular_sdk.core.PrinticularServiceManager;
 import com.meamobile.printicular_sdk.core.PrinticularServiceManager.PrinticularEnvironment;
 import com.meamobile.printicular_sdk.core.models.PrintService;
+import com.meamobile.printicular_sdk.user_interface.CustomerDetailsActivity;
 import com.meamobile.printicular_sdk.user_interface.ManageOrderActivity;
 import com.meamobile.printicular_sdk.user_interface.store_search.StoreSearchActivity;
 
@@ -215,11 +216,11 @@ public class MainActivity extends AuthenticatableActivity implements ExplorerFra
         determineLocation();
 
         //For Testing A Activity
-//        new Handler(Looper.getMainLooper()).postDelayed(new Runnable() {@Override public void run()
-//        {
-//            Intent i = new Intent(MainActivity.this, StoreSearchActivity.class);
-//            startActivity(i);
-//        }}, 2 * 1000);
+        new Handler(Looper.getMainLooper()).postDelayed(new Runnable() {@Override public void run()
+        {
+            Intent i = new Intent(MainActivity.this, CustomerDetailsActivity.class);
+            startActivity(i);
+        }}, 2 * 1000);
     }
 
     ///-----------------------------------------------------------

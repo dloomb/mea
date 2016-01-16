@@ -9,7 +9,9 @@
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:layout_weight="1"
-        android:background="?android:attr/selectableItemBackground">
+        android:background="?android:attr/selectableItemBackground"
+        android:clickable="true"
+        android:onClick="onSearchAddressClicked">
 
         <TextView
             android:layout_width="match_parent"
@@ -33,7 +35,9 @@
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:layout_weight="1"
-        android:background="?android:attr/selectableItemBackground">
+        android:background="?android:attr/selectableItemBackground"
+        android:clickable="true"
+        android:onClick="onTypeAddressClicked">
 
         <TextView
             android:layout_width="match_parent"
