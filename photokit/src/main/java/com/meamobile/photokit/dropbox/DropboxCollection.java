@@ -18,6 +18,9 @@ import com.meamobile.photokit.core.Collection;
 import java.util.ArrayList;
 import java.util.List;
 
+import rx.Observable;
+import rx.Subscriber;
+
 @SuppressLint("ParcelCreator")
 public class DropboxCollection extends Collection
 {
@@ -50,27 +53,29 @@ public class DropboxCollection extends Collection
 
 
     @Override
-    public void loadContents(Activity activity)
+    public Observable<Double> loadContents(Activity activity)
     {
-        super.loadContents(activity);
+        return Observable.create(new Observable.OnSubscribe<Double>() {
+            @Override
+            public void call(Subscriber<? super Double> subscriber) {
+                mLoadSubscriber = subscriber;
 
-        new Thread(new Runnable() { @Override public void run()
-        {
-            DropboxSource source = (DropboxSource) mSource;
-            DbxClientV2 client = source.getNewClient();
+                DropboxSource source = (DropboxSource) mSource;
+                DbxClientV2 client = source.getNewClient();
 
-            try
-            {
-                DbxFiles.ListFolderResult result = client.files.listFolderBuilder(mDropboxPath).includeMediaInfo(true).start();
-                ArrayList<Metadata> entries = result.entries;//client.files.listFolder(mDropboxPath).entries;
-                handleResponseEntries(entries);
+                try
+                {
+                    DbxFiles.ListFolderResult result = client.files.listFolderBuilder(mDropboxPath).includeMediaInfo(true).start();
+                    ArrayList<Metadata> entries = result.entries;//client.files.listFolder(mDropboxPath).entries;
+                    handleResponseEntries(entries);
+                }
+                catch (DbxException e)
+                {
+                    e.printStackTrace();
+                    subscriber.onError(e);
+                }
             }
-            catch (DbxException e)
-            {
-                e.printStackTrace();
-            }
-
-        }}).start();
+        });
     }
 
     private void handleResponseEntries(List<Metadata> entries)

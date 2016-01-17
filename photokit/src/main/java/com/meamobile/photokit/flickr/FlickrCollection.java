@@ -19,6 +19,9 @@ import org.json.XML;
 import java.util.List;
 import java.util.Map;
 
+import rx.Observable;
+import rx.Subscriber;
+
 @SuppressLint("ParcelCreator")
 public class FlickrCollection extends Collection
 {
@@ -45,14 +48,18 @@ public class FlickrCollection extends Collection
     }
 
     @Override
-    public void loadContents(Activity activity)
-    {
+    public Observable<Double> loadContents(Activity activity) {
         super.loadContents(activity);
 
-        new Thread(new Runnable() { @Override public void run()
-        {
-            loadImagesAtPage(0);
-        }}).start();
+        return Observable.create(new Observable.OnSubscribe<Double>() {
+            @Override
+            public void call(Subscriber<? super Double> subscriber) {
+
+                mLoadSubscriber = subscriber;
+                loadImagesAtPage(0);
+
+            }
+        });
     }
 
     protected void loadImagesAtPage(int page)

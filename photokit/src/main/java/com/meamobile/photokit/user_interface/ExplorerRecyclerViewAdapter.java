@@ -23,7 +23,7 @@ import rx.android.schedulers.AndroidSchedulers;
 import rx.schedulers.Schedulers;
 
 
-public class ExplorerRecyclerViewAdapter extends RecyclerView.Adapter implements Collection.CollectionObserver
+public class ExplorerRecyclerViewAdapter extends RecyclerView.Adapter
 {
     private static final int VIEWTYPE_COLLECTION = 0;
     private static final int VIEWTYPE_ASSEST = 1;
@@ -204,39 +204,6 @@ public class ExplorerRecyclerViewAdapter extends RecyclerView.Adapter implements
                             Log.d("Image Error", error.getLocalizedMessage());
                         }
                 );
-    }
-
-
-    ///-----------------------------------------------------------
-    /// @name Collection Observing
-    ///-----------------------------------------------------------
-
-
-    @Override
-    public void collectionDidAddAssetAtIndex(Collection collection, Asset added, int index) {
-        mActivity.runOnUiThread(new Runnable() {
-            @Override
-            public void run() {
-                notifyDataSetChanged();
-            }
-        });
-    }
-
-    @Override
-    public void collectionDidAddCollectionAtIndex(Collection collection, Collection added, int index) {
-        mActivity.runOnUiThread(new Runnable()
-        {
-            @Override
-            public void run()
-            {
-                notifyDataSetChanged();
-            }
-        });
-    }
-
-    @Override
-    public void collectionRefresh(Collection collection) {
-
     }
 
 }

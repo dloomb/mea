@@ -12,6 +12,9 @@ import com.meamobile.photokit.core.JSONHttpClient;
 import java.util.List;
 import java.util.Map;
 
+import rx.Observable;
+import rx.Subscriber;
+
 @SuppressLint("ParcelCreator")
 public class InstagramCollection extends Collection
 {
@@ -36,14 +39,23 @@ public class InstagramCollection extends Collection
     }
 
     @Override
-    public void loadContents(Activity activity)
+    public Observable<Double> loadContents(Activity activity)
     {
         super.loadContents(activity);
 
-        InstagramSource igSource = (InstagramSource) this.mSource;
-        String url = "https://api.instagram.com/v1/users/self/media/recent/?count=20&access_token=" + igSource.getAccessToken();
+        return Observable.create(new Observable.OnSubscribe<Double>() {
+            @Override
+            public void call(Subscriber<? super Double> subscriber) {
 
-        loadAssetsWithUrl(url);
+                mLoadSubscriber = subscriber;
+
+                InstagramSource igSource = (InstagramSource) mSource;
+                String url = "https://api.instagram.com/v1/users/self/media/recent/?count=20&access_token=" + igSource.getAccessToken();
+
+                loadAssetsWithUrl(url);
+
+            }
+        });
     }
 
     protected void loadAssetsWithUrl(String url)

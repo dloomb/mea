@@ -62,6 +62,7 @@ public class Collection implements Parcelable
     protected Source mSource;
     protected String mTitle;
     protected Asset mCoverAsset;
+    protected Subscriber mLoadSubscriber;
 
     public Collection()
     {
@@ -86,11 +87,6 @@ public class Collection implements Parcelable
         return getClass().getName() + mTitle;
     }
 
-    public void setCollectionObserver(CollectionObserver observer)
-    {
-        mObserver = observer;
-    }
-
     public int numberOfAll()
     {
         return numberOfAssets() + numberOfCollections();
@@ -108,6 +104,11 @@ public class Collection implements Parcelable
         if (mObserver != null)
         {
             mObserver.collectionDidAddCollectionAtIndex(this, collection, i);
+        }
+
+        if (mLoadSubscriber != null)
+        {
+            mLoadSubscriber.onNext(1.0d);
         }
     }
 
@@ -137,6 +138,11 @@ public class Collection implements Parcelable
         {
             mObserver.collectionDidAddAssetAtIndex(this, asset, i);
         }
+
+        if (mLoadSubscriber != null)
+        {
+            mLoadSubscriber.onNext(1.0d);
+        }
     }
 
     public Asset assetAtIndex(int index)
@@ -158,7 +164,7 @@ public class Collection implements Parcelable
     //          ContentLoading
     //---------------------------------
 
-    public void loadContents(Activity activity){
+    public Observable<Double> loadContents(Activity activity){
 
         if (getType() != CollectionType.Root)
         {
@@ -174,6 +180,8 @@ public class Collection implements Parcelable
                 mAssets = new ArrayList<Asset>();
 //            }
         }
+
+        return Observable.empty();
     }
 
 

@@ -17,6 +17,9 @@ import com.meamobile.photokit.core.Collection;
 import java.util.List;
 import java.util.Map;
 
+import rx.Observable;
+import rx.Subscriber;
+
 @SuppressLint("ParcelCreator")
 public class FacebookCollection extends Collection
 {
@@ -45,23 +48,31 @@ public class FacebookCollection extends Collection
 
 
     @Override
-    public void loadContents(Activity activity)
+    public Observable<Double> loadContents(Activity activity)
     {
         super.loadContents(activity);
 
-        if (mFacebookAlbumId == null)
-        {
-            loadGraphPath("me/albums", "id,name,count,picture");
-        }
-        else if (mFacebookAlbumId == FACEBOOK_TAGGED_PHOTOS_ALBUM)
-        {
+        return Observable.create(new Observable.OnSubscribe<Double>() {
+            @Override
+            public void call(Subscriber<? super Double> subscriber) {
 
-        }
-        else
-        {
-            loadGraphPath(mFacebookAlbumId + "/photos", "id,source,picture,width,height,created_time,images");
-        }
+                mLoadSubscriber = subscriber;
 
+                if (mFacebookAlbumId == null)
+                {
+                    loadGraphPath("me/albums", "id,name,count,picture");
+                }
+                else if (mFacebookAlbumId == FACEBOOK_TAGGED_PHOTOS_ALBUM)
+                {
+
+                }
+                else
+                {
+                    loadGraphPath(mFacebookAlbumId + "/photos", "id,source,picture,width,height,created_time,images");
+                }
+
+            }
+        });
     }
 
     @Override

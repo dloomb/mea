@@ -17,6 +17,9 @@ import com.meamobile.photokit.core.Source;
 import java.util.ArrayList;
 import java.util.Arrays;
 
+import rx.Observable;
+import rx.Subscriber;
+
 public class LocalCollection extends Collection
 {
     private static String LOCAL_CAMERA_BUCKET_NAME = Environment.getExternalStorageDirectory().toString();
@@ -49,23 +52,25 @@ public class LocalCollection extends Collection
 
 
     @Override
-    public void loadContents(final Activity activity)
+    public Observable<Double> loadContents(Activity activity)
     {
         super.loadContents(activity);
 
-        final Activity _activity = activity;
+        return Observable.create(new Observable.OnSubscribe<Double>() {
+            @Override
+            public void call(Subscriber<? super Double> subscriber) {
+                mLoadSubscriber = subscriber;
 
-        new Thread(new Runnable() { @Override public void run()
-        {
-            if (mBucketId == 0)
-            {
-                loadBaseCollections(_activity);
+                if (mBucketId == 0)
+                {
+                    loadBaseCollections(activity);
+                }
+                else
+                {
+                    loadAssets(activity);
+                }
             }
-            else
-            {
-                loadAssets(activity);
-            }
-        }}).start();
+        });
     }
 
     private void loadBaseCollections(Activity activity)

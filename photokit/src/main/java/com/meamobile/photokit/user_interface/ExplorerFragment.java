@@ -23,6 +23,9 @@ import com.meamobile.photokit.core.Collection;
 import com.meamobile.photokit.R;
 import com.meamobile.photokit.core.Source;
 
+import rx.android.schedulers.AndroidSchedulers;
+import rx.schedulers.Schedulers;
+
 public class ExplorerFragment extends Fragment implements ItemClickSupport.OnItemClickListener{
 
     public interface ExplorerFragmentDelegate
@@ -42,6 +45,7 @@ public class ExplorerFragment extends Fragment implements ItemClickSupport.OnIte
 
     private GridView mGridView;
     private RecyclerView mRecyclerView;
+    private ExplorerRecyclerViewAdapter mAdapter;
     private OnFragmentInteractionListener mListener;
     private ExplorerFragmentDelegate mDelegate;
 
@@ -64,7 +68,12 @@ public class ExplorerFragment extends Fragment implements ItemClickSupport.OnIte
             mCollection = (Collection) getArguments().getParcelable(ARG_COLLECTION);
         }
 
-        mCollection.loadContents(getActivity());
+        mCollection.loadContents(getActivity())
+                .subscribeOn(Schedulers.io())
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribe(x -> {
+                    mAdapter.notifyDataSetChanged();
+                });
     }
 
     @Override
@@ -139,11 +148,9 @@ public class ExplorerFragment extends Fragment implements ItemClickSupport.OnIte
     {
         mRecyclerView = (RecyclerView) view.findViewById(R.id.recyclerView);
 
-        ExplorerRecyclerViewAdapter adapter = new ExplorerRecyclerViewAdapter(getActivity(), mCollection, mDelegate);
-        mRecyclerView.setAdapter(adapter);
+        mAdapter = new ExplorerRecyclerViewAdapter(getActivity(), mCollection, mDelegate);
+        mRecyclerView.setAdapter(mAdapter);
         ItemClickSupport.addTo(mRecyclerView).setOnItemClickListener(this);
-
-        mCollection.setCollectionObserver(adapter);
 
         StaggeredGridLayoutManager layout = new StaggeredGridLayoutManager(2, StaggeredGridLayoutManager.VERTICAL);
 

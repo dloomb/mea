@@ -219,7 +219,7 @@ public class MainActivity extends AuthenticatableActivity implements ExplorerFra
         new Handler(Looper.getMainLooper()).postDelayed(new Runnable() {@Override public void run()
         {
             Intent i = new Intent(MainActivity.this, CustomerDetailsActivity.class);
-            startActivity(i);
+//            startActivity(i);
         }}, 2 * 1000);
     }
 
