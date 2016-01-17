@@ -1,5 +1,6 @@
 package com.meamobile.printicular_sdk.user_interface;
 
+import android.content.Intent;
 import android.graphics.PorterDuff;
 import android.os.Bundle;
 import android.text.Editable;
@@ -12,18 +13,34 @@ import android.widget.LinearLayout;
 import android.widget.RelativeLayout;
 
 import com.meamobile.printicular_sdk.R;
+import com.meamobile.printicular_sdk.core.PrinticularCartManager;
+import com.meamobile.printicular_sdk.core.PrinticularServiceManager;
 import com.meamobile.printicular_sdk.core.models.Address;
 import com.meamobile.printicular_sdk.user_interface.common.ObservableRelativeLayout;
+
+import java.util.List;
 
 import rx.android.schedulers.AndroidSchedulers;
 
 
-public class CustomerDetailsActivity extends CheckoutActivity implements TextWatcher
+public class CustomerDetailsActivity extends CheckoutActivity
 {
     enum SearchMode
     {
         MANUAL,
         AUTOMATIC
+    }
+
+    enum Field
+    {
+        NAME,
+        EMAIL,
+        PHONE,
+        LINE_1,
+        LINE_2,
+        CITY,
+        STATE,
+        COUNTRY
     }
 
     private SearchMode mSearchMode = SearchMode.AUTOMATIC;
@@ -38,13 +55,24 @@ public class CustomerDetailsActivity extends CheckoutActivity implements TextWat
 
     private Button mButtonNext;
 
-    private View mViewAutomaticSelectionDetail,
+    private View
+            mViewAutomaticSelectionDetail,
             mViewManualSelectionDetail;
 
-    private EditText mEditTextName, mEditTextEmail, mEditTextPhone, mEditTextAddressLine1, mEditTextAddressLine2, mEditTextCity, mEditTextState, mEditText;
+    private EditText
+            mEditTextName,
+            mEditTextEmail,
+            mEditTextPhone,
+            mEditTextAddressLine1,
+            mEditTextAddressLine2,
+            mEditTextCity,
+            mEditTextState,
+            mEditTextCountry;
 
     private int mOriginalHeight = 0;
     private Address mAddress;
+    private PrinticularCartManager mCartManager = PrinticularCartManager.getInstance();
+    private PrinticularServiceManager mServiceManager = PrinticularServiceManager.getInstance();
 
     @Override
     protected void onCreate(Bundle savedInstanceState)
@@ -52,10 +80,7 @@ public class CustomerDetailsActivity extends CheckoutActivity implements TextWat
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_customer_details);
 
-        mEditTextName = (EditText) findViewById(R.id.editTextName);
-        mEditTextEmail = (EditText) findViewById(R.id.editTextName);
-        mEditTextPhone = (EditText) findViewById(R.id.editTextName);
-
+        setupEditTextListeners();
 
         mButtonNext = (Button) findViewById(R.id.buttonNext);
         mButtonNext.getBackground().setColorFilter(getResources().getColor(R.color.button_red), PorterDuff.Mode.MULTIPLY);
@@ -69,6 +94,7 @@ public class CustomerDetailsActivity extends CheckoutActivity implements TextWat
 
         setupNextButtonHidingListener();
         layoutForCurrentSearchMode();
+        loadOrSetupAddress();
     }
 
 
@@ -127,26 +153,91 @@ public class CustomerDetailsActivity extends CheckoutActivity implements TextWat
     }
 
 
+    protected void loadOrSetupAddress()
+    {
+        mAddress = mCartManager.getCurrentAddress();
+        if (mAddress == null)
+        {
+            mAddress = new Address();
+        }
+    }
+
 
     ///-----------------------------------------------------------
     /// @name TextWatcher
     ///-----------------------------------------------------------
 
+    protected void setupEditTextListeners()
+    {
+        (mEditTextName = (EditText) findViewById(R.id.editTextName))
+                .addTextChangedListener(new DetailsTextWatcher(mEditTextName, Field.NAME));
 
-    @Override
-    public void beforeTextChanged(CharSequence s, int start, int count, int after) {
+        (mEditTextEmail = (EditText) findViewById(R.id.editTextEmail))
+            .addTextChangedListener(new DetailsTextWatcher(mEditTextEmail, Field.EMAIL));
 
+        (mEditTextPhone = (EditText) findViewById(R.id.editTextPhone))
+            .addTextChangedListener(new DetailsTextWatcher(mEditTextPhone, Field.PHONE));
+
+        (mEditTextAddressLine1 = (EditText) findViewById(R.id.editTextLine1))
+                .addTextChangedListener(new DetailsTextWatcher(mEditTextAddressLine1, Field.LINE_1));
+
+        (mEditTextAddressLine2 = (EditText) findViewById(R.id.editTextLine2))
+                .addTextChangedListener(new DetailsTextWatcher(mEditTextAddressLine2, Field.LINE_2));
+
+        (mEditTextCity = (EditText) findViewById(R.id.editTextCity))
+                .addTextChangedListener(new DetailsTextWatcher(mEditTextCity, Field.CITY));
+
+        (mEditTextState = (EditText) findViewById(R.id.editTextState))
+                .addTextChangedListener(new DetailsTextWatcher(mEditTextState, Field.STATE));
+
+        (mEditTextCountry = (EditText) findViewById(R.id.editTextCountry))
+                .addTextChangedListener(new DetailsTextWatcher(mEditTextCountry, Field.COUNTRY));
+
+        mEditTextCountry.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+
+            }
+        });
     }
 
-    @Override
-    public void onTextChanged(CharSequence s, int start, int before, int count) {
+    class DetailsTextWatcher implements TextWatcher
+    {
+        private EditText mEditText;
+        private Field mField;
 
+        public DetailsTextWatcher(EditText editText, Field field)
+        {
+            mEditText = editText;
+            mField = field;
+        }
+
+        @Override
+        public void beforeTextChanged(CharSequence s, int start, int count, int after) {}
+
+        @Override
+        public void onTextChanged(CharSequence s, int start, int before, int count)
+        {
+            String text = mEditText.getText().toString();
+
+            switch (mField)
+            {
+                case NAME:
+                    mAddress.setName(text);
+                    break;
+
+                case EMAIL:
+                    mAddress.setEmail(text);
+                    break;
+
+                case PHONE:
+                    mAddress.setPhone(text);
+                    break;
+            }
+        }
+
+        @Override
+        public void afterTextChanged(Editable s) {}
     }
-
-    @Override
-    public void afterTextChanged(Editable s) {
-
-    }
-
 
 }

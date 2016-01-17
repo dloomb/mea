@@ -1,8 +1,9 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-              android:orientation="vertical"
-              android:layout_width="match_parent"
-              android:layout_height="match_parent">
+                android:orientation="vertical"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:background="#FFF">
 
     <TextView
         android:textAppearance="@style/customer_details_text_input"
@@ -13,35 +14,55 @@
         android:textSize="20sp"
         android:layout_margin="10dp"/>
 
-    <EditText
-        android:id="@+id/editTextName"
+    <android.support.design.widget.TextInputLayout
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:inputType="textPersonName"
-        android:hint="Name"
-        android:ems="10"
-        android:textColor="@color/text_semi_dark"
-        android:layout_margin="10dp"/>
+        android:layout_height="wrap_content">
 
-    <EditText
-        android:id="@+id/editTextEmail"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:inputType="textEmailAddress"
-        android:hint="Email"
-        android:ems="10"
-        android:textColor="@color/text_semi_dark"
-        android:layout_margin="10dp" />
+        <EditText
+            android:id="@+id/editTextName"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:inputType="textPersonName"
+            android:hint="Name"
+            android:ems="10"
+            android:textColor="@color/text_semi_dark"
+            android:layout_margin="10dp"/>
 
-    <EditText
-        android:id="@+id/editTextPhone"
+    </android.support.design.widget.TextInputLayout>
+
+
+    <android.support.design.widget.TextInputLayout
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:inputType="phone"
-        android:hint="Phone"
-        android:ems="10"
-        android:textColor="@color/text_semi_dark"
-        android:layout_margin="10dp" />
+        android:layout_height="wrap_content">
+
+        <EditText
+            android:id="@+id/editTextEmail"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:inputType="textEmailAddress"
+            android:hint="Email"
+            android:ems="10"
+            android:textColor="@color/text_semi_dark"
+            android:layout_margin="10dp" />
+
+    </android.support.design.widget.TextInputLayout>
+
+
+    <android.support.design.widget.TextInputLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
+
+        <EditText
+            android:id="@+id/editTextPhone"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:inputType="phone"
+            android:hint="Phone"
+            android:ems="10"
+            android:textColor="@color/text_semi_dark"
+            android:layout_margin="10dp" />
+
+    </android.support.design.widget.TextInputLayout>
 
 </LinearLayout>
 

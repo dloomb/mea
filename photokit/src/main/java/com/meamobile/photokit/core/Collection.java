@@ -14,6 +14,9 @@ import java.util.EnumSet;
 import java.util.HashMap;
 import java.util.Map;
 
+import rx.Observable;
+import rx.Subscriber;
+
 
 public class Collection implements Parcelable
 {

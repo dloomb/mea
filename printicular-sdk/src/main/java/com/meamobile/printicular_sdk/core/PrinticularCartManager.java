@@ -2,10 +2,10 @@ package com.meamobile.printicular_sdk.core;
 
 import android.content.Context;
 import android.content.SharedPreferences;
-import android.location.Address;
 
 import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
+import com.meamobile.printicular_sdk.core.models.Address;
 import com.meamobile.printicular_sdk.core.models.Image;
 import com.meamobile.printicular_sdk.core.models.LineItem;
 import com.meamobile.printicular_sdk.core.models.PrintService;
@@ -56,6 +56,8 @@ public class PrinticularCartManager
     {
         mContext = context;
     }
+
+
 
     ///-----------------------------------------------------------
     /// @name Image Handling
