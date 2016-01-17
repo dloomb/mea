@@ -23,7 +23,8 @@
             android:textSize="15sp"
             android:textAlignment="center"/>
 
-        <TextView
+        <View
+            android:id="@+id/viewAutomaticSelectionDetail"
             android:layout_width="match_parent"
             android:layout_height="5dp"
             android:background="@color/selection_yellow"
@@ -49,12 +50,12 @@
             android:textColor="#FFF"
             android:textAlignment="center"/>
 
-        <TextView
+        <View
+            android:id="@+id/viewManualSelectionDetail"
             android:layout_width="match_parent"
             android:layout_height="5dp"
             android:background="@color/selection_yellow"
-            android:layout_alignParentBottom="true"
-            android:visibility="invisible"/>
+            android:layout_alignParentBottom="true" />
 
     </RelativeLayout>
 

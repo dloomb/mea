@@ -1,9 +1,10 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout
+<com.meamobile.printicular_sdk.user_interface.common.ObservableRelativeLayout
     xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     tools:context="com.meamobile.printicular_sdk.user_interface.CustomerDetailsActivity"
+    android:id="@+id/relativeLayoutMain"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:orientation="vertical">
@@ -17,11 +18,19 @@
         android:theme="@style/ThemeOverlay.AppCompat.Dark.ActionBar"
         app:popupTheme="@style/ThemeOverlay.AppCompat.Light"/>
 
+    <Button
+        android:id="@+id/buttonNext"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_alignParentBottom="true"
+        android:text="next"
+        android:textColor="#FFF" />
+
     <ScrollView
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_marginBottom="60dp"
         android:layout_below="@id/toolbar"
+        android:layout_above="@id/buttonNext"
         android:id="@+id/scrollView">
 
         <LinearLayout
@@ -45,44 +54,42 @@
                 android:id="@+id/linearLayoutManualSearch"
                 android:orientation="vertical"
                 android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:padding="8dp">
+                android:layout_height="wrap_content">
 
                 <EditText
                     android:id="@+id/editTextLine1"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
+                    android:layout_margin="10dp"
                     android:hint="Address Line 1"/>
 
                 <EditText
                     android:id="@+id/editTextLine2"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
+                    android:layout_margin="10dp"
                     android:hint="Address Line 2"/>
 
                 <EditText
                     android:id="@+id/editTextCity"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
+                    android:layout_margin="10dp"
                     android:hint="City"/>
 
                 <EditText
                     android:id="@+id/editTextState"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
+                    android:layout_margin="10dp"
                     android:hint="State"/>
 
             </LinearLayout>
 
         </LinearLayout>
 
+
     </ScrollView>
 
-    <Button
-        android:id="@+id/buttonNext"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:text="next"
-        android:textColor="#FFF" />
 
-</LinearLayout>
+</com.meamobile.printicular_sdk.user_interface.common.ObservableRelativeLayout>
