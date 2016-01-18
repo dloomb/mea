@@ -3,7 +3,6 @@ package com.meamobile.photokit.flickr;
 
 import android.annotation.SuppressLint;
 import android.app.Activity;
-import android.util.Log;
 
 import com.github.scribejava.core.model.OAuthRequest;
 import com.github.scribejava.core.model.Response;
@@ -11,7 +10,6 @@ import com.github.scribejava.core.model.Verb;
 import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
 import com.meamobile.photokit.core.Collection;
-import com.meamobile.photokit.core.JSONHttpClient;
 
 import org.json.JSONObject;
 import org.json.XML;
@@ -47,19 +45,12 @@ public class FlickrCollection extends Collection
         return CollectionType.Flickr;
     }
 
+
     @Override
-    public Observable<Double> loadContents(Activity activity) {
-        super.loadContents(activity);
-
-        return Observable.create(new Observable.OnSubscribe<Double>() {
-            @Override
-            public void call(Subscriber<? super Double> subscriber) {
-
-                mLoadSubscriber = subscriber;
-                loadImagesAtPage(0);
-
-            }
-        });
+    public void call(Subscriber<? super Object> subscriber)
+    {
+        super.call(subscriber);
+        loadImagesAtPage(0);
     }
 
     protected void loadImagesAtPage(int page)

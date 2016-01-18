@@ -20,6 +20,7 @@ import java.util.List;
 
 import rx.Observable;
 import rx.Subscriber;
+import rx.functions.Action0;
 
 @SuppressLint("ParcelCreator")
 public class DropboxCollection extends Collection
@@ -53,29 +54,24 @@ public class DropboxCollection extends Collection
 
 
     @Override
-    public Observable<Double> loadContents(Activity activity)
+    public void call(Subscriber<? super Object> subscriber)
     {
-        return Observable.create(new Observable.OnSubscribe<Double>() {
-            @Override
-            public void call(Subscriber<? super Double> subscriber) {
-                mLoadSubscriber = subscriber;
+        super.call(subscriber);
 
-                DropboxSource source = (DropboxSource) mSource;
-                DbxClientV2 client = source.getNewClient();
+        DropboxSource source = (DropboxSource) mSource;
+        DbxClientV2 client = source.getNewClient();
 
-                try
-                {
-                    DbxFiles.ListFolderResult result = client.files.listFolderBuilder(mDropboxPath).includeMediaInfo(true).start();
-                    ArrayList<Metadata> entries = result.entries;//client.files.listFolder(mDropboxPath).entries;
-                    handleResponseEntries(entries);
-                }
-                catch (DbxException e)
-                {
-                    e.printStackTrace();
-                    subscriber.onError(e);
-                }
-            }
-        });
+        try
+        {
+            DbxFiles.ListFolderResult result = client.files.listFolderBuilder(mDropboxPath).includeMediaInfo(true).start();
+            ArrayList<Metadata> entries = result.entries;//client.files.listFolder(mDropboxPath).entries;
+            handleResponseEntries(entries);
+        }
+        catch (DbxException e)
+        {
+            e.printStackTrace();
+            mLoadSubscriber.onError(e);
+        }
     }
 
     private void handleResponseEntries(List<Metadata> entries)

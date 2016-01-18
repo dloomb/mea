@@ -48,31 +48,22 @@ public class FacebookCollection extends Collection
 
 
     @Override
-    public Observable<Double> loadContents(Activity activity)
+    public void call(Subscriber<? super Object> subscriber)
     {
-        super.loadContents(activity);
+        super.call(subscriber);
 
-        return Observable.create(new Observable.OnSubscribe<Double>() {
-            @Override
-            public void call(Subscriber<? super Double> subscriber) {
+        if (mFacebookAlbumId == null)
+        {
+            loadGraphPath("me/albums", "id,name,count,picture");
+        }
+        else if (mFacebookAlbumId == FACEBOOK_TAGGED_PHOTOS_ALBUM)
+        {
 
-                mLoadSubscriber = subscriber;
-
-                if (mFacebookAlbumId == null)
-                {
-                    loadGraphPath("me/albums", "id,name,count,picture");
-                }
-                else if (mFacebookAlbumId == FACEBOOK_TAGGED_PHOTOS_ALBUM)
-                {
-
-                }
-                else
-                {
-                    loadGraphPath(mFacebookAlbumId + "/photos", "id,source,picture,width,height,created_time,images");
-                }
-
-            }
-        });
+        }
+        else
+        {
+            loadGraphPath(mFacebookAlbumId + "/photos", "id,source,picture,width,height,created_time,images");
+        }
     }
 
     @Override

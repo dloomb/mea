@@ -61,70 +61,63 @@ public class PhotobucketCollection extends Collection
         return CollectionType.Photobucket;
     }
 
+
     @Override
-    public Observable<Double> loadContents(Activity activity)
+    public void call(Subscriber<? super Object> subscriber)
     {
-        super.loadContents(activity);
+        super.call(subscriber);
 
-        return Observable.create(new Observable.OnSubscribe<Double>() {
-            @Override
-            public void call(Subscriber<? super Double> subscriber) {
+        OAuthService service = mPBSource.getOAuthService();
 
-                mLoadSubscriber = subscriber;
+        mPhotobucketAlbumId = (mPhotobucketAlbumId == null) ? mPBSource.getUsername() : mPhotobucketAlbumId;
 
-                OAuthService service = mPBSource.getOAuthService();
+        String url = "http://api.photobucket.com/album/" + mPhotobucketAlbumId;
 
-                mPhotobucketAlbumId = (mPhotobucketAlbumId == null) ? mPBSource.getUsername() : mPhotobucketAlbumId;
+        OAuthRequest request = new OAuthRequest(Verb.GET, url, service);
+        service.signRequest(mPBSource.getOAuthToken(), request);
+        String complete = request.getCompleteUrl();
+        try
+        {
+            Response response = request.send();
+            String body = response.getBody();
+            JSONObject json = XML.toJSONObject(body);
+            Map<String, Object> object = new Gson().fromJson(json.toString(), new TypeToken<Map<String, Object>>()
+            {
+            }.getType());
 
-                String url = "http://api.photobucket.com/album/" + mPhotobucketAlbumId;
+            Map res = (Map) object.get("response");
+            Map content = (Map) res.get("content");
+            Map root = (Map) content.get("album");
 
-                OAuthRequest request = new OAuthRequest(Verb.GET, url, service);
-                service.signRequest(mPBSource.getOAuthToken(), request);
-                String complete = request.getCompleteUrl();
-                try
+            final Object albums = root.get("album");
+            if (albums != null)
+            {
+                List<Map> iAlbums = (albums instanceof List) ? (List) albums : new ArrayList(){{add(albums);}};
+
+                for (Map album : iAlbums)
                 {
-                    Response response = request.send();
-                    String body = response.getBody();
-                    JSONObject json = XML.toJSONObject(body);
-                    Map<String, Object> object = new Gson().fromJson(json.toString(), new TypeToken<Map<String, Object>>()
-                    {
-                    }.getType());
-
-                    Map res = (Map) object.get("response");
-                    Map content = (Map) res.get("content");
-                    Map root = (Map) content.get("album");
-
-                    final Object albums = root.get("album");
-                    if (albums != null)
-                    {
-                        List<Map> iAlbums = (albums instanceof List) ? (List) albums : new ArrayList(){{add(albums);}};
-
-                        for (Map album : iAlbums)
-                        {
-                            album.put("parent", mPhotobucketAlbumId);
-                            PhotobucketCollection collection = new PhotobucketCollection(album, mPBSource);
-                            addCollection(collection);
-                        }
-                    }
-
-                    final Object media = (List) root.get("media");
-                    if (media != null)
-                    {
-                        List<Map> iMedia = (media instanceof List) ? (List) media : new ArrayList(){{add(media);}};
-                        for (Map image : iMedia)
-                        {
-                            PhotobucketAsset asset = new PhotobucketAsset(image);
-                            addAsset(asset);
-                        }
-                    }
-
-                }
-                catch (Exception e)
-                {
-                    e.printStackTrace();
-                    mLoadSubscriber.onError(e);
+                    album.put("parent", mPhotobucketAlbumId);
+                    PhotobucketCollection collection = new PhotobucketCollection(album, mPBSource);
+                    addCollection(collection);
                 }
             }
-        });
+
+            final Object media = (List) root.get("media");
+            if (media != null)
+            {
+                List<Map> iMedia = (media instanceof List) ? (List) media : new ArrayList(){{add(media);}};
+                for (Map image : iMedia)
+                {
+                    PhotobucketAsset asset = new PhotobucketAsset(image);
+                    addAsset(asset);
+                }
+            }
+
+        }
+        catch (Exception e)
+        {
+            e.printStackTrace();
+            mLoadSubscriber.onError(e);
+        }
     }
 }

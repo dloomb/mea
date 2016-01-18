@@ -16,9 +16,10 @@ import java.util.Map;
 
 import rx.Observable;
 import rx.Subscriber;
+import rx.subjects.PublishSubject;
 
 
-public class Collection implements Parcelable
+public class Collection implements Parcelable, Observable.OnSubscribe<Object>
 {
     public enum CollectionType
     {
@@ -63,6 +64,7 @@ public class Collection implements Parcelable
     protected String mTitle;
     protected Asset mCoverAsset;
     protected Subscriber mLoadSubscriber;
+    protected Activity mActivityContext;
 
     public Collection()
     {
@@ -164,7 +166,9 @@ public class Collection implements Parcelable
     //          ContentLoading
     //---------------------------------
 
-    public Observable<Double> loadContents(Activity activity){
+    public Observable<Object> loadContents(Activity activity)
+    {
+        mActivityContext = activity;
 
         if (getType() != CollectionType.Root)
         {
@@ -176,13 +180,21 @@ public class Collection implements Parcelable
 //            if (mLastLoaded != null &&  now.before(mLastLoaded))
 //            {
 //                mLastLoaded = now;
-                mCollections = new ArrayList<Collection>();
-                mAssets = new ArrayList<Asset>();
+            mCollections = new ArrayList<Collection>();
+            mAssets = new ArrayList<Asset>();
 //            }
         }
 
-        return Observable.empty();
+        return Observable.create(this);
     }
+
+
+    @Override
+    public void call(Subscriber<? super Object> subscriber)
+    {
+        mLoadSubscriber = subscriber;
+    }
+
 
 
     ///-----------------------------------------------------------

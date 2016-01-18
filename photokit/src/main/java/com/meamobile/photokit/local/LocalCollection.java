@@ -1,6 +1,5 @@
 package com.meamobile.photokit.local;
 
-import android.annotation.SuppressLint;
 import android.app.Activity;
 import android.content.ContentResolver;
 import android.database.Cursor;
@@ -12,10 +11,6 @@ import android.provider.MediaStore.Images.ImageColumns;
 
 import com.meamobile.photokit.core.Asset;
 import com.meamobile.photokit.core.Collection;
-import com.meamobile.photokit.core.Source;
-
-import java.util.ArrayList;
-import java.util.Arrays;
 
 import rx.Observable;
 import rx.Subscriber;
@@ -50,32 +45,24 @@ public class LocalCollection extends Collection
         return CollectionType.Local;
     }
 
-
     @Override
-    public Observable<Double> loadContents(Activity activity)
+    public void call(Subscriber<? super Object> subscriber)
     {
-        super.loadContents(activity);
+        super.call(subscriber);
 
-        return Observable.create(new Observable.OnSubscribe<Double>() {
-            @Override
-            public void call(Subscriber<? super Double> subscriber) {
-                mLoadSubscriber = subscriber;
-
-                if (mBucketId == 0)
-                {
-                    loadBaseCollections(activity);
-                }
-                else
-                {
-                    loadAssets(activity);
-                }
-            }
-        });
+        if (mBucketId == 0)
+        {
+            loadBaseCollections();
+        }
+        else
+        {
+            loadAssets();
+        }
     }
 
-    private void loadBaseCollections(Activity activity)
+    private void loadBaseCollections()
     {
-        ContentResolver contentResolver = activity.getContentResolver();
+        ContentResolver contentResolver = mActivityContext.getContentResolver();
         String[] projection = new String[]{"distinct " + ImageColumns.BUCKET_ID, ImageColumns.BUCKET_DISPLAY_NAME};
 
         Cursor cursor = contentResolver.query(MediaStore.Images.Media.EXTERNAL_CONTENT_URI, projection, "", null, null);
@@ -103,9 +90,9 @@ public class LocalCollection extends Collection
         }
     }
 
-    private void loadAssets(Activity activity)
+    private void loadAssets()
     {
-        ContentResolver contentResolver = activity.getContentResolver();
+        ContentResolver contentResolver = mActivityContext.getContentResolver();
         String[] projection = { ImageColumns._ID, ImageColumns.DISPLAY_NAME, ImageColumns.DATE_TAKEN, ImageColumns.DATA };
         String selection = ImageColumns.BUCKET_ID + " = ? ";
         String[] selectionArgs = { "" + mBucketId };

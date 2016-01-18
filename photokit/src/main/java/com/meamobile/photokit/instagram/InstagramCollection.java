@@ -39,23 +39,14 @@ public class InstagramCollection extends Collection
     }
 
     @Override
-    public Observable<Double> loadContents(Activity activity)
+    public void call(Subscriber<? super Object> subscriber)
     {
-        super.loadContents(activity);
+        super.call(subscriber);
 
-        return Observable.create(new Observable.OnSubscribe<Double>() {
-            @Override
-            public void call(Subscriber<? super Double> subscriber) {
+        InstagramSource igSource = (InstagramSource) mSource;
+        String url = "https://api.instagram.com/v1/users/self/media/recent/?count=20&access_token=" + igSource.getAccessToken();
 
-                mLoadSubscriber = subscriber;
-
-                InstagramSource igSource = (InstagramSource) mSource;
-                String url = "https://api.instagram.com/v1/users/self/media/recent/?count=20&access_token=" + igSource.getAccessToken();
-
-                loadAssetsWithUrl(url);
-
-            }
-        });
+        loadAssetsWithUrl(url);
     }
 
     protected void loadAssetsWithUrl(String url)
