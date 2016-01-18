@@ -61,10 +61,10 @@ public class Store extends Model
             mRetailerStoreId = (String) attributes.get("retailer_store_id");
             mChecksum = (String) attributes.get("checksum");
 
-            mLatitude =  (Double) safeParse(attributes.get("latitude"), "DOUBLE");
-            mLongitude = (Double) safeParse(attributes.get("longitude"), "DOUBLE");
+            mLatitude =  (Double) safeParse(attributes.get("latitude"), ClassType.DOUBLE);
+            mLongitude = (Double) safeParse(attributes.get("longitude"), ClassType.DOUBLE);
 
-            mActive = (boolean) safeParse(attributes.get("active"), "BOOLEAN"); // ((Number) attributes.get("active")).intValue() == 1;
+            mActive = (boolean) safeParse(attributes.get("active"), ClassType.BOOLEAN); // ((Number) attributes.get("active")).intValue() == 1;
         }
     }
 

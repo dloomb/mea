@@ -7,6 +7,8 @@ public class Territory extends Model
     private String mCountryCode, mCountryName;
     private PrintService mDefaultPrintService;
 
+    public Territory(){}
+
     public Territory(Locale locale)
     {
         mCountryCode = locale.getISO3Country();

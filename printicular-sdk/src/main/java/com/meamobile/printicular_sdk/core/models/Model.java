@@ -14,6 +14,15 @@ import java.util.Map;
 
 public class Model
 {
+    protected enum ClassType
+    {
+        STRING,
+        DOUBLE,
+        BOOLEAN,
+        INTEGER,
+        LONG
+    }
+
     protected long mId;
     protected String mType;
     protected Date mCreatedAt, mUpdatedAt;
@@ -168,9 +177,15 @@ public class Model
         String capitalized = WordUtils.capitalizeFully(type, '_');
         String shrunk = capitalized.replace("_", "");
         String out = shrunk.substring(0, shrunk.length() - 1);
-        if (shrunk.substring(0, shrunk.length() - 3) == "ses")
+        String end = shrunk.substring(shrunk.length() - 3, shrunk.length());
+        if (end.equals("ses"))
         {
             out = shrunk.substring(0, shrunk.length() - 2);
+        }
+        else if (end.equals("ies"))
+        {
+            out = shrunk.substring(0, shrunk.length() - 3);
+            out += "y";
         }
 
         return "com.meamobile.printicular_sdk.core.models." + out;
@@ -186,7 +201,7 @@ public class Model
     {
         Map<String, Object> data = new HashMap<>();
 
-        data.put("id", mId);
+        safePut(data, "id", mId);
         data.put("type", mType);
 
         Map<String, Object> attributes = new HashMap<>();
@@ -222,20 +237,25 @@ public class Model
     {
         if (map != null && key != null && value != null)
         {
+            if (value instanceof Number && ((Number) value).intValue() == 0)
+            {
+                return;
+            }
+
             map.put(key, value);
         }
     }
 
-    protected Object safeParse(Object input, String wantedClass)
+    protected Object safeParse(Object input, ClassType wantedClass)
     {
         if (input instanceof String)
         {
             switch (wantedClass)
             {
-                case "STRING":
+                case STRING:
                     return input;
 
-                case "DOUBLE":
+                case DOUBLE:
                     return Double.parseDouble((String) input);
             }
         }
@@ -244,13 +264,13 @@ public class Model
         {
             switch (wantedClass)
             {
-                case "STRING":
+                case STRING:
                     return ((Number) input).toString();
 
-                case "DOUBLE":
+                case DOUBLE:
                     return ((Number) input).doubleValue();
 
-                case "BOOLEAN":
+                case BOOLEAN:
                     return ((Number) input).intValue() > 0;
             }
         }
@@ -259,7 +279,7 @@ public class Model
         {
             switch (wantedClass)
             {
-                case "BOOLEAN":
+                case BOOLEAN:
                     return input;
             }
         }

@@ -27,6 +27,11 @@ public class Address extends Model
     ///-----------------------------------------------------------
 
 
+    @Override
+    public String getType() {
+        return "addresses";
+    }
+
     public String getLine1() {
         return mLine1;
     }
@@ -118,15 +123,15 @@ public class Address extends Model
 
         if (attributes != null)
         {
-            mLine1 = (String) data.get("line_1");
-            mLine2 = (String) data.get("line_2");
-            mCity = (String) data.get("city");
-            mState = (String) data.get("state");
-            mPostcode = (String) data.get("postcode");
-            mPhone = (String) data.get("phone");
-            mEmail = (String) data.get("email");
-            mName = (String) data.get("name");
-            mDeviceToken = (String) data.get("device_token");
+            mLine1 = (String) safeParse(attributes.get("line_1"), ClassType.STRING);
+            mLine2 = (String) safeParse(attributes.get("line_2"), ClassType.STRING);
+            mCity = (String) safeParse(attributes.get("city"), ClassType.STRING);
+            mState = (String) safeParse(attributes.get("state"), ClassType.STRING);
+            mPostcode = (String) safeParse(attributes.get("postcode"), ClassType.STRING);
+            mPhone = (String) safeParse(attributes.get("phone"), ClassType.STRING);
+            mEmail = (String) safeParse(attributes.get("email"), ClassType.STRING);
+            mName = (String) safeParse(attributes.get("name"), ClassType.STRING);
+            mDeviceToken = (String) safeParse(attributes.get("device_token"), ClassType.STRING);
         }
 
     }

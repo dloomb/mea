@@ -1,7 +1,6 @@
 package com.meamobile.printicular;
 
 import android.app.AlertDialog;
-import android.app.Dialog;
 import android.content.Intent;
 import android.graphics.Color;
 import android.graphics.drawable.ColorDrawable;
@@ -44,10 +43,8 @@ import com.meamobile.printicular_sdk.core.PrinticularServiceManager.PrinticularE
 import com.meamobile.printicular_sdk.core.models.PrintService;
 import com.meamobile.printicular_sdk.user_interface.CustomerDetailsActivity;
 import com.meamobile.printicular_sdk.user_interface.ManageOrderActivity;
-import com.meamobile.printicular_sdk.user_interface.store_search.StoreSearchActivity;
 
 import java.util.Locale;
-import java.util.Map;
 
 
 import android.os.Handler;
@@ -223,6 +220,19 @@ public class MainActivity extends AuthenticatableActivity implements ExplorerFra
             Intent i = new Intent(MainActivity.this, CustomerDetailsActivity.class);
             startActivity(i);
         }}, 500);
+
+
+        com.meamobile.printicular_sdk.core.models.Address a = new com.meamobile.printicular_sdk.core.models.Address();
+
+        a.setName("Daniel");
+        a.setEmail("daniel@meamobile.com");
+
+        mServiceManager.saveAddress(a)
+        .subscribe(x -> {
+            Log.d(TAG, x.toJsonString());
+        }, error -> {
+            Log.e(TAG, error.getLocalizedMessage());
+        });
     }
 
     ///-----------------------------------------------------------
