@@ -23,6 +23,7 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_alignParentBottom="true"
+        android:onClick="onNextButtonClick"
         android:text="next"
         android:textColor="#FFF" />
 
@@ -55,7 +56,8 @@
                 android:id="@+id/linearLayoutManualSearch"
                 android:orientation="vertical"
                 android:layout_width="match_parent"
-                android:layout_height="wrap_content">
+                android:layout_height="wrap_content"
+                android:background="#FFF">
 
                 <android.support.design.widget.TextInputLayout
                     android:layout_width="match_parent"

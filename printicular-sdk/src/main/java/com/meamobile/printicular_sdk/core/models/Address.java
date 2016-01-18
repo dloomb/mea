@@ -67,6 +67,16 @@ public class Address extends Model
         this.mPostcode = mPostcode;
     }
 
+    public Territory getTerritory()
+    {
+        return mTerritory;
+    }
+
+    public void setTerritory(Territory mTerritory)
+    {
+        this.mTerritory = mTerritory;
+    }
+
     public String getPhone() {
         return mPhone;
     }
@@ -95,10 +105,14 @@ public class Address extends Model
         return mDeviceToken;
     }
 
+    public void setDeviceToken(String mDeviceToken)
+    {
+        this.mDeviceToken = mDeviceToken;
+    }
+
     @Override
     public void populate(Map data) {
         super.populate(data);
-
 
         Map attributes = (Map) data.get("attributes");
 
@@ -115,5 +129,24 @@ public class Address extends Model
             mDeviceToken = (String) data.get("device_token");
         }
 
+    }
+
+    @Override
+    public Map<String, Object> evaporate()
+    {
+        Map <String, Object> data = super.evaporate();
+
+        Map<String, Object> attributes = (Map<String, Object>) data.get("attributes");
+        safePut(attributes, "line_1", mLine1);
+        safePut(attributes, "line_2", mLine2);
+        safePut(attributes, "city", mCity);
+        safePut(attributes, "state", mState);
+        safePut(attributes, "postcode", mPostcode);
+        safePut(attributes, "phone", mPhone);
+        safePut(attributes, "email", mEmail);
+        safePut(attributes, "name", mName);
+        safePut(attributes, "device_token", mDeviceToken);
+
+        return data;
     }
 }

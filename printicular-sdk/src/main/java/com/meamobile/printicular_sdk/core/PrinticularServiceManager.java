@@ -193,10 +193,23 @@ public class PrinticularServiceManager
         Map<String, String> params = new HashMap<>();
         params.put("deviceToken", getUniqueIdentifer());
 
-        return client.get("users/0/addresses", null, mAccessToken)
+        return client.get("users/0/addresses", params, mAccessToken)
                 .flatMap(response -> {
                     Map objects = (Map) Model.hydrate(response);
                     return Observable.just((Map<Long, Address>) objects.get("address"));
+                });
+    }
+
+    public Observable<Address> saveAddress(Address address)
+    {
+        APIClient client = new APIClient(getBaseUrlForEnvironment());
+
+        Map<String, Object> params = address.evaporate();
+
+        return client.post("users/0/addresses?deviceToken=" + getUniqueIdentifer() , params, mAccessToken)
+                .flatMap(response -> {
+                    Map objects = (Map) Model.hydrate(response);
+                    return Observable.just((Address) objects.get("address"));
                 });
     }
 

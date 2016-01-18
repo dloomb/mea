@@ -91,7 +91,16 @@ public class APIClient
                             connection.connect();
                             int responseCode = connection.getResponseCode();
 
-                            InputStream inputStream = connection.getInputStream();
+                            InputStream inputStream;
+                            try
+                            {
+                                inputStream = connection.getInputStream();
+                            }
+                            catch (Exception e)
+                            {
+                                inputStream = connection.getErrorStream();
+                            }
+
                             String json = readStream(inputStream);
                             inputStream.close();
                             Map<String, Object> map = new Gson().fromJson(json, new TypeToken<Map<String, Object>>() {}.getType());
@@ -110,7 +119,9 @@ public class APIClient
                     }
                 }
 
-        );
+        )
+        .subscribeOn(Schedulers.newThread())
+        .observeOn(AndroidSchedulers.mainThread());
     }
 
 
@@ -135,9 +146,7 @@ public class APIClient
             connection.setRequestProperty("Content-Length", "" + content.length());
             connection.setRequestProperty("Content-Language", "en-US");
 
-            return request(connection, accessToken, content)
-                    .subscribeOn(Schedulers.newThread())
-                    .observeOn(AndroidSchedulers.mainThread());
+            return request(connection, accessToken, content);
         }
         catch (Exception e)
         {
@@ -178,9 +187,7 @@ public class APIClient
 
             connection.setRequestMethod("GET");
 
-            return request(connection, accessToken)
-                    .subscribeOn(Schedulers.newThread())
-                    .observeOn(AndroidSchedulers.mainThread());
+            return request(connection, accessToken);
         }
         catch (Exception e)
         {

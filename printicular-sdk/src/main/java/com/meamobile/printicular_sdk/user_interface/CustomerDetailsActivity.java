@@ -16,9 +16,11 @@ import com.meamobile.printicular_sdk.R;
 import com.meamobile.printicular_sdk.core.PrinticularCartManager;
 import com.meamobile.printicular_sdk.core.PrinticularServiceManager;
 import com.meamobile.printicular_sdk.core.models.Address;
+import com.meamobile.printicular_sdk.core.models.Territory;
 import com.meamobile.printicular_sdk.user_interface.common.ObservableRelativeLayout;
 
 import java.util.List;
+import java.util.Locale;
 
 import rx.android.schedulers.AndroidSchedulers;
 
@@ -40,6 +42,7 @@ public class CustomerDetailsActivity extends CheckoutActivity
         LINE_2,
         CITY,
         STATE,
+        POSTCODE,
         COUNTRY
     }
 
@@ -67,6 +70,7 @@ public class CustomerDetailsActivity extends CheckoutActivity
             mEditTextAddressLine2,
             mEditTextCity,
             mEditTextState,
+            mEditTextPostCode,
             mEditTextCountry;
 
     private int mOriginalHeight = 0;
@@ -164,7 +168,24 @@ public class CustomerDetailsActivity extends CheckoutActivity
 
 
     ///-----------------------------------------------------------
-    /// @name TextWatcher
+    /// @name Actions
+    ///-----------------------------------------------------------
+
+    public void onNextButtonClick(View v)
+    {
+        PrinticularServiceManager manager = PrinticularServiceManager.getInstance();
+
+        manager.saveAddress(mAddress)
+                .subscribe(x-> {
+                    Log.d("", "");
+                }, error -> {
+                    Log.e("", "");
+                });
+    }
+
+
+    ///-----------------------------------------------------------
+    /// @name TextWatcher / Address Changing
     ///-----------------------------------------------------------
 
     protected void setupEditTextListeners()
@@ -191,14 +212,14 @@ public class CustomerDetailsActivity extends CheckoutActivity
                 .addTextChangedListener(new DetailsTextWatcher(mEditTextState, Field.STATE));
 
         (mEditTextCountry = (EditText) findViewById(R.id.editTextCountry))
-                .addTextChangedListener(new DetailsTextWatcher(mEditTextCountry, Field.COUNTRY));
+                .setOnClickListener(new View.OnClickListener()
+                {
+                    @Override
+                    public void onClick(View v)
+                    {
 
-        mEditTextCountry.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-
-            }
-        });
+                    }
+                });
     }
 
     class DetailsTextWatcher implements TextWatcher
@@ -233,11 +254,38 @@ public class CustomerDetailsActivity extends CheckoutActivity
                 case PHONE:
                     mAddress.setPhone(text);
                     break;
+
+
+
+                case LINE_1:
+                    mAddress.setLine1(text);
+                    break;
+
+                case LINE_2:
+                    mAddress.setLine2(text);
+                    break;
+
+                case CITY:
+                    mAddress.setCity(text);
+                    break;
+
+                case STATE:
+                    mAddress.setState(text);
+                    break;
+
+                case POSTCODE:
+                    mAddress.setPostcode(text);
+                    break;
             }
         }
 
         @Override
         public void afterTextChanged(Editable s) {}
+    }
+
+    public Territory territoryForCountry(Locale locale)
+    {
+        return new Territory(locale);
     }
 
 }

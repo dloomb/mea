@@ -222,7 +222,7 @@ public class MainActivity extends AuthenticatableActivity implements ExplorerFra
         {
             Intent i = new Intent(MainActivity.this, CustomerDetailsActivity.class);
             startActivity(i);
-        }}, 2 * 1000);
+        }}, 500);
     }
 
     ///-----------------------------------------------------------

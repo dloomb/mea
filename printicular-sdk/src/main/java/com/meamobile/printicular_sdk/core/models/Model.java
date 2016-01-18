@@ -86,84 +86,6 @@ public class Model
         return mMeta;
     }
 
-    ///-----------------------------------------------------------
-    /// @name Helpers
-    ///-----------------------------------------------------------
-
-
-    protected Object safeParse(Object input, String wantedClass)
-    {
-        if (input instanceof String)
-        {
-            switch (wantedClass)
-            {
-                case "STRING":
-                    return input;
-
-                case "DOUBLE":
-                    return Double.parseDouble((String) input);
-            }
-        }
-
-        if (input instanceof Number)
-        {
-            switch (wantedClass)
-            {
-                case "STRING":
-                    return ((Number) input).toString();
-
-                case "DOUBLE":
-                    return ((Number) input).doubleValue();
-
-                case "BOOLEAN":
-                    return ((Number) input).intValue() > 0;
-            }
-        }
-
-        if (input instanceof Boolean)
-        {
-            switch (wantedClass)
-            {
-                case "BOOLEAN":
-                    return input;
-            }
-        }
-
-        return null;
-    }
-
-    protected Date parseDate(String input)
-    {
-        SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd kk:mm:ss zzz");
-        Date date = null;
-        try {
-            date = sdf.parse(input);
-        } catch (ParseException e) {
-            sdf = new SimpleDateFormat("yyyy-MM-dd kk:mm:ss");
-            try {
-                date = sdf.parse(input);
-            } catch (ParseException e1) {
-                sdf = new SimpleDateFormat("yyyy-MM-dd");
-
-                try
-                {
-                    date = sdf.parse(input);
-                }
-                catch (Exception e2)
-                {
-                    e2.printStackTrace();
-                    return null;
-                }
-            }
-        }
-        return date;
-    }
-
-    protected String dateToString(Date date) {
-        SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd kk:mm:ss zzz");
-        return sdf.format(date);
-    }
-
 
     ///-----------------------------------------------------------
     /// @name Hydration
@@ -268,20 +190,15 @@ public class Model
         data.put("type", mType);
 
         Map<String, Object> attributes = new HashMap<>();
-        attributes.put("created_at", dateToString(mCreatedAt));
-        attributes.put("upadted_at", dateToString(mUpdatedAt));
+        safePut(attributes, "created_at", dateToString(mCreatedAt));
+        safePut(attributes, "updated_at", dateToString(mUpdatedAt));
 
         data.put("attributes", attributes);
 
-        if (mMeta != null)
-        {
-            data.put("meta", mMeta);
-        }
 
-        if (mRelationshipMap != null)
-        {
-            data.put("relationships", mRelationshipMap);
-        }
+        safePut(attributes, "meta", mMeta);
+
+        safePut(attributes, "relationships", mRelationshipMap);
 
         return data;
     }
@@ -292,5 +209,93 @@ public class Model
         return new Gson().toJson(evaporated);
     }
 
+
+
+
+
+
+    ///-----------------------------------------------------------
+    /// @name Helpers
+    ///-----------------------------------------------------------
+
+    protected void safePut(Map map, Object key, Object value)
+    {
+        if (map != null && key != null && value != null)
+        {
+            map.put(key, value);
+        }
+    }
+
+    protected Object safeParse(Object input, String wantedClass)
+    {
+        if (input instanceof String)
+        {
+            switch (wantedClass)
+            {
+                case "STRING":
+                    return input;
+
+                case "DOUBLE":
+                    return Double.parseDouble((String) input);
+            }
+        }
+
+        if (input instanceof Number)
+        {
+            switch (wantedClass)
+            {
+                case "STRING":
+                    return ((Number) input).toString();
+
+                case "DOUBLE":
+                    return ((Number) input).doubleValue();
+
+                case "BOOLEAN":
+                    return ((Number) input).intValue() > 0;
+            }
+        }
+
+        if (input instanceof Boolean)
+        {
+            switch (wantedClass)
+            {
+                case "BOOLEAN":
+                    return input;
+            }
+        }
+
+        return null;
+    }
+
+    protected Date parseDate(String input)
+    {
+        SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd kk:mm:ss zzz");
+        Date date = null;
+        try {
+            date = sdf.parse(input);
+        } catch (ParseException e) {
+            sdf = new SimpleDateFormat("yyyy-MM-dd kk:mm:ss");
+            try {
+                date = sdf.parse(input);
+            } catch (ParseException e1) {
+                sdf = new SimpleDateFormat("yyyy-MM-dd");
+
+                try
+                {
+                    date = sdf.parse(input);
+                }
+                catch (Exception e2)
+                {
+                    e2.printStackTrace();
+                    return null;
+                }
+            }
+        }
+        return date;
+    }
+
+    protected String dateToString(Date date) {
+        return (date == null) ? null : new SimpleDateFormat("yyyy-MM-dd kk:mm:ss zzz").format(date);
+    }
 
 }
