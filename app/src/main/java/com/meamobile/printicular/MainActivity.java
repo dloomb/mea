@@ -37,6 +37,7 @@ import com.meamobile.photokit.user_interface.ExplorerFragment;
 import com.meamobile.photokit.user_interface.ExplorerFragment.ExplorerFragmentDelegate;
 import com.meamobile.printicular.cart.CartFragment;
 import com.meamobile.printicular.cart.PhotoKitCartManager;
+import com.meamobile.printicular.settings.LocationPickerDialog;
 import com.meamobile.printicular_sdk.core.PrinticularCartManager;
 import com.meamobile.printicular_sdk.core.PrinticularServiceManager;
 import com.meamobile.printicular_sdk.core.PrinticularServiceManager.PrinticularEnvironment;
@@ -220,7 +221,7 @@ public class MainActivity extends AuthenticatableActivity implements ExplorerFra
         new Handler(Looper.getMainLooper()).postDelayed(new Runnable() {@Override public void run()
         {
             Intent i = new Intent(MainActivity.this, CustomerDetailsActivity.class);
-//            startActivity(i);
+            startActivity(i);
         }}, 2 * 1000);
     }
 
@@ -269,22 +270,55 @@ public class MainActivity extends AuthenticatableActivity implements ExplorerFra
 
     public void onPickupButtonPressed(View v)
     {
-        if (checkCartValidity())
+        if (!checkCartValidity())
         {
-            PrintService service = PrinticularServiceManager.getInstance().getPrintServiceWithId(3); // Should eventually be pulled based on Territory Model
-
-            switch (mCountryLocale.getISO3Country())
-            {
-                case "NZL":
-                    service = PrinticularServiceManager.getInstance().getPrintServiceWithId(3);
-                    break;
-            }
-
-            PrinticularCartManager.getInstance().setCurrentPrintService(service);
-
-            Intent i = new Intent(MainActivity.this, ManageOrderActivity.class);
-            startActivity(i);
+            return;
         }
+
+        if (mCountryLocale == null)
+        {
+            LocationPickerDialog picker = new LocationPickerDialog(this);
+            picker.setLocationPickerDialogInterface(new LocationPickerDialog.LocationPickerDialogInterface()
+            {
+                @Override
+                public void OnCountrySelected(LocationPickerDialog dialog, Locale country) {}
+
+                @Override
+                public void OnOkClicked(LocationPickerDialog dialog, Locale country)
+                {
+                    mCountryLocale = country;
+                    LocationUtil.setUserSavedCountry(country);
+                    handlePickupPressed();
+                    dialog.dismiss();
+                }
+
+                @Override
+                public void OnCancelClicked(LocationPickerDialog dialog, Locale country) {dialog.dismiss();}
+            });
+            picker.setCurrentLocale(LocationUtil.getCurrentCountry());
+            picker.show();
+
+            return;
+        }
+
+        handlePickupPressed();
+    }
+
+    protected void handlePickupPressed()
+    {
+        PrintService service = PrinticularServiceManager.getInstance().getPrintServiceWithId(3); // Should eventually be pulled based on Territory Model
+
+        switch (mCountryLocale.getISO3Country())
+        {
+            case "NZL":
+                service = PrinticularServiceManager.getInstance().getPrintServiceWithId(3);
+                break;
+        }
+
+        PrinticularCartManager.getInstance().setCurrentPrintService(service);
+
+        Intent i = new Intent(MainActivity.this, ManageOrderActivity.class);
+        startActivity(i);
     }
 
 
