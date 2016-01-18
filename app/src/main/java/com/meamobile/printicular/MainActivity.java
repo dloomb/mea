@@ -269,9 +269,6 @@ public class MainActivity extends AuthenticatableActivity implements ExplorerFra
 
     public void onPickupButtonPressed(View v)
     {
-        DialogC
-
-
         if (checkCartValidity())
         {
             PrintService service = PrinticularServiceManager.getInstance().getPrintServiceWithId(3); // Should eventually be pulled based on Territory Model

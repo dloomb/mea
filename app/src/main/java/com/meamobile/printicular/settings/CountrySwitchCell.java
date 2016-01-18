@@ -12,7 +12,7 @@ import com.meamobile.printicular.R;
 
 import java.util.Locale;
 
-public class CountrySwitchCell extends RecyclerView.ViewHolder
+public class CountrySwitchCell extends RecyclerView.ViewHolder implements LocationPickerDialog.LocationPickerDialogInterface, View.OnClickListener
 {
     private Context mContext;
     private SettingsRecyclerViewAdapter mAdapter;
@@ -29,7 +29,7 @@ public class CountrySwitchCell extends RecyclerView.ViewHolder
         mImageView = (ImageView) itemView.findViewById(R.id.imageView);
         mTextView = (TextView) itemView.findViewById(R.id.textView);
         mImageButton = (ImageButton) itemView.findViewById(R.id.imageButton);
-        itemView.setOnClickListener(getOnClickListener());
+        itemView.setOnClickListener(this);
     }
 
     public void setCountry(Locale country)
@@ -60,44 +60,36 @@ public class CountrySwitchCell extends RecyclerView.ViewHolder
         }
     }
 
-    public View.OnClickListener getOnClickListener()
+    @Override
+    public void onClick(View v)
     {
-        return new View.OnClickListener() {@Override public void onClick(View v)
-        {
-            LocationPickerDialog dialog = new LocationPickerDialog(mContext);
-            dialog.setLocationPickerDialogInterface(getLocationPickerInterface());
-            dialog.setCurrentLocale(LocationUtil.getCurrentCountry());
-            dialog.show();
-        }};
+        LocationPickerDialog dialog = new LocationPickerDialog(mContext);
+        dialog.setLocationPickerDialogInterface(this);
+        dialog.setCurrentLocale(LocationUtil.getCurrentCountry());
+        dialog.show();
     }
 
     ///-----------------------------------------------------------
     /// @name Location Picker
     ///-----------------------------------------------------------
 
-    protected LocationPickerDialog.LocationPickerDialogInterface getLocationPickerInterface()
+    @Override
+    public void OnCountrySelected(LocationPickerDialog dialog, Locale country)
     {
-        return new LocationPickerDialog.LocationPickerDialogInterface()
-        {
-            @Override
-            public void OnCountrySelected(LocationPickerDialog dialog, Locale country)
-            {
 
-            }
+    }
 
-            @Override
-            public void OnOkClicked(LocationPickerDialog dialog, Locale country)
-            {
-                LocationUtil.setUserSavedCountry(country);
-                mAdapter.notifyDataSetChanged();
-                dialog.dismiss();
-            }
+    @Override
+    public void OnOkClicked(LocationPickerDialog dialog, Locale country)
+    {
+        LocationUtil.setUserSavedCountry(country);
+        mAdapter.notifyDataSetChanged();
+        dialog.dismiss();
+    }
 
-            @Override
-            public void OnCancelClicked(LocationPickerDialog dialog, Locale country)
-            {
-                dialog.dismiss();
-            }
-        };
+    @Override
+    public void OnCancelClicked(LocationPickerDialog dialog, Locale country)
+    {
+        dialog.dismiss();
     }
 }

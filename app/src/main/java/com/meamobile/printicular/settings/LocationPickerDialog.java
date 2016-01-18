@@ -98,7 +98,9 @@ public class LocationPickerDialog extends Dialog
 
     protected int resourceIdFromLocale(Locale locale)
     {
-        switch (locale.getISO3Country())
+        String iso = locale == null ? "" : locale.getISO3Country();
+
+        switch (iso)
         {
             case "NZL":
                 return R.id.radioNZ;
