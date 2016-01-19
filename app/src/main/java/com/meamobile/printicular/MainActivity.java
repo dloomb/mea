@@ -220,19 +220,6 @@ public class MainActivity extends AuthenticatableActivity implements ExplorerFra
             Intent i = new Intent(MainActivity.this, CustomerDetailsActivity.class);
             startActivity(i);
         }}, 500);
-
-
-        com.meamobile.printicular_sdk.core.models.Address a = new com.meamobile.printicular_sdk.core.models.Address();
-
-        a.setName("Daniel");
-        a.setEmail("daniel@meamobile.com");
-
-        mServiceManager.saveAddress(a)
-        .subscribe(x -> {
-            Log.d(TAG, x.toJsonString());
-        }, error -> {
-            Log.e(TAG, error.getLocalizedMessage());
-        });
     }
 
     ///-----------------------------------------------------------

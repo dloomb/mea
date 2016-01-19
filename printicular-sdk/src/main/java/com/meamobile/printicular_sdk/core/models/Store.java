@@ -69,10 +69,10 @@ public class Store extends Model
     }
 
     @Override
-    public Map<String, Object> evaporate() {
-        Map <String, Object> data = super.evaporate();
+    public Map<String, Map> evaporate() {
+        Map <String, Map> data = super.evaporate();
 
-        Map<String, Object> attributes = (Map<String, Object>) data.get("attributes");
+        Map<String, Object> attributes = (Map<String, Object>) data.get("data").get("attributes");
         attributes.put("name", mName);
         attributes.put("address", mAddress);
         attributes.put("city", mCity);
@@ -138,5 +138,10 @@ public class Store extends Model
     public String getRetailerId()
     {
         return mRetailerId;
+    }
+
+    public String getRetailerStoreId()
+    {
+        return mRetailerStoreId;
     }
 }

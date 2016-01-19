@@ -205,8 +205,7 @@ public class PrinticularServiceManager
         APIClient client = new APIClient(getBaseUrlForEnvironment());
 
 
-        Map<String, Object> params = new HashMap<>();
-        params.put("data", address.evaporate());
+        Map<String, Map> params = address.evaporate();
 
         return client.post("users/0/addresses?deviceToken=" + getUniqueIdentifer() , params, mAccessToken)
                 .flatMap(response -> {

@@ -197,12 +197,12 @@ public class Model
     /// @name Evaporate
     ///-----------------------------------------------------------
 
-    public Map<String, Object> evaporate()
+    public Map<String, Map> evaporate()
     {
         Map<String, Object> data = new HashMap<>();
 
         safePut(data, "id", mId);
-        data.put("type", mType);
+        data.put("type", getType());
 
         Map<String, Object> attributes = new HashMap<>();
         safePut(attributes, "created_at", dateToString(mCreatedAt));
@@ -215,7 +215,9 @@ public class Model
 
         safePut(attributes, "relationships", mRelationshipMap);
 
-        return data;
+        Map<String, Map> out = new HashMap();
+        out.put("data", data);
+        return out;
     }
 
     public String toJsonString()
@@ -316,6 +318,26 @@ public class Model
 
     protected String dateToString(Date date) {
         return (date == null) ? null : new SimpleDateFormat("yyyy-MM-dd kk:mm:ss zzz").format(date);
+    }
+
+    protected Map<String, Object> attributesFromMap(Map <String, Map> map)
+    {
+        Map attributes = null;
+        if (map != null)
+        {
+            attributes = map.get("attributes");
+
+            if (attributes == null)
+            {
+                Map<String, Map> data = map.get("data");
+                if (data != null)
+                {
+                    attributes = data.get("attributes");
+                }
+            }
+        }
+
+        return attributes;
     }
 
 }

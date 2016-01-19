@@ -21,6 +21,49 @@ public class Address extends Model
             mDeviceToken;
 
 
+    @Override
+    public void populate(Map data) {
+        super.populate(data);
+
+        Map attributes = attributesFromMap(data);
+
+        if (attributes != null)
+        {
+            mLine1 = (String) safeParse(attributes.get("line_1"), ClassType.STRING);
+            mLine2 = (String) safeParse(attributes.get("line_2"), ClassType.STRING);
+            mCity = (String) safeParse(attributes.get("city"), ClassType.STRING);
+            mState = (String) safeParse(attributes.get("state"), ClassType.STRING);
+            mPostcode = (String) safeParse(attributes.get("postcode"), ClassType.STRING);
+            mPhone = (String) safeParse(attributes.get("phone"), ClassType.STRING);
+            mEmail = (String) safeParse(attributes.get("email"), ClassType.STRING);
+            mName = (String) safeParse(attributes.get("name"), ClassType.STRING);
+            mDeviceToken = (String) safeParse(attributes.get("device_token"), ClassType.STRING);
+        }
+
+    }
+    @Override
+    public Map<String, Map> evaporate()
+    {
+        Map <String, Map> data = super.evaporate();
+
+        Map<String, Object> attributes = attributesFromMap(data);
+        if (attributes != null)
+        {
+            safePut(attributes, "line_1", mLine1);
+            safePut(attributes, "line_2", mLine2);
+            safePut(attributes, "city", mCity);
+            safePut(attributes, "state", mState);
+            safePut(attributes, "postcode", mPostcode);
+            safePut(attributes, "phone", mPhone);
+            safePut(attributes, "email", mEmail);
+            safePut(attributes, "name", mName);
+            safePut(attributes, "device_token", mDeviceToken);
+        }
+
+
+        return data;
+    }
+
 
     ///-----------------------------------------------------------
     /// @name Proprety Access
@@ -113,45 +156,5 @@ public class Address extends Model
     public void setDeviceToken(String mDeviceToken)
     {
         this.mDeviceToken = mDeviceToken;
-    }
-
-    @Override
-    public void populate(Map data) {
-        super.populate(data);
-
-        Map attributes = (Map) data.get("attributes");
-
-        if (attributes != null)
-        {
-            mLine1 = (String) safeParse(attributes.get("line_1"), ClassType.STRING);
-            mLine2 = (String) safeParse(attributes.get("line_2"), ClassType.STRING);
-            mCity = (String) safeParse(attributes.get("city"), ClassType.STRING);
-            mState = (String) safeParse(attributes.get("state"), ClassType.STRING);
-            mPostcode = (String) safeParse(attributes.get("postcode"), ClassType.STRING);
-            mPhone = (String) safeParse(attributes.get("phone"), ClassType.STRING);
-            mEmail = (String) safeParse(attributes.get("email"), ClassType.STRING);
-            mName = (String) safeParse(attributes.get("name"), ClassType.STRING);
-            mDeviceToken = (String) safeParse(attributes.get("device_token"), ClassType.STRING);
-        }
-
-    }
-
-    @Override
-    public Map<String, Object> evaporate()
-    {
-        Map <String, Object> data = super.evaporate();
-
-        Map<String, Object> attributes = (Map<String, Object>) data.get("attributes");
-        safePut(attributes, "line_1", mLine1);
-        safePut(attributes, "line_2", mLine2);
-        safePut(attributes, "city", mCity);
-        safePut(attributes, "state", mState);
-        safePut(attributes, "postcode", mPostcode);
-        safePut(attributes, "phone", mPhone);
-        safePut(attributes, "email", mEmail);
-        safePut(attributes, "name", mName);
-        safePut(attributes, "device_token", mDeviceToken);
-
-        return data;
     }
 }

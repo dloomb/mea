@@ -10,12 +10,21 @@ import com.meamobile.printicular_sdk.core.models.Address;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
+import org.mockito.Mockito;
 
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.TimeUnit;
 
 import static org.junit.Assert.*;
 
-public class PrinticularServiceManagerTest {
+public class PrinticularServiceManagerTest
+{
+
+    @Test
+    public void it_can_fetch_addresses() throws Exception
+    {
+        PrinticularServiceManager m = Mockito.mock(PrinticularServiceManager.class);
+    }
+
 
 }
