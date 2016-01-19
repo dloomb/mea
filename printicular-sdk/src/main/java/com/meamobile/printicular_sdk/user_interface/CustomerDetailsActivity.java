@@ -63,6 +63,7 @@ public class CustomerDetailsActivity extends CheckoutActivity
             mViewManualSelectionDetail;
 
     private EditText
+            mEditTextSearch,
             mEditTextName,
             mEditTextEmail,
             mEditTextPhone,
@@ -106,12 +107,14 @@ public class CustomerDetailsActivity extends CheckoutActivity
     {
         mSearchMode = SearchMode.AUTOMATIC;
         layoutForCurrentSearchMode();
+        mEditTextSearch.requestFocus();
     }
 
     public void onTypeAddressClicked(View v)
     {
         mSearchMode = SearchMode.MANUAL;
         layoutForCurrentSearchMode();
+        mEditTextAddressLine1.requestFocus();
     }
 
     protected void setupNextButtonHidingListener()
@@ -190,6 +193,9 @@ public class CustomerDetailsActivity extends CheckoutActivity
 
     protected void setupEditTextListeners()
     {
+        (mEditTextSearch = (EditText) findViewById(R.id.editTextSearch))
+                .addTextChangedListener(new SearchTextWatcher());
+
         (mEditTextName = (EditText) findViewById(R.id.editTextName))
                 .addTextChangedListener(new DetailsTextWatcher(mEditTextName, Field.NAME));
 
@@ -221,6 +227,30 @@ public class CustomerDetailsActivity extends CheckoutActivity
                     }
                 });
     }
+
+
+    class SearchTextWatcher implements TextWatcher
+    {
+
+        @Override
+        public void beforeTextChanged(CharSequence s, int start, int count, int after)
+        {
+
+        }
+
+        @Override
+        public void onTextChanged(CharSequence s, int start, int before, int count)
+        {
+
+        }
+
+        @Override
+        public void afterTextChanged(Editable s)
+        {
+
+        }
+    }
+
 
     class DetailsTextWatcher implements TextWatcher
     {
