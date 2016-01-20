@@ -46,7 +46,7 @@ public class Store extends Model
     {
         super.populate(data);
 
-        Map attributes = (Map) data.get("attributes");
+        Map attributes = findMapWithKey(data, "attributes");
 
         if (attributes != null)
         {

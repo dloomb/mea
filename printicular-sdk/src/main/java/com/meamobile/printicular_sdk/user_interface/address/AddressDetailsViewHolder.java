@@ -16,7 +16,9 @@ public class AddressDetailsViewHolder extends RecyclerView.ViewHolder
             mTextViewName,
             mTextViewLine1,
             mTextViewLine2;
-    private RelativeLayout mRelativeLayoutLoadingContainer, mRelativeLayoutContent;
+    private RelativeLayout
+            mRelativeLayoutLoadingContainer,
+            mRelativeLayoutTextContainer;
 
     private boolean mLoading;
 
@@ -24,7 +26,7 @@ public class AddressDetailsViewHolder extends RecyclerView.ViewHolder
     {
         super(itemView);
 
-        mRelativeLayoutContent = (RelativeLayout) itemView.findViewById(R.id.relativeLayoutContent);
+        mRelativeLayoutTextContainer = (RelativeLayout) itemView.findViewById(R.id.relativeLayoutTextContainer);
         mRelativeLayoutLoadingContainer = (RelativeLayout) itemView.findViewById(R.id.relativeLayoutLoadingContainer);
 
         mTextViewTitle = (TextView) itemView.findViewById(R.id.textViewTitle);
@@ -75,11 +77,11 @@ public class AddressDetailsViewHolder extends RecyclerView.ViewHolder
         mLoading = loading;
 
         if (loading) {
-            mRelativeLayoutContent.setVisibility(View.GONE);
+            mRelativeLayoutTextContainer.setVisibility(View.GONE);
             mRelativeLayoutLoadingContainer.setVisibility(View.VISIBLE);
         }
         else {
-            mRelativeLayoutContent.setVisibility(View.VISIBLE);
+            mRelativeLayoutTextContainer.setVisibility(View.VISIBLE);
             mRelativeLayoutLoadingContainer.setVisibility(View.GONE);
         }
     }

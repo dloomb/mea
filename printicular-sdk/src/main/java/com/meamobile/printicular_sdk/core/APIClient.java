@@ -2,6 +2,7 @@ package com.meamobile.printicular_sdk.core;
 
 
 import android.net.Uri;
+import android.util.Log;
 
 import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
@@ -88,6 +89,8 @@ public class APIClient
                                 os.close();
                             }
 
+                            Log.d(TAG, "Connection Open: " + connection.getURL().toString() );
+
                             connection.connect();
                             int responseCode = connection.getResponseCode();
 
@@ -120,7 +123,7 @@ public class APIClient
                 }
 
         )
-        .subscribeOn(Schedulers.newThread())
+        .subscribeOn(Schedulers.io())
         .observeOn(AndroidSchedulers.mainThread())
         .doOnUnsubscribe(() -> {
             //TODO cancel any and all running operations

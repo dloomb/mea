@@ -10,6 +10,7 @@ import com.meamobile.printicular_sdk.core.models.Image;
 import com.meamobile.printicular_sdk.core.models.LineItem;
 import com.meamobile.printicular_sdk.core.models.Order;
 import com.meamobile.printicular_sdk.core.models.PrintService;
+import com.meamobile.printicular_sdk.core.models.Product;
 import com.meamobile.printicular_sdk.core.models.Store;
 
 import java.util.ArrayList;
@@ -79,10 +80,12 @@ public class PrinticularCartManager
 
     public void addImageToCart(Image image)
     {
-        if (cartContainsImage(image) == false)
+        if (!cartContainsImage(image))
         {
+            LineItem lineItem = new LineItem();
             ArrayList<LineItem> items = new ArrayList<LineItem>();
-            items.add(new LineItem());
+            items.add(lineItem);
+            mLineItems.add(lineItem);
             mData.put(image, items);
         }
         else
@@ -100,6 +103,11 @@ public class PrinticularCartManager
     {
         if (cartContainsImage(image))
         {
+            List<LineItem> items = mData.get(image);
+            for (Object item : items)
+            {
+                mLineItems.remove(item);
+            }
             mData.remove(image);
         }
     }
@@ -109,6 +117,15 @@ public class PrinticularCartManager
         return mData.containsKey(image);
     }
 
+
+    protected Product defaultProductForImage(Image image) {
+        int w = image.getWidth();
+        int h = image.getHeight();
+
+        float ratio = Math.min(w, h) / Math.max(w, h);
+
+        return mCurrentPrintService.getProducts().get(0);
+    }
 
 
     ///-----------------------------------------------------------
@@ -162,7 +179,6 @@ public class PrinticularCartManager
         {
             return Observable.error(new RuntimeException("No Line Items"));
         }
-
 
         order.setLineItems(mLineItems);
         order.setPrintService(mCurrentPrintService);

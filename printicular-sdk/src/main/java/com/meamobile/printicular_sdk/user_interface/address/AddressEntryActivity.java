@@ -11,6 +11,7 @@ import android.widget.Button;
 import android.widget.EditText;
 import android.widget.LinearLayout;
 import android.widget.RelativeLayout;
+import android.widget.TextView;
 
 import com.meamobile.printicular_sdk.R;
 import com.meamobile.printicular_sdk.core.PrinticularCartManager;
@@ -102,8 +103,8 @@ public class AddressEntryActivity extends CheckoutActivity
         mViewManualSelectionDetail = findViewById(R.id.viewManualSelectionDetail);
 
         setupNextButtonHidingListener();
-        layoutForCurrentSearchMode();
         loadOrSetupAddress();
+        layoutForCurrentSearchMode();
     }
 
 
@@ -182,6 +183,18 @@ public class AddressEntryActivity extends CheckoutActivity
         {
             mAddress = new Address();
         }
+        else {
+            mSearchMode = SearchMode.MANUAL;
+
+            mEditTextName.setText(mAddress.getName());
+            mEditTextEmail.setText(mAddress.getEmail());
+            mEditTextPhone.setText(mAddress.getPhone());
+            mEditTextAddressLine1.setText(mAddress.getLine1());
+            mEditTextAddressLine2.setText(mAddress.getLine2());
+            mEditTextCity.setText(mAddress.getCity());
+            mEditTextState.setText(mAddress.getState());
+            mEditTextPostCode.setText(mAddress.getPostcode());
+        }
     }
 
 
@@ -195,6 +208,7 @@ public class AddressEntryActivity extends CheckoutActivity
 
         manager.saveAddress(mAddress)
                 .subscribe(x-> {
+                    mCartManager.setCurrentAddress(x);
                     finish();
                 }, error -> {
                     new AlertDialog.Builder(this)
@@ -234,6 +248,9 @@ public class AddressEntryActivity extends CheckoutActivity
 
         (mEditTextState = (EditText) findViewById(R.id.editTextState))
                 .addTextChangedListener(new DetailsTextWatcher(mEditTextState, Field.STATE));
+
+        (mEditTextPostCode = (EditText) findViewById(R.id.editTextPostcode))
+                .addTextChangedListener(new DetailsTextWatcher(mEditTextPostCode, Field.STATE));
 
         (mEditTextCountry = (EditText) findViewById(R.id.editTextCountry))
                 .setOnClickListener(new View.OnClickListener()

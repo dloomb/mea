@@ -25,7 +25,7 @@ public class Address extends Model
     public void populate(Map data) {
         super.populate(data);
 
-        Map attributes = attributesFromMap(data);
+        Map attributes = findMapWithKey(data, "attributes");
 
         if (attributes != null)
         {
@@ -46,7 +46,7 @@ public class Address extends Model
     {
         Map <String, Map> data = super.evaporate();
 
-        Map<String, Object> attributes = attributesFromMap(data);
+        Map<String, Object> attributes = findMapWithKey(data, "attributes");
         if (attributes != null)
         {
             safePut(attributes, "line_1", mLine1);

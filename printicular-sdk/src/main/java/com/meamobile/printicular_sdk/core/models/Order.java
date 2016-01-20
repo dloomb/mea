@@ -28,9 +28,9 @@ public class Order extends Model
         return mLineItems;
     }
 
-    public void setLineItems(List<LineItem> mLineItems)
+    public void setLineItems(List<LineItem> lineItems)
     {
-        this.mLineItems = mLineItems;
+        mLineItems = lineItems;
     }
 
     public Address getAddress()
@@ -38,9 +38,9 @@ public class Order extends Model
         return mAddress;
     }
 
-    public void setAddress(Address mAddress)
+    public void setAddress(Address address)
     {
-        this.mAddress = mAddress;
+        mAddress = address;
     }
 
     public Store getStore()
@@ -48,9 +48,9 @@ public class Order extends Model
         return mStore;
     }
 
-    public void setStore(Store mStore)
+    public void setStore(Store store)
     {
-        this.mStore = mStore;
+        mStore = store;
     }
 
     public PrintService getPrintService()
@@ -58,9 +58,9 @@ public class Order extends Model
         return mPrintService;
     }
 
-    public void setPrintService(PrintService mPrintService)
+    public void setPrintService(PrintService printService)
     {
-        this.mPrintService = mPrintService;
+        mPrintService = printService;
     }
 
     public String getCurrency()
@@ -68,9 +68,9 @@ public class Order extends Model
         return mCurrency;
     }
 
-    public void setCurrency(String mCurrency)
+    public void setCurrency(String currency)
     {
-        this.mCurrency = mCurrency;
+        mCurrency = currency;
     }
 
     public String getClientName()
@@ -78,9 +78,9 @@ public class Order extends Model
         return mClientName;
     }
 
-    public void setClientName(String mClientName)
+    public void setClientName(String clientName)
     {
-        this.mClientName = mClientName;
+        mClientName = clientName;
     }
 
     public String getClientVersion()
@@ -88,9 +88,9 @@ public class Order extends Model
         return mClientVersion;
     }
 
-    public void setClientVersion(String mClientVersion)
+    public void setClientVersion(String clientVersion)
     {
-        this.mClientVersion = mClientVersion;
+        mClientVersion = clientVersion;
     }
     //endregion
 }

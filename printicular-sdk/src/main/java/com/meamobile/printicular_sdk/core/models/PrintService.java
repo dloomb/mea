@@ -37,7 +37,7 @@ public class PrintService extends Model
     private String mName, mDisplayName, mDefaultCurrency;
     private FulfillmentType mFulFillmentType;
     private boolean mEnforceDefaultCurrency, mAutoConfirmable;
-    private List mProducts;
+    private List<Product> mProducts;
 
     public PrintService(){}
 
@@ -52,7 +52,7 @@ public class PrintService extends Model
     {
         super.populate(data);
 
-        Map attributes = (Map) data.get("attributes");
+        Map attributes = findMapWithKey(data, "attributes");
 
         if (attributes != null)
         {
@@ -77,7 +77,7 @@ public class PrintService extends Model
             List<Map> data = (List) productsRealtion.get("data");
             if (data != null)
             {
-                mProducts = new ArrayList<Price>();
+                mProducts = new ArrayList<Product>();
                 for (Map map : data)
                 {
                     long priceId = ((Number) map.get("id")).longValue();
@@ -104,5 +104,9 @@ public class PrintService extends Model
     public String getDefaultCurrency()
     {
         return mDefaultCurrency != null ? mDefaultCurrency : "USD";
+    }
+
+    public List<Product> getProducts() {
+        return mProducts;
     }
 }

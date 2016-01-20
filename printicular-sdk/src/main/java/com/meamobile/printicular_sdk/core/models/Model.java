@@ -33,6 +33,9 @@ public class Model
 
     public void populate(Map data)
     {
+        Map nestedData = findMapWithKey(data, "data");
+        data = nestedData != null ? nestedData : data;
+
         mId = ((Number) data.get("id")).longValue();
         mType = (String) data.get("type");
 
@@ -320,24 +323,24 @@ public class Model
         return (date == null) ? null : new SimpleDateFormat("yyyy-MM-dd kk:mm:ss zzz").format(date);
     }
 
-    protected Map<String, Object> attributesFromMap(Map <String, Map> map)
+    protected Map<String, Object> findMapWithKey(Map<String, Map> map, String key)
     {
-        Map attributes = null;
+        Map result = null;
         if (map != null)
         {
-            attributes = map.get("attributes");
+            result = map.get(key);
 
-            if (attributes == null)
+            if (result == null)
             {
                 Map<String, Map> data = map.get("data");
                 if (data != null)
                 {
-                    attributes = data.get("attributes");
+                    result = data.get(key);
                 }
             }
         }
 
-        return attributes;
+        return result;
     }
 
 }
