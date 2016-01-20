@@ -45,8 +45,8 @@ public class StoreDetailsViewHolder extends RecyclerView.ViewHolder
 
         mImageViewStoreLogo = (ImageView) itemView.findViewById(R.id.imageViewStoreLogo);
         mTextViewTitle = (TextView) itemView.findViewById(R.id.textViewTitle);
-        mTextViewLineOne = (TextView) itemView.findViewById(R.id.textViewAddressLine1);
-        mTextViewLineTwo = (TextView) itemView.findViewById(R.id.textViewAddressLine2);
+        mTextViewLineOne = (TextView) itemView.findViewById(R.id.textViewLine1);
+        mTextViewLineTwo = (TextView) itemView.findViewById(R.id.textViewLine2);
         mTextViewSpecial = (TextView) itemView.findViewById(R.id.textViewSpecial);
         mImageViewSpecial = (ImageView) itemView.findViewById(R.id.imageViewSpecial);
         mImageViewAccessory = (ImageView) itemView.findViewById(R.id.imageViewAccessory);

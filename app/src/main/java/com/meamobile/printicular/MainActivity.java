@@ -41,7 +41,7 @@ import com.meamobile.printicular_sdk.core.PrinticularCartManager;
 import com.meamobile.printicular_sdk.core.PrinticularServiceManager;
 import com.meamobile.printicular_sdk.core.PrinticularServiceManager.PrinticularEnvironment;
 import com.meamobile.printicular_sdk.core.models.PrintService;
-import com.meamobile.printicular_sdk.user_interface.CustomerDetailsActivity;
+import com.meamobile.printicular_sdk.user_interface.address.AddressEntryActivity;
 import com.meamobile.printicular_sdk.user_interface.ManageOrderActivity;
 
 import java.util.Locale;
@@ -217,8 +217,8 @@ public class MainActivity extends AuthenticatableActivity implements ExplorerFra
         //For Testing A Activity
         new Handler(Looper.getMainLooper()).postDelayed(new Runnable() {@Override public void run()
         {
-            Intent i = new Intent(MainActivity.this, CustomerDetailsActivity.class);
-            startActivity(i);
+            Intent i = new Intent(MainActivity.this, AddressEntryActivity.class);
+//            startActivity(i);
         }}, 500);
     }
 

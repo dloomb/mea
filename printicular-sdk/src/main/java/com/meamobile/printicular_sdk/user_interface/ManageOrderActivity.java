@@ -1,33 +1,44 @@
 package com.meamobile.printicular_sdk.user_interface;
 
+import android.app.AlertDialog;
 import android.content.Intent;
 import android.graphics.PorterDuff;
 import android.os.Bundle;
-import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.Button;
-import android.widget.ImageButton;
 import android.widget.LinearLayout;
-import android.widget.RelativeLayout;
 import android.widget.TextView;
 
 import com.meamobile.printicular_sdk.R;
 import com.meamobile.printicular_sdk.core.PrinticularCartManager;
+import com.meamobile.printicular_sdk.core.PrinticularServiceManager;
+import com.meamobile.printicular_sdk.core.models.Address;
+import com.meamobile.printicular_sdk.core.models.Order;
 import com.meamobile.printicular_sdk.core.models.PrintService.FulfillmentType;
 import com.meamobile.printicular_sdk.core.models.Store;
+import com.meamobile.printicular_sdk.user_interface.address.AddressDetailsViewHolder;
+import com.meamobile.printicular_sdk.user_interface.address.AddressListActivity;
+import com.meamobile.printicular_sdk.user_interface.address.AddressEntryActivity;
 import com.meamobile.printicular_sdk.user_interface.common.StoreDetailsViewHolder;
 import com.meamobile.printicular_sdk.user_interface.store_search.StoreSearchActivity;
 
+import java.util.Collection;
+
+import rx.Subscription;
+import rx.android.schedulers.AndroidSchedulers;
+
 public class ManageOrderActivity extends CheckoutActivity
 {
-    private FulfillmentType mFulfillmentType = FulfillmentType.PICKUP;
-    private PrinticularCartManager mCartManager;
+    private FulfillmentType mFulfillmentType = FulfillmentType.DELIVERY;
+    private PrinticularCartManager mCartManager = PrinticularCartManager.getInstance();
+    private PrinticularServiceManager mServiceManger = PrinticularServiceManager.getInstance();
+    private Subscription mSubscriptionLoadingAddresses;
 
     //UI
     private StoreDetailsViewHolder mStoreDetailsViewHolder;
-    private RelativeLayout mRelativeLayoutPostalDetails;
+    private AddressDetailsViewHolder mAddressDetailsViewHolder;
     private LinearLayout mLinearLayoutPaymentDetails;
     private TextView mTextViewQuantity, mTextViewShipping, mTextViewTotal;
 
@@ -39,23 +50,11 @@ public class ManageOrderActivity extends CheckoutActivity
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_manage_order);
 
-        mCartManager = PrinticularCartManager.getInstance();
-
-        ImageButton postEdit = (ImageButton) findViewById(R.id.buttonPostalEdit);
-        postEdit.setOnClickListener(new View.OnClickListener()
-        {
-            @Override
-            public void onClick(View v)
-            {
-                Intent i = new Intent(ManageOrderActivity.this, CustomerDetailsActivity.class);
-                startActivity(i);
-            }
-        });
-
         Button nextButton = (Button) findViewById(R.id.buttonNext);
         nextButton.getBackground().setColorFilter(getResources().getColor(R.color.button_red), PorterDuff.Mode.MULTIPLY);
 
         loadComponents();
+        loadAddresses();
     }
 
     @Override
@@ -63,6 +62,15 @@ public class ManageOrderActivity extends CheckoutActivity
         super.onResume();
 
         setupUserInterface();
+    }
+
+    @Override
+    protected void onDestroy()
+    {
+        super.onDestroy();
+        if (mSubscriptionLoadingAddresses != null) {
+            mSubscriptionLoadingAddresses.unsubscribe();
+        }
     }
 
     @Override
@@ -84,6 +92,16 @@ public class ManageOrderActivity extends CheckoutActivity
         return super.onOptionsItemSelected(item);
     }
 
+    public void onNextButtonClicked(View v)
+    {
+        mCartManager.createNewOrderInstance()
+        .subscribe(order -> {
+
+        }, error -> {
+            
+        });
+    }
+
     protected void loadComponents()
     {
         mTextViewQuantity = (TextView) findViewById(R.id.textViewQuantity);
@@ -98,14 +116,47 @@ public class ManageOrderActivity extends CheckoutActivity
             }
         });
 
-        mRelativeLayoutPostalDetails = (RelativeLayout) findViewById(R.id.postalDetails);
+        mAddressDetailsViewHolder = new AddressDetailsViewHolder(findViewById(R.id.relativeLayoutAddressViewHolder));
+        mAddressDetailsViewHolder.itemView.setOnClickListener(new View.OnClickListener()
+        {
+            @Override
+            public void onClick(View v)
+            {
+                onPostalDetailsPressed(v);
+            }
+        });
         mLinearLayoutPaymentDetails = (LinearLayout) findViewById(R.id.paymentDetails);
     }
 
 
     protected void onPostalDetailsPressed(View v)
     {
+        if (mSubscriptionLoadingAddresses == null)
+        {
+            mSubscriptionLoadingAddresses = mServiceManger
+                    .fetchSavedAddresses()
+                    .observeOn(AndroidSchedulers.mainThread())
+                    .subscribe(x -> {
+                        mSubscriptionLoadingAddresses = null;
 
+                        Intent i = null;
+                        if (x.size() == 0)
+                        {
+                            i = new Intent(this, AddressEntryActivity.class);
+                        }
+                        else
+                        {
+                            i = new Intent(this, AddressListActivity.class);
+                        }
+                        startActivity(i);
+                    }, error -> {
+                        mSubscriptionLoadingAddresses = null;
+                        new AlertDialog.Builder(this)
+                                .setTitle("Address Error")
+                                .setMessage("Sorry, we were unable to connect to the Printicular Server. Please check your internet connection and try again")
+                                .show();
+                    });
+        }
     }
 
     protected void onStoreDetialsPressed(View v)
@@ -120,13 +171,13 @@ public class ManageOrderActivity extends CheckoutActivity
         if (mFulfillmentType == FulfillmentType.PICKUP)
         {
             mStoreDetailsViewHolder.itemView.setVisibility(View.VISIBLE);
-            mRelativeLayoutPostalDetails.setVisibility(View.GONE);
+            mAddressDetailsViewHolder.itemView.setVisibility(View.GONE);
             mLinearLayoutPaymentDetails.setVisibility(View.GONE);
         }
         else
         {
             mStoreDetailsViewHolder.itemView.setVisibility(View.GONE);
-            mRelativeLayoutPostalDetails.setVisibility(View.VISIBLE);
+            mAddressDetailsViewHolder.itemView.setVisibility(View.VISIBLE);
             mLinearLayoutPaymentDetails.setVisibility(View.VISIBLE);
         }
 
@@ -138,5 +189,33 @@ public class ManageOrderActivity extends CheckoutActivity
         Store store = mCartManager.getCurrentStore();
         mStoreDetailsViewHolder.setStore(store);
     }
+
+
+
+    ///-----------------------------------------------------------
+    /// @name Address
+    ///-----------------------------------------------------------
+
+
+    private void loadAddresses()
+    {
+        mAddressDetailsViewHolder.setLoading(true);
+
+        mSubscriptionLoadingAddresses = mServiceManger.fetchSavedAddresses()
+                .retry(2)
+                .subscribe(x -> {
+                    mSubscriptionLoadingAddresses = null;
+                    mAddressDetailsViewHolder.setLoading(false);
+
+                    Collection v = x.values();
+                    mAddressDetailsViewHolder.setAddress(v.size() == 0 ? null : (Address) v.iterator().next(), mCartManager.getCurrentPrintService());
+
+                }, error -> {
+                    mSubscriptionLoadingAddresses = null;
+                    mAddressDetailsViewHolder.setLoading(false);
+
+                });
+    }
+
 
 }

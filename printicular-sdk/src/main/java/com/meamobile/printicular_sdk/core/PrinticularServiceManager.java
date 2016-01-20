@@ -39,8 +39,12 @@ public class PrinticularServiceManager
     private PrinticularEnvironment mEnvironment;
     private long mCurrentRequestAttempts;
     private AccessToken mAccessToken;
+
     private Map<Long, PrintService> mPrintServices;
     private Date mPrintServicesTimeStamp;
+
+    private Map<Long, Address> mAddresses;
+    private Date mAddressesTimeStamp;
 
 
     public static PrinticularServiceManager getInstance()
@@ -126,8 +130,13 @@ public class PrinticularServiceManager
 
     public Observable<Map<Long, PrintService>> refreshPrintServices()
     {
+        return refreshPrintServices(false);
+    }
+
+    public Observable<Map<Long, PrintService>> refreshPrintServices(boolean force)
+    {
         //If we already have an Array of PrintServices and they are recent, return them.
-        if (mPrintServices != null && mPrintServicesTimeStamp != null && mPrintServicesTimeStamp.after(new Date()))
+        if (!force && (mPrintServices != null && mPrintServicesTimeStamp != null && mPrintServicesTimeStamp.after(new Date())))
         {
             Log.d(TAG, "PrintService Refresh Success, Reusing.");
             return Observable.just(mPrintServices);
@@ -188,6 +197,17 @@ public class PrinticularServiceManager
 
     public Observable<Map<Long, Address>> fetchSavedAddresses()
     {
+        return fetchSavedAddresses(false);
+    }
+
+    public Observable<Map<Long, Address>> fetchSavedAddresses(boolean force)
+    {
+        if (!force && !cachedAddressesAreNullOrExpired())
+        {
+            Log.d(TAG, "Address successfully loaded from Cached");
+            return Observable.just(mAddresses);
+        }
+
         APIClient client = new APIClient(getBaseUrlForEnvironment());
 
         Map<String, String> params = new HashMap<>();
@@ -196,7 +216,18 @@ public class PrinticularServiceManager
         return client.get("users/0/addresses", params, mAccessToken)
                 .flatMap(response -> {
                     Map objects = (Map) Model.hydrate(response);
-                    return Observable.just((Map<Long, Address>) objects.get("address"));
+
+                    mAddresses = (Map<Long, Address>) objects.get("addresses");
+                    mAddressesTimeStamp = new Date(new Date().getTime() + (1000 * 60 * 60)); //Now plus an hour
+
+                    //If User has no addresses, make a blank Map
+                    if (mAddresses == null) {
+                        mAddresses = new HashMap<Long, Address>();
+                    }
+
+                    Log.d(TAG, "Address successfully loaded from Server");
+
+                    return Observable.just(mAddresses);
                 });
     }
 
@@ -204,14 +235,31 @@ public class PrinticularServiceManager
     {
         APIClient client = new APIClient(getBaseUrlForEnvironment());
 
-
         Map<String, Map> params = address.evaporate();
 
-        return client.post("users/0/addresses?deviceToken=" + getUniqueIdentifer() , params, mAccessToken)
+        return client.post("users/0/addresses?deviceToken=" + getUniqueIdentifer(), params, mAccessToken)
                 .flatMap(response -> {
                     Map objects = (Map) Model.hydrate(response);
-                    return Observable.just((Address) objects.get("address"));
+
+                    Log.d(TAG, "Address saved successfully");
+
+                    Map <Long, Address> addresses = (Map<Long, Address>) objects.get("addresses");
+                    Address newAddress = addresses.values().iterator().next();
+                    if (mAddresses == null) {
+                        mAddresses = addresses;
+                    }
+                    else
+                    {
+                        mAddresses.put(address.getId(), newAddress);
+                    }
+
+                    return Observable.just(newAddress);
                 });
+    }
+
+    protected boolean cachedAddressesAreNullOrExpired()
+    {
+        return (mAddresses == null || mAddressesTimeStamp == null || mAddressesTimeStamp.before(new Date()));
     }
 
 

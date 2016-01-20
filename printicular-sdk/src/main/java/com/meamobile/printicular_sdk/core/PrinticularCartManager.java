@@ -8,6 +8,7 @@ import com.google.gson.reflect.TypeToken;
 import com.meamobile.printicular_sdk.core.models.Address;
 import com.meamobile.printicular_sdk.core.models.Image;
 import com.meamobile.printicular_sdk.core.models.LineItem;
+import com.meamobile.printicular_sdk.core.models.Order;
 import com.meamobile.printicular_sdk.core.models.PrintService;
 import com.meamobile.printicular_sdk.core.models.Store;
 
@@ -15,6 +16,8 @@ import java.util.ArrayList;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
+
+import rx.Observable;
 
 public class PrinticularCartManager
 {
@@ -145,14 +148,33 @@ public class PrinticularCartManager
     }
 
 
+
+
     ///-----------------------------------------------------------
-    /// @name Address Handling
+    /// @name Order Handling
     ///-----------------------------------------------------------
 
-    public void saveAddress()
+    public Observable<Order> createNewOrderInstance()
     {
+        Order order = new Order();
 
+        if (mLineItems == null || mLineItems.size() == 0)
+        {
+            return Observable.error(new RuntimeException("No Line Items"));
+        }
+
+
+        order.setLineItems(mLineItems);
+        order.setPrintService(mCurrentPrintService);
+        order.setStore(mCurrentStore);
+        order.setAddress(mCurrentAddress);
+        order.setCurrency(mCurrentPrintService.getDefaultCurrency());
+
+
+
+        return Observable.just(order);
     }
+
 
 
     ///-----------------------------------------------------------

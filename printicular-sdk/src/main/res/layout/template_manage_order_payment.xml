@@ -2,84 +2,97 @@
 <LinearLayout
     xmlns:android="http://schemas.android.com/apk/res/android"
     android:id="@+id/paymentDetails"
-    android:layout_marginTop="25dp"
+    android:layout_marginTop="4dp"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    android:orientation="vertical">
+    android:orientation="vertical"
+    android:background="@color/white">
 
-<TextView
-    android:layout_width="match_parent"
-    android:layout_height="wrap_content"
-    android:text="Payment details"
-    android:textStyle="bold"
-    android:textColor="@color/text_dark"
-    android:id="@+id/titlePaymentDetails"
-    android:layout_marginBottom="10dp"/>
-
-<RelativeLayout
-    android:layout_width="match_parent"
-    android:layout_height="wrap_content"
-    android:background="?android:attr/selectableItemBackground"
-    android:clickable="true"
-    android:orientation="horizontal"
-    android:layout_below="@id/titlePaymentDetails">
-
-    <ImageView
-        android:layout_width="60dp"
-        android:layout_height="40dp"
-        android:layout_centerVertical="true"
-        android:background="#aaa"
-        android:id="@+id/imageViewGoogleWallet"/>
-
-    <TextView
-        android:layout_width="wrap_content"
+    <LinearLayout
+        android:orientation="vertical"
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:text="Google Wallet"
-        android:layout_centerVertical="true"
-        android:layout_toRightOf="@id/imageViewGoogleWallet"
-        android:layout_marginLeft="10dp"/>
+        android:padding="8dp">
 
-    <ImageView
-        android:layout_width="30dp"
-        android:layout_height="30dp"
-        android:src="@drawable/printicular_selection"
-        android:layout_centerVertical="true"
-        android:layout_alignParentRight="true"/>
+        <TextView
+            android:id="@+id/titlePaymentDetails"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Payment details"
+            android:textStyle="bold"
+            android:textColor="@color/text_dark"
+            android:textAppearance="?android:attr/textAppearanceMedium"
+            android:layout_marginBottom="10dp"/>
 
-</RelativeLayout>
+        <RelativeLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:background="?android:attr/selectableItemBackground"
+            android:clickable="true"
+            android:orientation="horizontal"
+            android:layout_below="@id/titlePaymentDetails">
 
-<RelativeLayout
-    android:layout_width="match_parent"
-    android:layout_height="wrap_content"
-    android:background="?android:attr/selectableItemBackground"
-    android:clickable="true"
-    android:orientation="horizontal"
-    android:layout_marginTop="10dp"
-    android:layout_below="@id/titlePaymentDetails">
+            <ImageView
+                android:layout_width="60dp"
+                android:layout_height="40dp"
+                android:layout_centerVertical="true"
+                android:src="@drawable/vect_credit_card"
+                android:id="@+id/imageViewGoogleWallet"/>
 
-    <ImageView
-        android:layout_width="60dp"
-        android:layout_height="40dp"
-        android:layout_centerVertical="true"
-        android:background="#aaa"
-        android:id="@+id/imageViewCreditCard"/>
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Google Wallet"
+                android:layout_centerVertical="true"
+                android:layout_toRightOf="@id/imageViewGoogleWallet"
+                android:layout_marginLeft="10dp"/>
 
-    <TextView
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="Credit card"
-        android:layout_centerVertical="true"
-        android:layout_toRightOf="@id/imageViewCreditCard"
-        android:layout_marginLeft="10dp"/>
+            <ImageView
+                android:layout_width="30dp"
+                android:layout_height="30dp"
+                android:src="@drawable/printicular_selection"
+                android:layout_centerVertical="true"
+                android:layout_alignParentRight="true"/>
 
-    <ImageView
-        android:layout_width="30dp"
-        android:layout_height="30dp"
-        android:src="@drawable/printicular_selection_empty"
-        android:layout_centerVertical="true"
-        android:layout_alignParentRight="true"/>
+        </RelativeLayout>
 
-</RelativeLayout>
+        <RelativeLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:background="?android:attr/selectableItemBackground"
+            android:clickable="true"
+            android:orientation="horizontal"
+            android:layout_marginTop="10dp"
+            android:layout_below="@id/titlePaymentDetails">
 
+            <ImageView
+                android:layout_width="60dp"
+                android:layout_height="40dp"
+                android:layout_centerVertical="true"
+                android:src="@drawable/vect_credit_card"
+                android:id="@+id/imageViewCreditCard"/>
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Credit card"
+                android:layout_centerVertical="true"
+                android:layout_toRightOf="@id/imageViewCreditCard"
+                android:layout_marginLeft="10dp"/>
+
+            <ImageView
+                android:layout_width="30dp"
+                android:layout_height="30dp"
+                android:src="@drawable/printicular_selection_empty"
+                android:layout_centerVertical="true"
+                android:layout_alignParentRight="true"/>
+
+        </RelativeLayout>
+    </LinearLayout>
+
+    <View
+        android:layout_width="match_parent"
+        android:layout_height="2dp"
+        android:background="@color/shadow"/>
 
 </LinearLayout>

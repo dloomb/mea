@@ -39,7 +39,7 @@
             android:scaleType="fitEnd"/>
 
         <TextView
-            android:id="@+id/textViewAddressLine1"
+            android:id="@+id/textViewLine1"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_below="@id/imageViewStoreLogo"
@@ -47,10 +47,10 @@
             android:text="20 Astor Place"/>
 
         <TextView
-            android:id="@+id/textViewAddressLine2"
+            android:id="@+id/textViewLine2"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_below="@id/textViewAddressLine1"
+            android:layout_below="@id/textViewLine1"
             android:text="New York, NY 10003"
             android:textAppearance="@style/list_section_text_medium"/>
 
@@ -59,7 +59,7 @@
             android:layout_width="match_parent"
             android:layout_height="21dp"
             android:layout_marginTop="5dp"
-            android:layout_below="@id/textViewAddressLine2">
+            android:layout_below="@id/textViewLine2">
 
             <ImageView
                 android:id="@+id/imageViewSpecial"
@@ -112,5 +112,12 @@
         android:layout_alignLeft="@id/relativeLayoutInner"
         android:layout_alignRight="@id/relativeLayoutInner"
         android:background="?android:attr/selectableItemBackground"/>
+
+    <View
+        android:layout_below="@id/viewBrandDetail"
+        android:layout_width="match_parent"
+        android:layout_height="2dp"
+        android:background="@color/shadow"/>
+
 
 </RelativeLayout>

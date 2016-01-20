@@ -1,0 +1,107 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@+id/relativeLayoutAddressViewHolder"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:layout_marginTop="4dp"
+    android:layout_marginBottom="4dp">
+
+    <RelativeLayout
+        android:id="@+id/relativeLayoutContent"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:padding="8dp"
+        android:background="@color/white">
+
+
+        <TextView
+            android:id="@+id/textViewTitle"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Postal details"
+            android:textStyle="bold"
+            android:textColor="@color/text_dark"
+            android:textAppearance="?android:attr/textAppearanceMedium"
+            android:layout_marginBottom="10dp"/>
+
+        <RelativeLayout
+            android:id="@+id/relativeLayoutContent"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_below="@id/textViewTitle">
+
+
+            <TextView
+                android:id="@+id/textViewName"
+                android:textColor="@color/text_dark"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="Daniel Loomb"/>
+
+            <TextView
+                android:id="@+id/textViewLine1"
+                android:textColor="@color/text_dark"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="Level 15, Tower Building, 48 Ward St"
+                android:layout_below="@id/textViewName"/>
+
+            <TextView
+                android:id="@+id/textViewLine2"
+                android:textColor="@color/text_dark"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="Hamilton, New Zealand"
+                android:layout_below="@id/textViewLine1"/>
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_alignParentRight="true"
+                android:text="change"/>
+
+        </RelativeLayout>
+
+
+        <RelativeLayout
+            android:id="@+id/relativeLayoutLoadingContainer"
+            android:layout_below="@id/textViewTitle"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:padding="8dp">
+
+            <RelativeLayout
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_centerInParent="true">
+
+                <TextView
+                    android:id="@+id/textViewLoading"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginRight="10dp"
+                    android:text="Loading..."
+                    android:textAppearance="?android:attr/textAppearanceMedium"
+                    android:layout_centerVertical="true"/>
+
+                <ProgressBar
+                    android:id="@+id/progressBarLoading"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_centerVertical="true"
+                    android:layout_toRightOf="@id/textViewLoading"/>
+
+            </RelativeLayout>
+
+        </RelativeLayout>
+
+    </RelativeLayout>
+
+    <View
+        android:layout_below="@id/relativeLayoutContent"
+        android:layout_width="match_parent"
+        android:layout_height="2dp"
+        android:background="@color/shadow"/>
+
+</RelativeLayout>

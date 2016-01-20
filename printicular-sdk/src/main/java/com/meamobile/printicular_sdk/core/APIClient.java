@@ -121,7 +121,10 @@ public class APIClient
 
         )
         .subscribeOn(Schedulers.newThread())
-        .observeOn(AndroidSchedulers.mainThread());
+        .observeOn(AndroidSchedulers.mainThread())
+        .doOnUnsubscribe(() -> {
+            //TODO cancel any and all running operations
+        });
     }
 
 

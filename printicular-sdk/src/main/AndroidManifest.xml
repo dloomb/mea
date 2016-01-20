@@ -1,12 +1,11 @@
 <?xml version="1.0" encoding="utf-8"?>
-<manifest xmlns:android="http://schemas.android.com/apk/res/android"
-    package="com.meamobile.printicular_sdk">
+<manifest package="com.meamobile.printicular_sdk"
+          xmlns:android="http://schemas.android.com/apk/res/android">
 
     <application
         android:allowBackup="true"
         android:label="@string/app_name"
         android:supportsRtl="true">
-
         <meta-data
             android:name="com.google.android.geo.API_KEY"
             android:value="@string/google_places_client_id"/>
@@ -17,13 +16,18 @@
         </activity>
 
         <activity
-            android:name=".user_interface.CustomerDetailsActivity"
+            android:name=".user_interface.address.AddressEntryActivity"
             android:label="@string/activity_customer_details_title">
         </activity>
 
         <activity
             android:name=".user_interface.store_search.StoreSearchActivity"
             android:label="@string/activity_store_search_title">
+        </activity>
+
+        <activity
+            android:name=".user_interface.address.AddressListActivity"
+            android:label="Choose an address">
         </activity>
 
     </application>

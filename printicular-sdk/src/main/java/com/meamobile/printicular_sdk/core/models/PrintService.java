@@ -88,4 +88,21 @@ public class PrintService extends Model
 
         }
     }
+
+
+
+    ///-----------------------------------------------------------
+    /// @name Property Access
+    ///-----------------------------------------------------------
+
+
+    public FulfillmentType getFulFillmentType()
+    {
+        return mFulFillmentType;
+    }
+
+    public String getDefaultCurrency()
+    {
+        return mDefaultCurrency != null ? mDefaultCurrency : "USD";
+    }
 }

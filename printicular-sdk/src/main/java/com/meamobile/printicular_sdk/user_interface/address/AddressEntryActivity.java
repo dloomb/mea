@@ -1,6 +1,6 @@
-package com.meamobile.printicular_sdk.user_interface;
+package com.meamobile.printicular_sdk.user_interface.address;
 
-import android.content.Intent;
+import android.app.AlertDialog;
 import android.graphics.PorterDuff;
 import android.os.Bundle;
 import android.text.Editable;
@@ -16,16 +16,17 @@ import com.meamobile.printicular_sdk.R;
 import com.meamobile.printicular_sdk.core.PrinticularCartManager;
 import com.meamobile.printicular_sdk.core.PrinticularServiceManager;
 import com.meamobile.printicular_sdk.core.models.Address;
+import com.meamobile.printicular_sdk.core.models.PrintService;
 import com.meamobile.printicular_sdk.core.models.Territory;
+import com.meamobile.printicular_sdk.user_interface.CheckoutActivity;
 import com.meamobile.printicular_sdk.user_interface.common.ObservableRelativeLayout;
 
-import java.util.List;
 import java.util.Locale;
 
 import rx.android.schedulers.AndroidSchedulers;
 
 
-public class CustomerDetailsActivity extends CheckoutActivity
+public class AddressEntryActivity extends CheckoutActivity
 {
     enum SearchMode
     {
@@ -54,7 +55,9 @@ public class CustomerDetailsActivity extends CheckoutActivity
     private RelativeLayout
             mRelativeLayoutAutomaticSearch;
 
-    private LinearLayout mLinearLayoutManualSearch;
+    private LinearLayout
+            mLinearLayoutSearchTabs,
+            mLinearLayoutManualSearch;
 
     private Button mButtonNext;
 
@@ -83,7 +86,7 @@ public class CustomerDetailsActivity extends CheckoutActivity
     protected void onCreate(Bundle savedInstanceState)
     {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_customer_details);
+        setContentView(R.layout.activity_address_entry);
 
         setupEditTextListeners();
 
@@ -91,6 +94,7 @@ public class CustomerDetailsActivity extends CheckoutActivity
         mButtonNext.getBackground().setColorFilter(getResources().getColor(R.color.button_red), PorterDuff.Mode.MULTIPLY);
 
         mRelativeLayoutMain = (ObservableRelativeLayout) findViewById(R.id.relativeLayoutMain);
+        mLinearLayoutSearchTabs = (LinearLayout) findViewById(R.id.linearLayoutSearchTabs);
         mRelativeLayoutAutomaticSearch = (RelativeLayout) findViewById(R.id.relativeLayoutAutomaticSearch);
         mLinearLayoutManualSearch = (LinearLayout) findViewById(R.id.linearLayoutManualSearch);
 
@@ -141,21 +145,32 @@ public class CustomerDetailsActivity extends CheckoutActivity
 
     protected void layoutForCurrentSearchMode()
     {
-        switch (mSearchMode)
+        if (mCartManager.getCurrentPrintService().getFulFillmentType() == PrintService.FulfillmentType.PICKUP)
         {
-            case AUTOMATIC:
-                mLinearLayoutManualSearch.setVisibility(View.GONE);
-                mRelativeLayoutAutomaticSearch.setVisibility(View.VISIBLE);
-                mViewAutomaticSelectionDetail.setVisibility(View.VISIBLE);
-                mViewManualSelectionDetail.setVisibility(View.INVISIBLE);
-                break;
+            mLinearLayoutSearchTabs.setVisibility(View.GONE);
+            mLinearLayoutManualSearch.setVisibility(View.GONE);
+            mRelativeLayoutAutomaticSearch.setVisibility(View.GONE);
+        }
+        else
+        {
+            mLinearLayoutManualSearch.setVisibility(View.VISIBLE);
 
-            case MANUAL:
-                mLinearLayoutManualSearch.setVisibility(View.VISIBLE);
-                mRelativeLayoutAutomaticSearch.setVisibility(View.GONE);
-                mViewAutomaticSelectionDetail.setVisibility(View.INVISIBLE);
-                mViewManualSelectionDetail.setVisibility(View.VISIBLE);
-                break;
+            switch (mSearchMode)
+            {
+                case AUTOMATIC:
+                    mLinearLayoutManualSearch.setVisibility(View.GONE);
+                    mRelativeLayoutAutomaticSearch.setVisibility(View.VISIBLE);
+                    mViewAutomaticSelectionDetail.setVisibility(View.VISIBLE);
+                    mViewManualSelectionDetail.setVisibility(View.INVISIBLE);
+                    break;
+
+                case MANUAL:
+                    mLinearLayoutManualSearch.setVisibility(View.VISIBLE);
+                    mRelativeLayoutAutomaticSearch.setVisibility(View.GONE);
+                    mViewAutomaticSelectionDetail.setVisibility(View.INVISIBLE);
+                    mViewManualSelectionDetail.setVisibility(View.VISIBLE);
+                    break;
+            }
         }
     }
 
@@ -180,9 +195,12 @@ public class CustomerDetailsActivity extends CheckoutActivity
 
         manager.saveAddress(mAddress)
                 .subscribe(x-> {
-                    Log.d("", "");
+                    finish();
                 }, error -> {
-                    Log.e("", "");
+                    new AlertDialog.Builder(this)
+                            .setTitle("Address Error")
+                            .setMessage("Sorry, but we were unable to save your address at this time. Please check you internet connection and try again.")
+                            .show();
                 });
     }
 

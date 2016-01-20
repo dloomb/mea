@@ -20,19 +20,19 @@
             android:layout_height="wrap_content"
             android:text="Store details"
             android:textAppearance="@style/list_section_title"
-            android:id="@+id/titlePostDetails"
+            android:id="@+id/textViewTitle"
             android:layout_marginBottom="10dp"/>
 
         <ImageView
             android:id="@+id/imageViewStoreLogo"
             android:layout_width="wrap_content"
             android:layout_height="40dp"
-            android:layout_below="@id/titlePostDetails"
+            android:layout_below="@id/textViewTitle"
             android:src="@drawable/walgreens_store_title"
             android:tint="#FFca2026"/>
 
         <TextView
-            android:id="@+id/textViewAddressLine1"
+            android:id="@+id/textViewLine1"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_below="@id/imageViewStoreLogo"
@@ -40,11 +40,11 @@
             android:text="20 Astor Place"/>
 
         <TextView
-            android:id="@+id/textViewAddressLine2"
+            android:id="@+id/textViewLine2"
             android:textColor="@color/text_dark"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_below="@id/textViewAddressLine1"
+            android:layout_below="@id/textViewLine1"
             android:text="New York, NY 10003"
             android:textAppearance="@style/list_section_text_medium"/>
 
@@ -63,7 +63,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginTop="5dp"
-            android:layout_below="@id/textViewAddressLine2"
+            android:layout_below="@id/textViewLine2"
             android:textColor="#FF49a4db"
             android:text="Pickup time 10:11 am Today"
             android:textAppearance="@style/list_section_text_medium"/>

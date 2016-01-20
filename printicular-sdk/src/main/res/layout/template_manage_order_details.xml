@@ -1,56 +1,74 @@
 <?xml version="1.0" encoding="utf-8"?>
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
-    android:layout_height="wrap_content">
+    android:layout_height="wrap_content"
+    android:background="@color/white"
+    android:layout_marginBottom="4dp"
+    android:clipToPadding="false">
 
-    <TextView
+
+    <RelativeLayout
+        android:id="@+id/relativeLayoutContent"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:text="Order details"
-        android:textStyle="bold"
-        android:textColor="@color/text_dark"
-        android:id="@+id/titleOrderDetails"
-        android:layout_marginBottom="10dp"/>
+        android:padding="8dp">
 
-    <TextView
-        android:id="@+id/textViewQuantity"
-        android:textColor="@color/text_dark"
+        <TextView
+            android:id="@+id/titleOrderDetails"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Order details"
+            android:textStyle="bold"
+            android:textColor="@color/text_dark"
+            android:textAppearance="?android:attr/textAppearanceMedium"
+            android:layout_marginBottom="10dp"/>
+
+        <TextView
+            android:id="@+id/textViewQuantity"
+            android:textColor="@color/text_dark"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Quantity (45 Prints)"
+            android:layout_below="@id/titleOrderDetails"/>
+
+        <TextView
+            android:id="@+id/textViewShipping"
+            android:textColor="@color/text_dark"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Shipping $4.95"
+            android:layout_below="@id/textViewQuantity"/>
+
+        <TextView
+            android:id="@+id/textViewTotal"
+            android:textColor="@color/text_dark"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="TOTAL $60.50"
+            android:textStyle="bold"
+            android:layout_below="@id/textViewShipping"
+            android:layout_marginTop="5dp"/>
+
+        <Button
+            android:id="@+id/buttonIncrement"
+            android:layout_alignParentRight="true"
+            android:layout_width="40dp"
+            android:layout_height="40dp"
+            android:text="+"/>
+
+        <Button
+            android:id="@+id/buttonDecrement"
+            android:layout_width="40dp"
+            android:layout_height="40dp"
+            android:layout_toLeftOf="@id/buttonIncrement"
+            android:text="-"/>
+
+    </RelativeLayout>
+
+    <View
+        android:layout_below="@id/relativeLayoutContent"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:text="Quantity (45 Prints)"
-        android:layout_below="@id/titleOrderDetails"/>
-
-    <TextView
-        android:id="@+id/textViewShipping"
-        android:textColor="@color/text_dark"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:text="Shipping $4.95"
-        android:layout_below="@id/textViewQuantity"/>
-
-    <TextView
-        android:id="@+id/textViewTotal"
-        android:textColor="@color/text_dark"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:text="TOTAL $60.50"
-        android:textStyle="bold"
-        android:layout_below="@id/textViewShipping"
-        android:layout_marginTop="5dp"/>
-
-    <Button
-        android:id="@+id/buttonIncrement"
-        android:layout_alignParentRight="true"
-        android:layout_width="40dp"
-        android:layout_height="40dp"
-        android:text="+"/>
-
-    <Button
-        android:id="@+id/buttonDecrement"
-        android:layout_width="40dp"
-        android:layout_height="40dp"
-        android:layout_toLeftOf="@id/buttonIncrement"
-        android:text="-"/>
-
+        android:layout_height="2dp"
+        android:background="@color/shadow"/>
 
 </RelativeLayout>

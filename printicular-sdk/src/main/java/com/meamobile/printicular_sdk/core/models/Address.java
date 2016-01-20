@@ -157,4 +157,5 @@ public class Address extends Model
     {
         this.mDeviceToken = mDeviceToken;
     }
+
 }
