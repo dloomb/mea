@@ -2,6 +2,7 @@ package com.meamobile.printicular_sdk.core.models;
 
 import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
+import com.meamobile.printicular_sdk.core.JSONResource;
 
 import org.junit.Test;
 

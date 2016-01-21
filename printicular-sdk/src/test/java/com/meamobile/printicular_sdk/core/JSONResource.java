@@ -1,4 +1,4 @@
-package com.meamobile.printicular_sdk.core.models;
+package com.meamobile.printicular_sdk.core;
 
 public class JSONResource
 {

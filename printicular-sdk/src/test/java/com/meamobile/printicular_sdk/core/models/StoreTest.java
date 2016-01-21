@@ -2,6 +2,7 @@ package com.meamobile.printicular_sdk.core.models;
 
 import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
+import com.meamobile.printicular_sdk.core.JSONResource;
 
 import org.junit.Test;
 
@@ -52,7 +53,7 @@ public class StoreTest
         assertNotNull(data.get("attributes"));
 
         assertEquals(11l, data.get("id"));
-        assertEquals(attributes.get("name"),        "Warehouse Stationery Warkworth");
+        assertEquals(attributes.get("name"), "Warehouse Stationery Warkworth");
         assertEquals(attributes.get("address"),     "4 Queen Street");
         assertEquals(attributes.get("city"),        "Warkworth");
         assertEquals(attributes.get("state"),       "");
