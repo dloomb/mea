@@ -71,7 +71,7 @@ public class Model
 
     public String getType()
     {
-        return mType;
+        throw new RuntimeException("Cannot call getType on Base Model");
     }
 
     public Date getCreatedAt()

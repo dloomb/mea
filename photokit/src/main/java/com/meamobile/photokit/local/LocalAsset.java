@@ -4,8 +4,11 @@ import android.annotation.SuppressLint;
 import android.database.Cursor;
 import android.graphics.Bitmap;
 import android.provider.MediaStore;
+import android.util.Log;
 
 import com.meamobile.photokit.core.Asset;
+
+import java.io.File;
 
 @SuppressLint("ParcelCreator")
 public class LocalAsset extends Asset
@@ -52,5 +55,26 @@ public class LocalAsset extends Asset
     public String getAssetIdentifier()
     {
         return getClass().toString() + "-" + mId + "-" + mTitle + "-" + mTimestamp;
+    }
+
+    public File getFile() {
+        return new File(mPath);
+    }
+
+    public long getBytesize() {
+        return getFile().length();
+    }
+
+    public String getChecksum() {
+        return "";
+    }
+
+    public String getFilename() {
+        String[] split = mPath.split("/");
+        if (split.length >= 1)
+        {
+            return split[split.length - 1];
+        }
+        return null;
     }
 }

@@ -111,4 +111,11 @@ public class CachingImageManager
         }
     }
 
+    protected Observable<File> loadLocalAssetFullResolutionWithContentResolver(LocalAsset asset, File file) {
+
+        ContentResolver resolver = mContext.getContentResolver();
+
+        return Observable.empty();
+    }
+
 }

@@ -271,6 +271,12 @@ public class MainActivity extends AuthenticatableActivity implements ExplorerFra
 
     public void onPickupButtonPressed(View v)
     {
+        PrinticularServiceManager m = PrinticularServiceManager.getInstance();
+        m.registerImages(mCartManager.getImages())
+            .subscribe((images) -> {
+
+            });
+
         if (!checkCartValidity())
         {
             return;

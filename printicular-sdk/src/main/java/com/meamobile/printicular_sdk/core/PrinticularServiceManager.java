@@ -10,9 +10,11 @@ import com.google.android.gms.maps.model.LatLng;
 import com.meamobile.printicular_sdk.core.models.AccessToken;
 import com.meamobile.printicular_sdk.core.models.*;
 
+import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.UUID;
 
@@ -261,6 +263,42 @@ public class PrinticularServiceManager
     {
         return (mAddresses == null || mAddressesTimeStamp == null || mAddressesTimeStamp.before(new Date()));
     }
+
+
+
+
+
+    ///-----------------------------------------------------------
+    /// @name Images
+    ///-----------------------------------------------------------
+
+    public Observable<Map<Long, Image>> registerImages(List<Image> images)
+    {
+        List<Map> imageJsons = new ArrayList<>();
+
+        for (Image image : images) {
+            imageJsons.add(image.evaporate().get("data"));
+        }
+
+        Map<String, String> meta = new HashMap<>();
+        meta.put("device_token", getUniqueIdentifer());
+
+        Map<String, Object> data = new HashMap<>();
+        data.put("data", imageJsons);
+        data.put("meta", meta);
+
+        APIClient client = new APIClient(getBaseUrlForEnvironment());
+        return client.post("users/0/images", data, mAccessToken)
+                .flatMap((res) -> {
+
+                    Map objects = (Map) Model.hydrate(res);
+
+                    return null;// objects.get("images");
+                });
+    }
+
+
+
 
 
     ///-----------------------------------------------------------
