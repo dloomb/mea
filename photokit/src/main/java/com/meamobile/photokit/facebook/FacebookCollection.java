@@ -130,7 +130,7 @@ public class FacebookCollection extends Collection
 
                     }
                 }
-        ).executeAsync();
+        ).executeAndWait();
     }
 
     protected void loadImagesWithGraphPath(String path)
