@@ -258,7 +258,13 @@ public class Model
             switch (wantedClass)
             {
                 case STRING:
-                    return input;
+                    return ((String) input).length() == 0 ? null : input;
+
+                case INTEGER:
+                    return Integer.parseInt((String) input);
+
+                case LONG:
+                    return Long.parseLong((String) input);
 
                 case DOUBLE:
                     return Double.parseDouble((String) input);
@@ -271,6 +277,12 @@ public class Model
             {
                 case STRING:
                     return ((Number) input).toString();
+
+                case INTEGER:
+                    return ((Number) input).intValue();
+
+                case LONG:
+                    return ((Number) input).longValue();
 
                 case DOUBLE:
                     return ((Number) input).doubleValue();

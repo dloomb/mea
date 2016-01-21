@@ -2,7 +2,7 @@ package com.meamobile.printicular_sdk.core.models;
 
 import java.util.Map;
 
-public class Address extends Model
+public class Address extends DeviceTokenableModel
 {
 
     private User mUser;
@@ -148,14 +148,4 @@ public class Address extends Model
     public void setName(String mName) {
         this.mName = mName;
     }
-
-    public String getDeviceToken() {
-        return mDeviceToken;
-    }
-
-    public void setDeviceToken(String mDeviceToken)
-    {
-        this.mDeviceToken = mDeviceToken;
-    }
-
 }

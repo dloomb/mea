@@ -2,7 +2,7 @@ package com.meamobile.printicular_sdk.core.models;
 
 import java.util.List;
 
-public class Order extends Model
+public class Order extends DeviceTokenableModel
 {
     protected List<LineItem> mLineItems;
     protected Address mAddress;
