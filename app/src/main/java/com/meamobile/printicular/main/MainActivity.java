@@ -1,4 +1,4 @@
-package com.meamobile.printicular;
+package com.meamobile.printicular.main;
 
 import android.app.AlertDialog;
 import android.content.Intent;
@@ -34,9 +34,13 @@ import com.meamobile.photokit.core.UserDefaults;
 import com.meamobile.photokit.dropbox.DropboxSource;
 import com.meamobile.photokit.user_interface.ExplorerFragment;
 import com.meamobile.photokit.user_interface.ExplorerFragment.ExplorerFragmentDelegate;
-import com.meamobile.printicular.cart.CartFragment;
-import com.meamobile.printicular.cart.PhotoKitCartManager;
+import com.meamobile.printicular.AuthenticatableActivity;
+import com.meamobile.printicular.utilities.LocationUtil;
+import com.meamobile.printicular.R;
+import com.meamobile.printicular.main.cart.CartFragment;
+import com.meamobile.printicular.main.cart.PhotoKitCartManager;
 import com.meamobile.printicular.settings.LocationPickerDialog;
+import com.meamobile.printicular.settings.SettingsActivity;
 import com.meamobile.printicular_sdk.core.PrinticularCartManager;
 import com.meamobile.printicular_sdk.core.PrinticularServiceManager;
 import com.meamobile.printicular_sdk.core.PrinticularServiceManager.PrinticularEnvironment;

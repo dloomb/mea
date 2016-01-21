@@ -1,6 +1,5 @@
-package com.meamobile.printicular.cart;
+package com.meamobile.printicular.main.cart;
 
-import android.app.ActionBar;
 import android.app.Activity;
 import android.net.Uri;
 import android.os.Bundle;

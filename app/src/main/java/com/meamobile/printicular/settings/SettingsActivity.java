@@ -1,4 +1,4 @@
-package com.meamobile.printicular;
+package com.meamobile.printicular.settings;
 
 import android.app.AlertDialog;
 import android.app.Dialog;
@@ -18,6 +18,8 @@ import com.facebook.CallbackManager;
 import com.meamobile.photokit.core.Collection;
 import com.meamobile.photokit.core.CollectionFactory;
 import com.meamobile.photokit.user_interface.AuthenticatorCallbackManager;
+import com.meamobile.printicular.AuthenticatableActivity;
+import com.meamobile.printicular.R;
 import com.meamobile.printicular.settings.SettingsRecyclerViewAdapter;
 import com.meamobile.printicular_sdk.core.PrinticularServiceManager;
 

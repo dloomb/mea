@@ -1,27 +1,19 @@
 package com.meamobile.printicular.settings;
 
-import android.app.Activity;
 import android.content.Context;
-import android.content.DialogInterface;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.ImageButton;
-import android.widget.ImageView;
 import android.widget.TextView;
 
 import java.util.ArrayList;
 import java.util.Locale;
 
-import com.cocosw.bottomsheet.BottomSheet;
 import com.meamobile.photokit.core.Collection;
 import com.meamobile.photokit.core.CollectionFactory;
 import com.meamobile.photokit.core.Source;
-import com.meamobile.photokit.facebook.FacebookSource;
-import com.meamobile.photokit.instagram.InstagramSource;
-import com.meamobile.photokit.photobucket.PhotobucketSource;
-import com.meamobile.printicular.LocationUtil;
+import com.meamobile.printicular.utilities.LocationUtil;
 import com.meamobile.printicular.R;
 import com.meamobile.printicular_sdk.core.PrinticularServiceManager;
 

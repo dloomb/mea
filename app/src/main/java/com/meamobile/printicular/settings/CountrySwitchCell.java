@@ -7,7 +7,7 @@ import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.TextView;
 
-import com.meamobile.printicular.LocationUtil;
+import com.meamobile.printicular.utilities.LocationUtil;
 import com.meamobile.printicular.R;
 
 import java.util.Locale;

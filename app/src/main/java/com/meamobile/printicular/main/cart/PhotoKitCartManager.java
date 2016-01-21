@@ -1,4 +1,4 @@
-package com.meamobile.printicular.cart;
+package com.meamobile.printicular.main.cart;
 
 import com.meamobile.photokit.core.Asset;
 import com.meamobile.printicular_sdk.core.PrinticularCartManager;

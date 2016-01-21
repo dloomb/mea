@@ -1,4 +1,4 @@
-package com.meamobile.printicular;
+package com.meamobile.printicular.utilities;
 
 import android.content.Context;
 import android.location.Address;

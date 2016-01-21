@@ -4,7 +4,7 @@
     android:layout_height="match_parent"
     android:paddingLeft="5dp"
     android:paddingRight="5dp"
-    tools:context=".cart.CartFragment">
+    tools:context=".main.cart.CartFragment">
 
 
     <GridView
