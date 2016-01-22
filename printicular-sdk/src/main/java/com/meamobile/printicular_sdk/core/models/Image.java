@@ -54,6 +54,11 @@ public class Image extends DeviceTokenableModel
     ///-----------------------------------------------------------
 
 
+    @Override
+    public String getType() {
+        return "images";
+    }
+
     public String getExternalUrl()
     {
         return mExternalUrl;

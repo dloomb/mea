@@ -19,11 +19,20 @@ import static org.junit.Assert.*;
 
 public class PrinticularServiceManagerTest
 {
+    @Before
+    public void setUp()
+    {
+
+    }
+
 
     @Test
     public void it_can_fetch_addresses() throws Exception
     {
-        PrinticularServiceManager m = Mockito.mock(PrinticularServiceManager.class);
+
+        PrinticularServiceManager serviceManager = PrinticularServiceManager.getInstance();
+
+        serviceManager.validateAccessToken().subscribe();
     }
 
 

@@ -1,6 +1,8 @@
 package com.meamobile.printicular.main.cart;
 
 import com.meamobile.photokit.core.Asset;
+import com.meamobile.photokit.core.RemoteAsset;
+import com.meamobile.photokit.local.LocalAsset;
 import com.meamobile.printicular_sdk.core.PrinticularCartManager;
 import com.meamobile.printicular_sdk.core.models.Image;
 
@@ -33,6 +35,18 @@ public class PhotoKitCartManager extends PrinticularCartManager
     public void addAssetToCart(Asset asset)
     {
         Image image = new Image();
+        if (asset instanceof RemoteAsset) {
+            RemoteAsset remote = (RemoteAsset) asset;
+            image.setExternalUrl(remote.getFullResolutionUrlString());
+        } else if (asset instanceof LocalAsset) {
+            LocalAsset local = (LocalAsset) asset;
+            image.setWidth(local.getWidth());
+            image.setHeight(local.getHeight());
+            image.setBytesize(local.getBytesize());
+            image.setChecksum(local.getChecksum());
+            image.setFilename(local.getFilename());
+        }
+
         mImageMap.put(asset.getAssetIdentifier(), image);
         mAssetMap.put(asset.getAssetIdentifier(), asset);
         sInstance.addImageToCart(image);

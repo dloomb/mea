@@ -16,6 +16,8 @@ import java.util.Map;
 
 import rx.Observable;
 import rx.Subscriber;
+import rx.android.schedulers.AndroidSchedulers;
+import rx.schedulers.Schedulers;
 import rx.subjects.PublishSubject;
 
 
@@ -185,7 +187,9 @@ public class Collection implements Parcelable, Observable.OnSubscribe<Object>
 //            }
         }
 
-        return Observable.create(this);
+        return Observable.create(this)
+                .subscribeOn(Schedulers.io())
+                .observeOn(AndroidSchedulers.mainThread());
     }
 
 

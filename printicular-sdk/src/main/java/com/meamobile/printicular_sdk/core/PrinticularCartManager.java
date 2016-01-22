@@ -67,6 +67,10 @@ public class PrinticularCartManager
     /// @name Image Handling
     ///-----------------------------------------------------------
 
+    public List<Image> getImages() {
+        return new ArrayList<>(mData.keySet());
+    }
+
     public int getImageCount()
     {
         return mData.size();
