@@ -30,9 +30,6 @@ public class PrinticularServiceManagerTest
     public void it_can_fetch_addresses() throws Exception
     {
 
-        PrinticularServiceManager serviceManager = PrinticularServiceManager.getInstance();
-
-        serviceManager.validateAccessToken().subscribe();
     }
 
 

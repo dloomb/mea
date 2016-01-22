@@ -90,6 +90,12 @@ public class Store extends Model
         return data;
     }
 
+    @Override
+    public String getType()
+    {
+        return "stores";
+    }
+
     public int getStoreLogoImageResourceId()
     {
         return R.drawable.warehouse_stationery_inverse_no_bg;
