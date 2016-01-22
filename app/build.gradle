@@ -64,6 +64,6 @@ dependencies {
 
 
 retrolambda {
-    println System.getenv("JAVA8_HOME");
-    jdk '/Library/Java/JavaVirtualMachines/jdk1.8.0_65.jdk/Contents/Home'
+    println  System.getenv("JAVA8_HOME")
+    jdk  System.getenv("JAVA8_HOME")
 }
