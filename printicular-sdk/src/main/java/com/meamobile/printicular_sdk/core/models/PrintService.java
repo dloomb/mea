@@ -34,12 +34,16 @@ public class PrintService extends Model
         }
     }
 
-    private String mName, mDisplayName, mDefaultCurrency;
-    private FulfillmentType mFulFillmentType;
-    private boolean mEnforceDefaultCurrency, mAutoConfirmable;
-    private List<Product> mProducts;
+    private String
+            mName,
+            mDisplayName,
+            mDefaultCurrency;
 
-    public PrintService(){}
+    private FulfillmentType mFulFillmentType;
+
+    private boolean mEnforceDefaultCurrency, mAutoConfirmable;
+
+    private List<Product> mProducts;
 
 
 

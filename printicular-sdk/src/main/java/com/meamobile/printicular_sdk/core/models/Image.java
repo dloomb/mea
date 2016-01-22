@@ -5,12 +5,15 @@ import java.util.Map;
 public class Image extends DeviceTokenableModel
 {
     private User mUser;
+
     private String
-            mExternalUrl,
             mKey,
+            mChecksum,
             mFilename,
-            mChecksum;
+            mExternalUrl;
+
     private long mBytesize;
+
     private int
             mWidth,
             mHeight;
@@ -48,6 +51,20 @@ public class Image extends DeviceTokenableModel
         return data;
     }
 
+    @Override
+    public void update(Model model)
+    {
+        super.update(model);
+        Image imageModel = (Image) model;
+
+        mExternalUrl = (String) isSetOr(imageModel.getExternalUrl(), mExternalUrl);
+        mKey = (String) isSetOr(imageModel.getKey(), mKey);
+        mFilename = (String) isSetOr(imageModel.getFilename(), mFilename);
+        mChecksum = (String) isSetOr(imageModel.getChecksum(), mChecksum);
+        mBytesize = isSetOr(imageModel.getBytesize(), mBytesize);
+        mWidth = isSetOr(imageModel.getWidth(), mWidth);
+        mHeight = isSetOr(imageModel.getHeight(), mHeight);
+    }
 
     ///-----------------------------------------------------------
     /// @name Property Access
@@ -57,6 +74,10 @@ public class Image extends DeviceTokenableModel
     @Override
     public String getType() {
         return "images";
+    }
+
+    public String getReferencableString() {
+        return mKey != null ? mKey : mExternalUrl;
     }
 
     public String getExternalUrl()

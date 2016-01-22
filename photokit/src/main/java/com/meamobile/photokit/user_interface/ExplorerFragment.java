@@ -129,16 +129,6 @@ public class ExplorerFragment extends Fragment implements ItemClickSupport.OnIte
         }
     }
 
-//    @Override
-//    public void onActivityResult(int requestCode, int resultCode, Intent data)
-//    {
-//        super.onActivityResult(requestCode, resultCode, data);
-//    }
-//
-//    public void onAuthenticatorResult()
-//    {
-//
-//    }
 
     //--------------------------
     //        GridView
@@ -151,6 +141,8 @@ public class ExplorerFragment extends Fragment implements ItemClickSupport.OnIte
         mAdapter = new ExplorerRecyclerViewAdapter(getActivity(), mCollection, mDelegate);
         mRecyclerView.setAdapter(mAdapter);
         ItemClickSupport.addTo(mRecyclerView).setOnItemClickListener(this);
+
+        mCollection.setCollectionObserver(mAdapter);
 
         StaggeredGridLayoutManager layout = new StaggeredGridLayoutManager(2, StaggeredGridLayoutManager.VERTICAL);
 

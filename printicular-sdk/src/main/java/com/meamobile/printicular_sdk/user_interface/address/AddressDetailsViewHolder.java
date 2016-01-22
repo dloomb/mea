@@ -8,6 +8,7 @@ import android.widget.TextView;
 import com.meamobile.printicular_sdk.R;
 import com.meamobile.printicular_sdk.core.models.Address;
 import com.meamobile.printicular_sdk.core.models.PrintService;
+import com.meamobile.printicular_sdk.core.models.PrintService.FulfillmentType;
 
 public class AddressDetailsViewHolder extends RecyclerView.ViewHolder
 {
@@ -35,7 +36,7 @@ public class AddressDetailsViewHolder extends RecyclerView.ViewHolder
         mTextViewLine2 = (TextView) itemView.findViewById(R.id.textViewLine2);
     }
 
-    public void setAddress(Address address, PrintService printService)
+    public void setAddress(Address address, FulfillmentType fulfillmentType)
     {
         mTextViewName.setVisibility(View.VISIBLE);
         mTextViewLine1.setVisibility(View.VISIBLE);
@@ -44,8 +45,7 @@ public class AddressDetailsViewHolder extends RecyclerView.ViewHolder
         mTextViewTitle.setText("Your Details");
         String blankMessage = "Tap to enter your details";
 
-        boolean isDelivery = printService.getFulFillmentType() == PrintService.FulfillmentType.DELIVERY;
-
+        boolean isDelivery = fulfillmentType == PrintService.FulfillmentType.DELIVERY;
         if (isDelivery)
         {
             mTextViewTitle.setText("Postal Details");

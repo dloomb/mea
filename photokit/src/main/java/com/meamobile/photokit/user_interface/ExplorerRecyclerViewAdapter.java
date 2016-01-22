@@ -23,7 +23,7 @@ import rx.android.schedulers.AndroidSchedulers;
 import rx.schedulers.Schedulers;
 
 
-public class ExplorerRecyclerViewAdapter extends RecyclerView.Adapter
+public class ExplorerRecyclerViewAdapter extends RecyclerView.Adapter implements Collection.CollectionObserver
 {
     private static final int VIEWTYPE_COLLECTION = 0;
     private static final int VIEWTYPE_ASSEST = 1;
@@ -120,6 +120,10 @@ public class ExplorerRecyclerViewAdapter extends RecyclerView.Adapter
         return layout.getSpanCount();
     }
 
+
+
+
+
     ///-----------------------------------------------------------
     /// @name View Recycling
     ///-----------------------------------------------------------
@@ -151,25 +155,6 @@ public class ExplorerRecyclerViewAdapter extends RecyclerView.Adapter
 
         StaggeredGridLayoutManager.LayoutParams layoutParams = (StaggeredGridLayoutManager.LayoutParams) holder.itemView.getLayoutParams();
         layoutParams.setFullSpan(false);
-
-//        int span = getSpanCount();
-//        int whole = (int)Math.ceil(mDensity * 6);
-//        int threeThird = (int)Math.ceil(mDensity * 4);
-//        int third = (int)Math.ceil(mDensity * 4);
-//        int half = (int)Math.ceil(mDensity * 3);
-//
-//        if (index % span == 0) //First Column
-//        {
-//            holder.itemView.setPadding(threeThird, whole, third, 0);
-//        }
-//        else if ((index + 1) % span == 0) //Last Column
-//        {
-//            holder.itemView.setPadding(third, whole, threeThird, 0);
-//        }
-//        else
-//        {
-//            holder.itemView.setPadding(half, whole, half, 0);
-//        }
     }
 
     protected void onBindBlankViewHolder(ExplorerViewHolder holder)
@@ -204,6 +189,42 @@ public class ExplorerRecyclerViewAdapter extends RecyclerView.Adapter
                             Log.d("Image Error", error.getLocalizedMessage());
                         }
                 );
+    }
+
+
+
+
+
+    ///-----------------------------------------------------------
+    /// @name Collection Observing
+    ///-----------------------------------------------------------
+
+
+    @Override
+    public void collectionDidAddAssetAtIndex(Collection collection, Asset added, int index) {
+        mActivity.runOnUiThread(new Runnable() {
+            @Override
+            public void run() {
+                notifyDataSetChanged();
+            }
+        });
+    }
+
+    @Override
+    public void collectionDidAddCollectionAtIndex(Collection collection, Collection added, int index) {
+        mActivity.runOnUiThread(new Runnable()
+        {
+            @Override
+            public void run()
+            {
+                notifyDataSetChanged();
+            }
+        });
+    }
+
+    @Override
+    public void collectionRefresh(Collection collection) {
+
     }
 
 }

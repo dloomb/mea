@@ -1,5 +1,6 @@
 package com.meamobile.printicular_sdk.user_interface.store_search;
 
+import android.content.Intent;
 import android.os.Bundle;
 import android.support.v7.widget.GridLayoutManager;
 import android.support.v7.widget.RecyclerView;
@@ -41,6 +42,7 @@ import com.meamobile.printicular_sdk.core.models.Store;
 import com.meamobile.printicular_sdk.user_interface.CheckoutActivity;
 import com.meamobile.printicular_sdk.user_interface.ItemClickSupport;
 import com.meamobile.printicular_sdk.user_interface.ItemClickSupport.OnItemClickListener;
+import com.meamobile.printicular_sdk.user_interface.ManageOrderActivity;
 import com.meamobile.printicular_sdk.user_interface.UserInterfaceUtil;
 
 import java.util.ArrayList;
@@ -52,6 +54,8 @@ public class StoreSearchActivity
         extends CheckoutActivity
         implements OnEditorActionListener, TextWatcher, ResultCallback, OnConnectionFailedListener, ConnectionCallbacks, OnItemClickListener
 {
+    public static final String EXTRA_STORE_SEARCH_PUSHTO_MANAGE_ORDER = "com.meamobile.printicular_sdk.user_interface.store_search.pusto.mange_order_activity";
+
     private static final String TAG = "MEA.CheckoutActivity";
 
     private GoogleApiClient mGoogleApiClient;
@@ -147,7 +151,13 @@ public class StoreSearchActivity
             Store s = mStoreResults.get(position);
             mCartManager.setCurrentStore(s);
             mCartManager.saveStore(s);
-            finish();
+
+            if (getIntent().getBooleanExtra(EXTRA_STORE_SEARCH_PUSHTO_MANAGE_ORDER, false)) {
+                Intent i = new Intent(StoreSearchActivity.this, ManageOrderActivity.class);
+                startActivity(i);
+            } else {
+                finish();
+            }
         }
     }
 

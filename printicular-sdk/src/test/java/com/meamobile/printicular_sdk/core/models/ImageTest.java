@@ -132,4 +132,32 @@ public class ImageTest
 
         assertNull(attributes.get("external_url"));
     }
+
+    @Test
+    public void it_updates_correctly()
+    {
+        Image i1 = getNewLocalImageInstance();
+        Image i2 = getNewLocalImageInstance();
+
+        String key = "/dev/printicular-server/00-dummy/a-test-filename.jpg";
+
+        i2.setKey(key);
+        i2.setFilename("a-test-filename.jpg");
+        i2.setChecksum("aaaa-bbb-ccc-dddd");
+        i2.setBytesize(12345);
+        i2.setWidth(123);
+        i2.setHeight(124);
+
+        i1.update(i2);
+
+        assertEquals(key, i1.getKey());
+        assertEquals("a-test-filename.jpg", i1.getFilename());
+        assertEquals("aaaa-bbb-ccc-dddd", i1.getChecksum());
+        assertEquals(12345, i1.getBytesize());
+        assertEquals(123, i1.getWidth());
+        assertEquals(124, i1.getHeight());
+
+
+    }
+
 }

@@ -8,12 +8,14 @@ import com.google.gson.reflect.TypeToken;
 import com.meamobile.printicular_sdk.core.models.Address;
 import com.meamobile.printicular_sdk.core.models.Image;
 import com.meamobile.printicular_sdk.core.models.LineItem;
+import com.meamobile.printicular_sdk.core.models.Model;
 import com.meamobile.printicular_sdk.core.models.Order;
 import com.meamobile.printicular_sdk.core.models.PrintService;
 import com.meamobile.printicular_sdk.core.models.Product;
 import com.meamobile.printicular_sdk.core.models.Store;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
@@ -26,6 +28,7 @@ public class PrinticularCartManager
 
     private static final String SHARED_PREF_KEY = "com.meamobile.printicular_sdk.cart.shared_preferences";
     private static final String CART_SAVED_STORE_KEY = "com.meamobile.printicular_sdk.cart.saved_store";
+    private static final String CART_SAVED_ADDRESS_KEY = "com.meamobile.printicular_sdk.cart.saved_address";
 
 
     protected static PrinticularCartManager sInstance;
@@ -34,6 +37,7 @@ public class PrinticularCartManager
     protected List<LineItem> mLineItems;
     protected Map<Image, ArrayList> mData;
     protected Context mContext;
+    protected Map<Float, Product> mProductsByRatio;
 
     private PrintService mCurrentPrintService;
     private Store mCurrentStore;
@@ -41,9 +45,9 @@ public class PrinticularCartManager
 
     protected PrinticularCartManager()
     {
-        mImages = new ArrayList<Image>();
-        mLineItems = new ArrayList<LineItem>();
-        mData = new LinkedHashMap<Image, ArrayList>();
+        mImages = new ArrayList<>();
+        mLineItems = new ArrayList<>();
+        mData = new LinkedHashMap<>();
     }
 
     public static PrinticularCartManager getInstance()
@@ -86,7 +90,7 @@ public class PrinticularCartManager
     {
         if (!cartContainsImage(image))
         {
-            LineItem lineItem = new LineItem();
+            LineItem lineItem = newLineItemForImage(image);
             ArrayList<LineItem> items = new ArrayList<LineItem>();
             items.add(lineItem);
             mLineItems.add(lineItem);
@@ -121,12 +125,38 @@ public class PrinticularCartManager
         return mData.containsKey(image);
     }
 
+    protected LineItem newLineItemForImage(Image image) {
+        Product p = defaultProductForImage(image);
+        LineItem li = new LineItem(p);
+        return li;
+    }
+
+
+    ///-----------------------------------------------------------
+    /// @name Product Handling
+    ///-----------------------------------------------------------
+
+    protected void calculateAndSetProductsByRatio(List<Product> products)
+    {
+        mProductsByRatio = new HashMap<>();
+
+        for (Product p : products)
+        {
+            float w = 1;
+            float h = 1;
+            float ratio = Math.min(w, h) / Math.max(w, h);
+
+            mProductsByRatio.put(ratio, p);
+        }
+    }
 
     protected Product defaultProductForImage(Image image) {
         int w = image.getWidth();
         int h = image.getHeight();
 
         float ratio = Math.min(w, h) / Math.max(w, h);
+
+
 
         return mCurrentPrintService.getProducts().get(0);
     }
@@ -138,34 +168,26 @@ public class PrinticularCartManager
 
     public void saveStore(Store store)
     {
-        SharedPreferences prefs = mContext.getSharedPreferences(SHARED_PREF_KEY, Context.MODE_PRIVATE);
-        SharedPreferences.Editor e = prefs.edit();
-
-        if (store == null)
-        {
-            e.remove(CART_SAVED_STORE_KEY);
-        }
-        else {
-            e.putString(CART_SAVED_STORE_KEY, store.toJsonString());
-        }
-
-        e.apply();
+        saveModelToDisk(CART_SAVED_STORE_KEY, store);
     }
 
     public Store loadSavedStore()
     {
-        SharedPreferences prefs = mContext.getSharedPreferences(SHARED_PREF_KEY, Context.MODE_PRIVATE);
-        String json = prefs.getString(CART_SAVED_STORE_KEY, null);
+        return (Store) loadModelFromDisk(CART_SAVED_STORE_KEY, new Store());
+    }
 
-        if (json != null)
-        {
-            Map<String, Object> map = new Gson().fromJson(json, new TypeToken<Map<String, Object>>() {}.getType());
-            Store s = new Store();
-            s.populate(map);
-            return s;
-        }
 
-        return null;
+
+    ///-----------------------------------------------------------
+    /// @name Address Handling
+    ///-----------------------------------------------------------
+
+    public void saveAddress(Address address) {
+        saveModelToDisk(CART_SAVED_ADDRESS_KEY, address);
+    }
+
+    public Address loadSavedAddress() {
+        return (Address) loadModelFromDisk(CART_SAVED_ADDRESS_KEY, new Address());
     }
 
 
@@ -190,8 +212,6 @@ public class PrinticularCartManager
         order.setAddress(mCurrentAddress);
         order.setCurrency(mCurrentPrintService.getDefaultCurrency());
 
-
-
         return Observable.just(order);
     }
 
@@ -204,6 +224,8 @@ public class PrinticularCartManager
     public void setCurrentPrintService(PrintService printService)
     {
         mCurrentPrintService = printService;
+
+        calculateAndSetProductsByRatio(printService.getProducts());
     }
 
     public PrintService getCurrentPrintService()
@@ -232,5 +254,40 @@ public class PrinticularCartManager
     }
 
 
+
+
+
+    ///-----------------------------------------------------------
+    /// @name Helpers
+    ///-----------------------------------------------------------
+
+    protected void saveModelToDisk(String key, Model value) {
+        SharedPreferences prefs = mContext.getSharedPreferences(SHARED_PREF_KEY, Context.MODE_PRIVATE);
+        SharedPreferences.Editor e = prefs.edit();
+
+        if (value == null)
+        {
+            e.remove(key);
+        }
+        else {
+            e.putString(key, value.toJsonString());
+        }
+
+        e.commit();
+    }
+
+    protected Model loadModelFromDisk(String key, Model model) {
+        SharedPreferences prefs = mContext.getSharedPreferences(SHARED_PREF_KEY, Context.MODE_PRIVATE);
+        String json = prefs.getString(key, null);
+
+        if (json != null)
+        {
+            Map<String, Object> map = new Gson().fromJson(json, new TypeToken<Map<String, Object>>() {}.getType());
+            model.populate(map);
+            return model;
+        }
+
+        return null;
+    }
 
 }

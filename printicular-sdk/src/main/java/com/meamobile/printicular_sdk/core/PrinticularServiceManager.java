@@ -272,28 +272,37 @@ public class PrinticularServiceManager
     /// @name Images
     ///-----------------------------------------------------------
 
-    public Observable<Map<Long, Image>> registerImages(List<Image> images)
+    public Observable<List<Image>> registerImages(List<Image> images)
     {
-        List<Map> imageJsons = new ArrayList<>();
+        List<Map> imageData = new ArrayList<>();
+        Map<String, Image> imageMap = new HashMap<>();
 
         for (Image image : images) {
-            imageJsons.add(image.evaporate().get("data"));
+            imageData.add(image.evaporate().get("data"));
+            imageMap.put(image.getReferencableString(), image);
         }
 
         Map<String, String> meta = new HashMap<>();
         meta.put("device_token", getUniqueIdentifer());
 
         Map<String, Object> data = new HashMap<>();
-        data.put("data", imageJsons);
+        data.put("data", imageData);
         data.put("meta", meta);
 
         APIClient client = new APIClient(getBaseUrlForEnvironment());
         return client.post("users/0/images", data, mAccessToken)
-                .flatMap((res) -> {
+                .flatMap(r -> {
+                    Map<String, Map> objects = Model.hydrate(r);
+                    Map<Long, Image> models = objects.get("images");
+                    List<Image> modelsList = new ArrayList<>(models.values());
 
-                    Map objects = (Map) Model.hydrate(res);
+                    for (Image i : modelsList)
+                    {
+                        Image old = imageMap.get(i.getReferencableString());
+                        old.update(i);
+                    }
 
-                    return null;// objects.get("images");
+                    return Observable.just(images);
                 });
     }
 

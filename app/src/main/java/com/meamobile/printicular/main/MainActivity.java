@@ -41,12 +41,13 @@ import com.meamobile.printicular.main.cart.CartFragment;
 import com.meamobile.printicular.main.cart.PhotoKitCartManager;
 import com.meamobile.printicular.settings.LocationPickerDialog;
 import com.meamobile.printicular.settings.SettingsActivity;
-import com.meamobile.printicular_sdk.core.PrinticularCartManager;
 import com.meamobile.printicular_sdk.core.PrinticularServiceManager;
 import com.meamobile.printicular_sdk.core.PrinticularServiceManager.PrinticularEnvironment;
 import com.meamobile.printicular_sdk.core.models.PrintService;
+import com.meamobile.printicular_sdk.user_interface.CheckoutActivity;
 import com.meamobile.printicular_sdk.user_interface.address.AddressEntryActivity;
 import com.meamobile.printicular_sdk.user_interface.ManageOrderActivity;
+import com.meamobile.printicular_sdk.user_interface.store_search.StoreSearchActivity;
 
 import java.util.Locale;
 
@@ -210,6 +211,7 @@ public class MainActivity extends AuthenticatableActivity implements ExplorerFra
 
         mCartManager.setContext(this);
         mCartManager.setCurrentStore(mCartManager.loadSavedStore());
+        mCartManager.setCurrentAddress(mCartManager.loadSavedAddress());
     }
 
     @Override
@@ -218,7 +220,7 @@ public class MainActivity extends AuthenticatableActivity implements ExplorerFra
         super.onResume();
         determineLocation();
 
-        //For Testing A Activity
+        //For Testing a Activity
         new Handler(Looper.getMainLooper()).postDelayed(new Runnable() {@Override public void run()
         {
             Intent i = new Intent(MainActivity.this, AddressEntryActivity.class);
@@ -243,22 +245,6 @@ public class MainActivity extends AuthenticatableActivity implements ExplorerFra
     /// @name Button Actions
     ///-----------------------------------------------------------
 
-    private boolean checkCartValidity()
-    {
-        if (mCartManager.getImageCount() == 0)
-        {
-            new AlertDialog.Builder(this)
-                    .setTitle("Oops you haven't selected any images")
-                    .setMessage("Please select some images to continue")
-                    .setPositiveButton("Ok", null)
-                    .create()
-                    .show();
-
-            return false;
-        }
-        return true;
-    }
-
     public void onNextButtonPressed(View v)
     {
 
@@ -271,12 +257,6 @@ public class MainActivity extends AuthenticatableActivity implements ExplorerFra
 
     public void onPickupButtonPressed(View v)
     {
-        PrinticularServiceManager m = PrinticularServiceManager.getInstance();
-        m.registerImages(mCartManager.getImages())
-            .subscribe((images) -> {
-
-            });
-
         if (!checkCartValidity())
         {
             return;
@@ -313,7 +293,7 @@ public class MainActivity extends AuthenticatableActivity implements ExplorerFra
 
     protected void handlePickupPressed()
     {
-        PrintService service = PrinticularServiceManager.getInstance().getPrintServiceWithId(3); // Should eventually be pulled based on Territory Model
+        PrintService service = mServiceManager.getPrintServiceWithId(3); // Should eventually be pulled based on Territory Model
 
         switch (mCountryLocale.getISO3Country())
         {
@@ -322,10 +302,46 @@ public class MainActivity extends AuthenticatableActivity implements ExplorerFra
                 break;
         }
 
-        PrinticularCartManager.getInstance().setCurrentPrintService(service);
+        mCartManager.setCurrentPrintService(service);
+        mServiceManager.registerImages(mCartManager.getImages())
+                .subscribe(rr -> {
 
-        Intent i = new Intent(MainActivity.this, ManageOrderActivity.class);
-        startActivity(i);
+                    PrintService currentService = mCartManager.getCurrentPrintService();
+                    Intent i = new Intent(MainActivity.this, ManageOrderActivity.class);
+
+                    if (mCartManager.getCurrentAddress() == null) {
+                        i.setClass(MainActivity.this, AddressEntryActivity.class);
+                        i.putExtra(CheckoutActivity.EXTRA_DONE_BUTTON_ENABLED, true);
+                    }
+                    else if (mCartManager.getCurrentStore() == null
+                            && currentService.getFulFillmentType() == PrintService.FulfillmentType.PICKUP)
+                    {
+                        i.setClass(MainActivity.this, StoreSearchActivity.class);
+                        i.putExtra(CheckoutActivity.EXTRA_DONE_BUTTON_ENABLED, true);
+                    }
+
+                    startActivity(i);
+
+                }, error -> {
+
+                });
+
+    }
+
+    private boolean checkCartValidity()
+    {
+        if (mCartManager.getImageCount() == 0)
+        {
+            new AlertDialog.Builder(this)
+                    .setTitle("Oops you haven't selected any images")
+                    .setMessage("Please select some images to continue")
+                    .setPositiveButton("Ok", null)
+                    .create()
+                    .show();
+
+            return false;
+        }
+        return true;
     }
 
 

@@ -24,6 +24,14 @@ public class DeviceTokenableModel extends Model
         }
     }
 
+    @Override
+    public void update(Model model)
+    {
+        super.update(model);
+
+        DeviceTokenableModel dtModel = (DeviceTokenableModel) model;
+        mDeviceToken = (String) isSetOr(dtModel.getDeviceToken(), mDeviceToken);
+    }
 
     public String getDeviceToken()
     {

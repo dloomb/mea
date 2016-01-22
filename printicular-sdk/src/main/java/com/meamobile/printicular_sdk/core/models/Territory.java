@@ -4,8 +4,12 @@ import java.util.Locale;
 
 public class Territory extends Model
 {
-    private String mCountryCode, mCountryName;
+    private String
+            mCountryCode,
+            mCountryName;
+
     private PrintService mDefaultPrintService;
+
 
     public Territory(){}
 

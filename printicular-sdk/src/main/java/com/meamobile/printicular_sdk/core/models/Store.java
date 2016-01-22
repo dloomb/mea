@@ -23,16 +23,16 @@ public class Store extends Model
     }
 
     private String
-            mName,
-            mAddress,
             mCity,
+            mName,
             mState,
-            mPostCode,
             mPhone,
+            mAddress,
+            mChecksum,
+            mPostCode,
             mStoreCode,
             mRetailerId,
-            mRetailerStoreId,
-            mChecksum;
+            mRetailerStoreId;
 
     private double
             mLatitude,

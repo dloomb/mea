@@ -23,13 +23,24 @@ public class Model
         LONG
     }
 
-    protected long mId;
-    protected String mType;
-    protected Date mCreatedAt, mUpdatedAt;
-    protected Map<String, Object> mRelationshipMap;
-    protected Map<String, Object> mMeta;
+    protected long mId = -1;
+
+    protected Date
+            mCreatedAt,
+            mUpdatedAt;
+
+    protected Map<String, Object>
+            mMeta,
+            mRelationshipMap;
+
+
 
     public Model(){}
+
+    ///-----------------------------------------------------------
+    /// @name Data Management
+    ///-----------------------------------------------------------
+
 
     public void populate(Map data)
     {
@@ -37,7 +48,6 @@ public class Model
         data = nestedData != null ? nestedData : data;
 
         mId = ((Number) data.get("id")).longValue();
-        mType = (String) data.get("type");
 
         Map attributes = (Map) data.get("attributes");
         if (attributes != null)
@@ -64,38 +74,18 @@ public class Model
 
     }
 
-    public long getId()
-    {
-        return mId;
-    }
+    public void update(Model model) {
+        mId = isSetOr(model.getId(), mId);
+        mCreatedAt = (Date) isSetOr(model.getCreatedAt(), mCreatedAt);
+        mUpdatedAt = (Date) isSetOr(model.getUpdatedAt(), mUpdatedAt);
 
-    public String getType()
-    {
-        throw new RuntimeException("Cannot call getType on Base Model");
-    }
-
-    public Date getCreatedAt()
-    {
-        return mCreatedAt;
-    }
-
-    public Date getUpdatedAt()
-    {
-        return mUpdatedAt;
-    }
-
-    public Object getMeta(String key)
-    {
-        if (mMeta != null)
-        {
-            return mMeta.get(key);
+        if (model.getMeta() != null) {
+            mMeta.putAll(model.getMeta());
         }
-        return null;
-    }
 
-    public Map<String, Object> getMeta()
-    {
-        return mMeta;
+        if (model.getRelationshipsMap() != null) {
+            mRelationshipMap.putAll(model.getRelationshipsMap());
+        }
     }
 
 
@@ -234,6 +224,50 @@ public class Model
 
 
 
+
+    ///-----------------------------------------------------------
+    /// @name Property Access
+    ///-----------------------------------------------------------
+
+    public long getId()
+    {
+        return mId;
+    }
+
+    public String getType()
+    {
+        throw new RuntimeException("Cannot call getType on Base Model");
+    }
+
+    public Date getCreatedAt()
+    {
+        return mCreatedAt;
+    }
+
+    public Date getUpdatedAt()
+    {
+        return mUpdatedAt;
+    }
+
+    public Object getMeta(String key)
+    {
+        if (mMeta != null)
+        {
+            return mMeta.get(key);
+        }
+        return null;
+    }
+
+    public Map<String, Object> getMeta()
+    {
+        return mMeta;
+    }
+
+    protected Map<String, Object> getRelationshipsMap() {
+        return mRelationshipMap;
+    }
+
+
     ///-----------------------------------------------------------
     /// @name Helpers
     ///-----------------------------------------------------------
@@ -353,6 +387,18 @@ public class Model
         }
 
         return result;
+    }
+
+    protected Object isSetOr(Object isValue, Object orValue) {
+        return isValue != null ? isValue : orValue;
+    }
+
+    protected long isSetOr(long isValue, long orValue) {
+        return isValue != -1 ? isValue : orValue;
+    }
+
+    protected int isSetOr(int isValue, int orValue) {
+        return isValue != -1 ? isValue : orValue;
     }
 
 }

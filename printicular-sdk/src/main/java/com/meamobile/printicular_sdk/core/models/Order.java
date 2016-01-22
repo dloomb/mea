@@ -5,24 +5,31 @@ import java.util.List;
 public class Order extends DeviceTokenableModel
 {
     protected List<LineItem> mLineItems;
+
     protected Address mAddress;
+
     protected Store mStore;
+
     protected PrintService mPrintService;
+
     protected String
             mCurrency,
             mClientName,
             mClientVersion;
+
+
+
+
 
     public Order()
     {
 
     }
 
-
     ///-----------------------------------------------------------
     /// @name Property Access
     ///-----------------------------------------------------------
-    //region Property Access
+
     public List<LineItem> getLineItems()
     {
         return mLineItems;
@@ -92,5 +99,4 @@ public class Order extends DeviceTokenableModel
     {
         mClientVersion = clientVersion;
     }
-    //endregion
 }
