@@ -71,8 +71,9 @@ public class PrinticularServiceManager
         validateAccessToken()
                 .retry(5)
                 .subscribe((tRes) -> {
-                            refreshPrintServices().retry(5).subscribe((pRes) -> {}, (error) -> Log.e(TAG, error.getLocalizedMessage()));
-                        }, (error) -> Log.e(TAG, error.getLocalizedMessage()));
+                    refreshPrintServices().retry(5).subscribe((pRes) -> {
+                    }, (error) -> Log.e(TAG, error.getLocalizedMessage()));
+                }, (error) -> Log.e(TAG, error.getLocalizedMessage()));
     }
 
 
@@ -306,6 +307,24 @@ public class PrinticularServiceManager
     }
 
 
+
+
+    ///-----------------------------------------------------------
+    /// @name Orders
+    ///-----------------------------------------------------------
+
+    public Observable<Order> submitOrder(Order order)
+    {
+        Map<String, Map> params = order.evaporate();
+
+        APIClient client = new APIClient(getBaseUrlForEnvironment());
+        return client.post("users/0/orders?deviceToken=" + getUniqueIdentifer(), params, mAccessToken)
+                .flatMap(r -> {
+
+
+                    return Observable.just(order);
+                });
+    }
 
 
 

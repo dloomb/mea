@@ -69,7 +69,14 @@ public class PrinticularCartManager
         mContext = context;
     }
 
-
+    public void reset() {
+        mLineItems = new ArrayList<>();
+        mData = new LinkedHashMap<>();
+        mCurrentAddress = null;
+        mCurrentPrintService = null;
+        mCurrentStore = null;
+        mProductsByRatio = null;
+    }
 
     ///-----------------------------------------------------------
     /// @name Image Handling
@@ -185,7 +192,6 @@ public class PrinticularCartManager
             int w = image.getWidth();
             int h = image.getHeight();
             if (w == 0 || h == 0) {
-                Log.d(TAG, "Image width or height was Zero.");
                 return mProductsByRatio.values().iterator().next();
             }
 
@@ -214,6 +220,7 @@ public class PrinticularCartManager
         }
         return null;
     }
+
 
 
     ///-----------------------------------------------------------

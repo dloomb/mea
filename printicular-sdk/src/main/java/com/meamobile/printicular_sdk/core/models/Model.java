@@ -206,7 +206,7 @@ public class Model
 
         safePut(attributes, "meta", mMeta);
 
-        safePut(attributes, "relationships", mRelationshipMap);
+        safePut(data, "relationships", mRelationshipMap, new HashMap<>());
 
         Map<String, Map> out = new HashMap();
         out.put("data", data);
@@ -267,6 +267,20 @@ public class Model
         return mRelationshipMap;
     }
 
+    protected Map<String, Object> getDataWrappedResourceIdentifierObject()
+    {
+        Map out = new HashMap<>();
+        out.put("data", getResourceIdentifierObject());
+        return out;
+    }
+
+    protected Map<String, Object> getResourceIdentifierObject() {
+        Map data = new HashMap<>();
+        data.put("type", getType());
+        data.put("id", getId());
+        return data;
+    }
+
 
     ///-----------------------------------------------------------
     /// @name Helpers
@@ -274,14 +288,27 @@ public class Model
 
     protected void safePut(Map map, Object key, Object value)
     {
-        if (map != null && key != null && value != null)
+        safePut(map, key, value, null);
+    }
+
+    protected void safePut(Map map, Object key, Object value, Object fallback)
+    {
+        if (map != null && key != null)
         {
-            if (value instanceof Number && ((Number) value).intValue() == 0)
+            if (value != null)
             {
-                return;
+                if (value instanceof Number && ((Number) value).intValue() == 0)
+                {
+                    return;
+                }
+
+                map.put(key, value);
+            }
+            else if (fallback != null)
+            {
+                map.put(key, fallback);
             }
 
-            map.put(key, value);
         }
     }
 

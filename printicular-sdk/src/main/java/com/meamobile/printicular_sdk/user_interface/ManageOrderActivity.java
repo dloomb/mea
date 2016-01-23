@@ -2,37 +2,26 @@ package com.meamobile.printicular_sdk.user_interface;
 
 import android.app.AlertDialog;
 import android.content.Intent;
-import android.graphics.PorterDuff;
 import android.os.Bundle;
-import android.util.Log;
-import android.view.Menu;
-import android.view.MenuItem;
 import android.view.View;
-import android.widget.Button;
 import android.widget.LinearLayout;
-import android.widget.TextView;
 
 import com.meamobile.printicular_sdk.R;
 import com.meamobile.printicular_sdk.core.PrinticularCartManager;
 import com.meamobile.printicular_sdk.core.PrinticularServiceManager;
 import com.meamobile.printicular_sdk.core.models.Address;
-import com.meamobile.printicular_sdk.core.models.Order;
 import com.meamobile.printicular_sdk.core.models.PrintService.FulfillmentType;
 import com.meamobile.printicular_sdk.core.models.Store;
 import com.meamobile.printicular_sdk.user_interface.address.AddressDetailsViewHolder;
-import com.meamobile.printicular_sdk.user_interface.address.AddressListActivity;
 import com.meamobile.printicular_sdk.user_interface.address.AddressEntryActivity;
 import com.meamobile.printicular_sdk.user_interface.common.OrderSummaryViewHolder;
 import com.meamobile.printicular_sdk.user_interface.common.StoreDetailsViewHolder;
 import com.meamobile.printicular_sdk.user_interface.store_search.StoreSearchActivity;
 
 import java.util.Collection;
-import java.util.concurrent.TimeUnit;
 
-import rx.Observable;
 import rx.Subscription;
 import rx.android.schedulers.AndroidSchedulers;
-import rx.subjects.PublishSubject;
 
 public class ManageOrderActivity extends CheckoutActivity
 {
@@ -78,11 +67,14 @@ public class ManageOrderActivity extends CheckoutActivity
     public void onConfirmButtonClicked(View v)
     {
         mCartManager.createNewOrderInstance()
-        .subscribe(order -> {
+                .flatMap(order -> {
+                    return mServiceManger.fetchSavedAddresses();
+                })
+                .subscribe(order -> {
 
-        }, error -> {
-            
-        });
+                }, error -> {
+
+                });
     }
 
     protected void onPostalDetailsPressed(View v)
@@ -171,7 +163,7 @@ public class ManageOrderActivity extends CheckoutActivity
                 break;
         }
 
-        mOrderSummaryViewHolder.setupWithLineItems(mCartManager.getLineItems());
+        mOrderSummaryViewHolder.setupWithLineItemsAndPrintService(mCartManager.getLineItems(), mCartManager.getCurrentPrintService());
         mAddressDetailsViewHolder.setAddress(mCartManager.getCurrentAddress(), fulfillmentType);
         mStoreDetailsViewHolder.applyLayoutForManageOrderScreen();
     }

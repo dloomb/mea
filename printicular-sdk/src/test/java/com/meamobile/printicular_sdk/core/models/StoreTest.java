@@ -10,18 +10,9 @@ import java.util.Map;
 
 import static org.junit.Assert.*;
 
-public class StoreTest
+public class StoreTest extends ModelTest
 {
 
-    protected Store getNewStoreInstance()
-    {
-        Map<String, Object> map = new Gson().fromJson(JSONResource.RAW_STORE_JSON, new TypeToken<Map<String, Object>>() {}.getType());
-
-        Map<String, Map> objects = Model.hydrate(map);
-
-        Store store = (Store) objects.get("stores").get(11l);
-        return store;
-    }
 
     @Test
     public void it_hydrates_correctly()

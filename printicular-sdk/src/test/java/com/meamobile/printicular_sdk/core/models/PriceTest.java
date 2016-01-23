@@ -10,20 +10,8 @@ import java.util.Map;
 
 import static org.junit.Assert.*;
 
-public class PriceTest
+public class PriceTest extends ModelTest
 {
-
-    protected Price getNewPriceInstance()
-    {
-        Map<String, Object> map = new Gson().fromJson(JSONResource.RAW_WAREHOUSE_PRINT_SERVICE_JSON, new TypeToken<Map<String, Object>>() {}.getType());
-
-        Map<String, Map> objects = Model.hydrate(map);
-
-        Price price = (Price) objects.get("prices").get(4l);
-
-        return price;
-    }
-
     @Test
     public void it_hydrates_correctly() throws Exception
     {

@@ -10,18 +10,14 @@ import java.util.Map;
 
 import static org.junit.Assert.*;
 
-public class AddressTest
+public class AddressTest extends ModelTest
 {
-
-    protected Address getNewAddressInstance()
-    {
-        Map<String, Object> map = new Gson().fromJson(JSONResource.RAW_ADDRESS_JSON, new TypeToken<Map<String, Object>>() {}.getType());
-
-        Map<String, Map> objects = Model.hydrate(map);
-
-        Address address = (Address) objects.get("addresses").get(1l);
-        return address;
+    @Test
+    public void it_has_the_correct_type() {
+        Address a = new Address();
+        assertEquals("addresses", a.getType());
     }
+
 
     @Test
     public void it_hydrates_correctly()

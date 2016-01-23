@@ -147,6 +147,11 @@ public class Product extends Model
         return mPrintService;
     }
 
+    public void setPrintService(PrintService printService)
+    {
+        mPrintService = printService;
+    }
+
     public List<Price> getPrices()
     {
         return mPrices;

@@ -40,12 +40,13 @@ public class PhotoKitCartManager extends PrinticularCartManager
             image.setExternalUrl(remote.getFullResolutionUrlString());
         } else if (asset instanceof LocalAsset) {
             LocalAsset local = (LocalAsset) asset;
-            image.setWidth(local.getWidth());
-            image.setHeight(local.getHeight());
             image.setBytesize(local.getBytesize());
             image.setChecksum(local.getChecksum());
             image.setFilename(local.getFilename());
         }
+
+        image.setWidth(asset.getWidth());
+        image.setHeight(asset.getHeight());
 
         mImageMap.put(asset.getAssetIdentifier(), image);
         mAssetMap.put(asset.getAssetIdentifier(), asset);

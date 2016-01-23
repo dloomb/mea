@@ -41,8 +41,9 @@
             android:layout_height="wrap_content"
             android:layout_marginTop="4dp"
             android:layout_alignParentRight="true"
+            android:gravity="end"
             android:textColor="@color/text_dark"
-            android:text="$1.99\n$1.99\n$1.99\n"/>
+            android:text="$1.99\n$0.99\n$11.99\n"/>
 
 
 
