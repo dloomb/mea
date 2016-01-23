@@ -25,7 +25,8 @@ public class Order extends DeviceTokenableModel
     protected double
             mTaxTotal,
             mTotal,
-            mSubTotal;
+            mSubTotal,
+            mFreightTotal;
 
 
 
@@ -48,12 +49,14 @@ public class Order extends DeviceTokenableModel
         Map attributes = findMapWithKey(data, "attributes");
         if (attributes != null)
         {
+            mStatus = (String) attributes.get("status");
             mCurrency = (String) attributes.get("currency");
             mClientName = (String) attributes.get("client_name");
             mClientVersion = (String) safeParse(attributes.get("client_version"), ClassType.STRING);
             mTaxTotal = (double) safeParse(attributes.get("tax_total"), ClassType.DOUBLE);
             mSubTotal = (double) safeParse(attributes.get("subtotal"), ClassType.DOUBLE);
             mTotal = (double) safeParse(attributes.get("total"), ClassType.DOUBLE);
+            mFreightTotal = (double) safeParse(attributes.get("freight_total"), ClassType.DOUBLE);
         }
     }
 
@@ -109,6 +112,26 @@ public class Order extends DeviceTokenableModel
 
         return data;
     }
+
+    @Override
+    public void update(Model model)
+    {
+        super.update(model);
+
+        Order orderModel = (Order) model;
+
+        mCurrency = (String) isSetOr(orderModel.getCurrency(), mCurrency);
+        mVendorId = (String) isSetOr(orderModel.getVendorId(), mVendorId);
+        mStatus = (String) isSetOr(orderModel.getStatus(), mStatus);
+        mClientName = (String) isSetOr(orderModel.getClientName(), mClientName);
+        mClientVersion = (String) isSetOr(orderModel.getClientVersion(), mClientVersion);
+
+        mTotal =  isSetOr(orderModel.getTotal(), mTotal);
+        mSubTotal = isSetOr(orderModel.getSubTotal(), mSubTotal);
+        mTaxTotal =  isSetOr(orderModel.getTaxTotal(), mTaxTotal);
+        mFreightTotal = isSetOr(orderModel.getFreightTotal(), mFreightTotal);
+    }
+
 
     ///-----------------------------------------------------------
     /// @name Property Access
@@ -182,5 +205,65 @@ public class Order extends DeviceTokenableModel
     public void setClientVersion(String clientVersion)
     {
         mClientVersion = clientVersion;
+    }
+
+    public String getVendorId()
+    {
+        return mVendorId;
+    }
+
+    public void setVendorId(String vendorId)
+    {
+        mVendorId = vendorId;
+    }
+
+    public String getStatus()
+    {
+        return mStatus;
+    }
+
+    public void setStatus(String status)
+    {
+        mStatus = status;
+    }
+
+    public double getTaxTotal()
+    {
+        return mTaxTotal;
+    }
+
+    public void setTaxTotal(double taxTotal)
+    {
+        this.mTaxTotal = taxTotal;
+    }
+
+    public double getTotal()
+    {
+        return mTotal;
+    }
+
+    public void setTotal(double total)
+    {
+        this.mTotal = total;
+    }
+
+    public double getSubTotal()
+    {
+        return mSubTotal;
+    }
+
+    public void setSubTotal(double subTotal)
+    {
+        this.mSubTotal = subTotal;
+    }
+
+    public double getFreightTotal()
+    {
+        return mFreightTotal;
+    }
+
+    public void setFreightTotal(double freightTotal)
+    {
+        mFreightTotal = freightTotal;
     }
 }

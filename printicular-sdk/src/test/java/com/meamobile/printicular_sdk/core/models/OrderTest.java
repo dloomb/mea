@@ -30,6 +30,7 @@ public class OrderTest extends ModelTest
         assertEquals("fake", order.getClientName());
         assertEquals("1.0", order.getClientVersion());
         assertEquals("NZD", order.getCurrency());
+        assertEquals("new", order.getStatus());
     }
 
     @Test

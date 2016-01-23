@@ -14,22 +14,22 @@
             android:name=".user_interface.ManageOrderActivity"
             android:label="@string/activity_manage_order_title">
         </activity>
-
         <activity
             android:name=".user_interface.address.AddressEntryActivity"
             android:label="@string/activity_customer_details_title">
         </activity>
-
         <activity
             android:name=".user_interface.store_search.StoreSearchActivity"
             android:label="@string/activity_store_search_title">
         </activity>
-
         <activity
             android:name=".user_interface.address.AddressListActivity"
             android:label="Choose an address">
         </activity>
-
+        <activity
+            android:name=".user_interface.ReceiptActivity"
+            android:label="Thank You">
+        </activity>
     </application>
 
 </manifest>

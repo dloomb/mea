@@ -84,7 +84,12 @@ public class Model
         }
 
         if (model.getRelationshipsMap() != null) {
-            mRelationshipMap.putAll(model.getRelationshipsMap());
+            if (mRelationshipMap != null) {
+                mRelationshipMap.putAll(model.getRelationshipsMap());
+            }
+            else {
+                mRelationshipMap = model.getRelationshipsMap();
+            }
         }
     }
 
@@ -314,6 +319,26 @@ public class Model
 
     protected Object safeParse(Object input, ClassType wantedClass)
     {
+        if (input == null) {
+            switch (wantedClass)
+            {
+                case STRING:
+                    return null;
+
+                case INTEGER:
+                    return 0;
+
+                case LONG:
+                    return 0l;
+
+                case DOUBLE:
+                    return 0d;
+
+                case BOOLEAN:
+                    return false;
+            }
+        }
+
         if (input instanceof String)
         {
             switch (wantedClass)
@@ -440,6 +465,9 @@ public class Model
     }
 
     protected int isSetOr(int isValue, int orValue) {
+        return isValue != -1 ? isValue : orValue;
+    }
+    protected double isSetOr(double isValue, double orValue) {
         return isValue != -1 ? isValue : orValue;
     }
 

@@ -3,6 +3,7 @@ package com.meamobile.printicular_sdk.user_interface;
 import android.app.AlertDialog;
 import android.content.Intent;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.View;
 import android.widget.LinearLayout;
 
@@ -67,13 +68,17 @@ public class ManageOrderActivity extends CheckoutActivity
     public void onConfirmButtonClicked(View v)
     {
         mCartManager.createNewOrderInstance()
-                .flatMap(order -> {
-                    return mServiceManger.fetchSavedAddresses();
-                })
+                .flatMap(mServiceManger::submitOrder)
                 .subscribe(order -> {
 
-                }, error -> {
+                    Log.d(TAG, "Order Done");
 
+                    Intent i = new Intent(ManageOrderActivity.this, ReceiptActivity.class);
+                    i.putExtra("ORDER_JSON", order.toJsonString());
+                    startActivity(i);
+
+                }, error -> {
+                    error.printStackTrace();
                 });
     }
 

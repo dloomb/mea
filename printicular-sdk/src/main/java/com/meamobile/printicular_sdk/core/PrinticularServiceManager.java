@@ -320,7 +320,12 @@ public class PrinticularServiceManager
         APIClient client = new APIClient(getBaseUrlForEnvironment());
         return client.post("users/0/orders?deviceToken=" + getUniqueIdentifer(), params, mAccessToken)
                 .flatMap(r -> {
+                    Log.d(TAG, "Order submitted successfully");
 
+                    Map objects = (Map) Model.hydrate(r);
+                    Map <Long, Order> orders = (Map<Long, Order>) objects.get("orders");
+                    Order newOrder = orders.values().iterator().next();
+                    order.update(newOrder);
 
                     return Observable.just(order);
                 });
