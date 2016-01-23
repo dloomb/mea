@@ -2,6 +2,7 @@ package com.meamobile.printicular_sdk.core;
 
 import android.content.Context;
 import android.content.SharedPreferences;
+import android.util.Log;
 
 import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
@@ -15,10 +16,15 @@ import com.meamobile.printicular_sdk.core.models.Product;
 import com.meamobile.printicular_sdk.core.models.Store;
 
 import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.SortedSet;
+import java.util.TreeSet;
 
 import rx.Observable;
 
@@ -33,7 +39,6 @@ public class PrinticularCartManager
 
     protected static PrinticularCartManager sInstance;
 
-    protected List<Image> mImages;
     protected List<LineItem> mLineItems;
     protected Map<Image, ArrayList> mData;
     protected Context mContext;
@@ -45,7 +50,6 @@ public class PrinticularCartManager
 
     protected PrinticularCartManager()
     {
-        mImages = new ArrayList<>();
         mLineItems = new ArrayList<>();
         mData = new LinkedHashMap<>();
     }
@@ -126,8 +130,9 @@ public class PrinticularCartManager
     }
 
     protected LineItem newLineItemForImage(Image image) {
-        Product p = defaultProductForImage(image);
-        LineItem li = new LineItem(p);
+        LineItem li = new LineItem();
+        li.setProduct(defaultProductForImage(image));
+        li.setImage(image);
         return li;
     }
 
@@ -136,29 +141,74 @@ public class PrinticularCartManager
     /// @name Product Handling
     ///-----------------------------------------------------------
 
-    protected void calculateAndSetProductsByRatio(List<Product> products)
+    protected void calculateAndSetProductsByRatio(List<Product> products, String currency)
     {
         mProductsByRatio = new HashMap<>();
 
         for (Product p : products)
         {
-            float w = 1;
-            float h = 1;
-            float ratio = Math.min(w, h) / Math.max(w, h);
+            float w = p.getWidth();
+            float h = p.getHeight();
+            if (w == 0 || h == 0) {
+                Log.d(TAG, "Product width or height was Zero.");
+                continue;
+            }
 
-            mProductsByRatio.put(ratio, p);
+            float ratio = Math.min(w, h) / Math.max(w, h);
+            Product existing = mProductsByRatio.get(ratio);
+            if (existing != null) {
+                mProductsByRatio.put(ratio, Product.cheaper(p, existing, currency));
+            } else {
+                mProductsByRatio.put(ratio, p);
+            }
+        }
+
+        List<Image> images = getImages();
+        for (Image i : images)
+        {
+            Product p = defaultProductForImage(i);
+            List<LineItem> items = mData.get(i);
+
+            for (LineItem li : items)
+            {
+                li.setProduct(p);
+            }
         }
     }
 
     protected Product defaultProductForImage(Image image) {
-        int w = image.getWidth();
-        int h = image.getHeight();
+        if (mProductsByRatio != null) {
+            int w = image.getWidth();
+            int h = image.getHeight();
+            if (w == 0 || h == 0) {
+                Log.d(TAG, "Image width or height was Zero.");
+                return mProductsByRatio.values().iterator().next();
+            }
 
-        float ratio = Math.min(w, h) / Math.max(w, h);
+            float ratio = (float)Math.min(w, h) / Math.max(w, h);
 
+            List<Float> keys = new ArrayList<>(mProductsByRatio.keySet());
+            Collections.sort(keys);
+            int p = Collections.binarySearch(keys, ratio);
+            p = (p < 0) ? -p - 1 : p;
 
+            if (p == 0 || p == keys.size()) {
+                return mProductsByRatio.get(keys.get(p));
+            }
 
-        return mCurrentPrintService.getProducts().get(0);
+            float upper = keys.get(p);
+            float lower = keys.get(p - 1);
+
+            float diffLower = ratio - lower;
+            float diffUpper= upper - ratio;
+
+            if (diffLower < diffUpper) {
+                return mProductsByRatio.get(lower);
+            }
+
+            return mProductsByRatio.get(upper);
+        }
+        return null;
     }
 
 
@@ -223,9 +273,11 @@ public class PrinticularCartManager
 
     public void setCurrentPrintService(PrintService printService)
     {
-        mCurrentPrintService = printService;
+        if (printService != null && printService != mCurrentPrintService) {
+            calculateAndSetProductsByRatio(printService.getProducts(), printService.getDefaultCurrency());
+        }
 
-        calculateAndSetProductsByRatio(printService.getProducts());
+        mCurrentPrintService = printService;
     }
 
     public PrintService getCurrentPrintService()

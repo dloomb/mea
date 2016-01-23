@@ -302,6 +302,9 @@ public class Model
 
                 case DOUBLE:
                     return Double.parseDouble((String) input);
+
+                case BOOLEAN:
+                    return Boolean.parseBoolean((String) input);
             }
         }
 
@@ -330,6 +333,18 @@ public class Model
         {
             switch (wantedClass)
             {
+                case STRING:
+                    return ((boolean) input) ? "true" : "false";
+
+                case INTEGER:
+                    return ((boolean) input) ? 1 : 0;
+
+                case LONG:
+                    return ((boolean) input) ? 1l : 0l;
+
+                case DOUBLE:
+                    return ((boolean) input) ? 1.0d : 0.0d;
+
                 case BOOLEAN:
                     return input;
             }

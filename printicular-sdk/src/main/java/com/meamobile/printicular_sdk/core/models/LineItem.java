@@ -3,10 +3,9 @@ package com.meamobile.printicular_sdk.core.models;
 public class LineItem extends Model
 {
     private Product mProduct;
+    private Image mImage;
 
-    public LineItem(Product product) {
-        mProduct = product;
-    }
+    public LineItem(){}
 
     public Product getProduct()
     {
@@ -17,4 +16,6 @@ public class LineItem extends Model
     {
         mProduct = product;
     }
+
+    public void setImage(Image image) { mImage = image; }
 }

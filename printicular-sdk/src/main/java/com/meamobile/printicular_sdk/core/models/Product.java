@@ -1,11 +1,35 @@
 package com.meamobile.printicular_sdk.core.models;
 
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
 public class Product extends Model
 {
+    public static Product cheaper(Product p1, Product p2, String currency) {
+
+        Price price1 = p1.getPriceForCurrency(currency);
+        Price price2 = p2.getPriceForCurrency(currency);
+
+        if (price1 == null) {
+            return p2;
+        }
+
+        if (price2 == null) {
+            return p1;
+        }
+
+        if (price1.getTotal() < price2.getTotal()) {
+            return p1;
+        }
+
+        return p2;
+    }
+
+
+    private PrintService mPrintService;
+
     private List<Price> mPrices;
 
     private String
@@ -24,6 +48,15 @@ public class Product extends Model
             mMinimumResolution;
 
 
+    private boolean mIsMetric;
+
+    @Override
+    public String getType()
+    {
+        return "products";
+    }
+
+
     @Override
     public void populate(Map data)
     {
@@ -33,7 +66,7 @@ public class Product extends Model
         if (attributes != null)
         {
             mName = (String) attributes.get("name");
-            mChecksum = (String) attributes.get("name");
+            mChecksum = (String) attributes.get("checksum");
             mProductCode = (String) attributes.get("product_code");
             mLongDescription = (String) attributes.get("long_description");
             mShortDescription = (String) attributes.get("short_description");
@@ -44,13 +77,86 @@ public class Product extends Model
             mPixelWidth = (int) safeParse(attributes.get("pixel_width"), ClassType.INTEGER);
             mPixelHeight = (int) safeParse(attributes.get("pixel_height"), ClassType.INTEGER);
             mMinimumResolution = (int) safeParse(attributes.get("minimum_resolution"), ClassType.INTEGER);
+
+            mIsMetric = (boolean) safeParse(attributes.get("metric"), ClassType.BOOLEAN);
         }
+    }
+
+    @Override
+    public void associate(Map<String, Map> objects)
+    {
+        super.associate(objects);
+
+        if (mRelationshipMap != null && mRelationshipMap.get("prices") != null)
+        {
+            List<Map> priceRelations = (List) ((Map)mRelationshipMap.get("prices")).get("data");
+            if (priceRelations != null)
+            {
+
+                Map<Long, Price> priceModels = objects.get("prices");
+                mPrices = new ArrayList<>();
+                for (Map relation : priceRelations)
+                {
+                    long id = (long) safeParse(relation.get("id"), ClassType.LONG);
+                    String type = (String) relation.get("type");
+
+                    if (!type.equals("prices")) {
+                        throw new RuntimeException("Server returned a non price object against the prices relationship");
+                    }
+
+                    Price p = priceModels.get(id);
+                    if (p != null) {
+                        mPrices.add(p);
+                    }
+                }
+
+
+            }
+        }
+    }
+
+    @Override
+    public Map<String, Map> evaporate()
+    {
+        Map <String, Map> data = super.evaporate();
+
+        Map<String, Object> attributes = findMapWithKey(data, "attributes");
+        if (attributes != null)
+        {
+            attributes.put("name", mName);
+            attributes.put("checksum", mChecksum);
+            attributes.put("product_code", mProductCode);
+            attributes.put("long_description", mLongDescription);
+            attributes.put("short_description", mShortDescription);
+            attributes.put("secondary_product_code", mSecondaryProductCode);
+
+            attributes.put("width", mWidth);
+            attributes.put("height", mHeight);
+            attributes.put("pixel_width", mPixelWidth);
+            attributes.put("pixel_height", mPixelHeight);
+            attributes.put("minimum_resolution", mMinimumResolution);
+
+            attributes.put("metric", mIsMetric);
+        }
+
+        return data;
     }
 
 
     ///-----------------------------------------------------------
     /// @name Property Access
     ///-----------------------------------------------------------
+
+
+    public PrintService getPrintService()
+    {
+        return mPrintService;
+    }
+
+    public List<Price> getPrices()
+    {
+        return mPrices;
+    }
 
     public String getName()
     {
@@ -161,5 +267,21 @@ public class Product extends Model
     public void setMinimumResolution(int minimumResolution)
     {
         mMinimumResolution = minimumResolution;
+    }
+
+
+
+    public Price getPriceForCurrency(String currency) {
+        if (mPrices != null) {
+
+            for (Price p : mPrices)
+            {
+                if (p.getCurrency().equalsIgnoreCase(currency))
+                {
+                    return p;
+                }
+            }
+        }
+        return null;
     }
 }

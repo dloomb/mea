@@ -68,12 +68,11 @@ public class PrinticularServiceManager
         mContext = context;
         mEnvironment = environment;
 
-        Observable.concat(validateAccessToken(), refreshPrintServices())
+        validateAccessToken()
                 .retry(5)
-                .doOnError(e -> {
-                    Log.e(TAG, e.getLocalizedMessage());
-                })
-                .subscribe();
+                .subscribe((tRes) -> {
+                            refreshPrintServices().retry(5).subscribe((pRes) -> {}, (error) -> Log.e(TAG, error.getLocalizedMessage()));
+                        }, (error) -> Log.e(TAG, error.getLocalizedMessage()));
     }
 
 
