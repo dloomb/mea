@@ -79,6 +79,10 @@ public class PrinticularCartManager
         return new ArrayList<>(mData.keySet());
     }
 
+    public List<LineItem> getLineItems() {
+        return mLineItems;
+    }
+
     public int getImageCount()
     {
         return mData.size();

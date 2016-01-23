@@ -5,6 +5,8 @@ public class LineItem extends Model
     private Product mProduct;
     private Image mImage;
 
+    private int mQuantity = 1;
+
     public LineItem(){}
 
     public Product getProduct()
@@ -18,4 +20,14 @@ public class LineItem extends Model
     }
 
     public void setImage(Image image) { mImage = image; }
+
+    public int getQuantity()
+    {
+        return mQuantity;
+    }
+
+    public void setmQuantity(int quantity)
+    {
+        mQuantity = quantity;
+    }
 }

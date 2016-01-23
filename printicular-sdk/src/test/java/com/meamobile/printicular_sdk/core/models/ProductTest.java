@@ -61,8 +61,11 @@ public class ProductTest
     @Test
     public void it_associates_correctly() {
         Product product = getNewProductInstance();
+        Price price = product.getPriceForCurrency("NZD");
 
+        assertNotNull(price);
         assertNotNull(product.getPrices());
-        assertNotNull(product.getPriceForCurrency("NZD"));
+
+        assertEquals(0.35d, price.getTotal(), 0);
     }
 }

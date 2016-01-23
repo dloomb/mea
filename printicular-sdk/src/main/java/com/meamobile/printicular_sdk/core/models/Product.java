@@ -87,31 +87,25 @@ public class Product extends Model
     {
         super.associate(objects);
 
-        if (mRelationshipMap != null && mRelationshipMap.get("prices") != null)
-        {
-            List<Map> priceRelations = (List) ((Map)mRelationshipMap.get("prices")).get("data");
-            if (priceRelations != null)
+        try {
+            Map<Long, Price> prices = objects.get("prices");
+            List<Map> relations = (List) ((Map)mRelationshipMap.get("prices")).get("data");
+
+            mPrices = new ArrayList<>();
+            for (Map relation : relations)
             {
+                long id = (long) safeParse(relation.get("id"), ClassType.LONG);
+                Price p = prices.get(id);
 
-                Map<Long, Price> priceModels = objects.get("prices");
-                mPrices = new ArrayList<>();
-                for (Map relation : priceRelations)
-                {
-                    long id = (long) safeParse(relation.get("id"), ClassType.LONG);
-                    String type = (String) relation.get("type");
-
-                    if (!type.equals("prices")) {
-                        throw new RuntimeException("Server returned a non price object against the prices relationship");
-                    }
-
-                    Price p = priceModels.get(id);
-                    if (p != null) {
-                        mPrices.add(p);
-                    }
+                if (p != null) {
+                    mPrices.add(p);
                 }
-
-
             }
+
+        }
+        catch (Exception e) {
+            e.printStackTrace();
+
         }
     }
 

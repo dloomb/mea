@@ -1,10 +1,11 @@
 <?xml version="1.0" encoding="utf-8"?>
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    android:layout_width="match_parent"
-    android:layout_height="wrap_content"
-    android:background="@color/white"
-    android:layout_marginBottom="4dp"
-    android:clipToPadding="false">
+                android:id="@+id/relativeLayoutOrderSummary"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:background="@color/white"
+                android:layout_marginBottom="4dp"
+                android:clipToPadding="false">
 
 
     <RelativeLayout
@@ -24,44 +25,81 @@
             android:layout_marginBottom="10dp"/>
 
         <TextView
-            android:id="@+id/textViewQuantity"
-            android:textColor="@color/text_dark"
-            android:layout_width="match_parent"
+            android:id="@+id/textViewProductDescription"
+            android:layout_below="@id/titleOrderDetails"
+            android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="Quantity (45 Prints)"
-            android:layout_below="@id/titleOrderDetails"/>
+            android:layout_marginTop="4dp"
+            android:textColor="@color/text_dark"
+            android:text="4x4 matte print x13\n4x4 matte print x13\n4x4 matte print x13\n"/>
+
+
+        <TextView
+            android:id="@+id/textViewProductPrice"
+            android:layout_below="@id/titleOrderDetails"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="4dp"
+            android:layout_alignParentRight="true"
+            android:textColor="@color/text_dark"
+            android:text="$1.99\n$1.99\n$1.99\n"/>
+
+
+
 
         <TextView
             android:id="@+id/textViewShipping"
-            android:textColor="@color/text_dark"
-            android:layout_width="match_parent"
+            android:layout_below="@id/textViewProductDescription"
+            android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="Shipping $4.95"
-            android:layout_below="@id/textViewQuantity"/>
+            android:layout_marginTop="6dp"
+            android:layout_alignParentRight="true"
+            android:textColor="@color/text_dark"
+            android:text="Shipping $4.95"/>
+
+        <View
+            android:layout_above="@id/textViewShipping"
+            android:layout_alignLeft="@id/textViewShipping"
+            android:layout_width="wrap_content"
+            android:layout_height="1dp"
+            android:layout_marginBottom="-3dp"
+            android:layout_marginLeft="-10dp"
+            android:background="@color/accessory_button_dark"/>
+
+        <TextView
+            android:id="@+id/textViewTax"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_below="@id/textViewShipping"
+            android:layout_marginTop="2dp"
+            android:layout_alignParentRight="true"
+            android:textColor="@color/text_dark"
+            android:text="Tax $4.95"/>
 
         <TextView
             android:id="@+id/textViewTotal"
-            android:textColor="@color/text_dark"
-            android:layout_width="match_parent"
+            android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="TOTAL $60.50"
-            android:textStyle="bold"
-            android:layout_below="@id/textViewShipping"
-            android:layout_marginTop="5dp"/>
-
-        <Button
-            android:id="@+id/buttonIncrement"
+            android:layout_below="@id/textViewTax"
+            android:layout_marginTop="5dp"
             android:layout_alignParentRight="true"
-            android:layout_width="40dp"
-            android:layout_height="40dp"
-            android:text="+"/>
+            android:textColor="@color/text_dark"
+            android:text="TOTAL $60.50"
+            android:textStyle="bold"/>
 
-        <Button
-            android:id="@+id/buttonDecrement"
+
+        <ImageView
+            android:id="@+id/imageViewAccessory"
             android:layout_width="40dp"
             android:layout_height="40dp"
-            android:layout_toLeftOf="@id/buttonIncrement"
-            android:text="-"/>
+            android:paddingLeft="10dp"
+            android:paddingRight="0dp"
+            android:paddingBottom="10dp"
+            android:src="@drawable/vect_pencil"
+            android:tint="@color/accessory_button_dark"
+            android:layout_alignParentRight="true"
+            android:scaleType="fitCenter"/>
+
 
     </RelativeLayout>
 

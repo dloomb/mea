@@ -22,6 +22,7 @@ import com.meamobile.printicular_sdk.core.models.Store;
 import com.meamobile.printicular_sdk.user_interface.address.AddressDetailsViewHolder;
 import com.meamobile.printicular_sdk.user_interface.address.AddressListActivity;
 import com.meamobile.printicular_sdk.user_interface.address.AddressEntryActivity;
+import com.meamobile.printicular_sdk.user_interface.common.OrderSummaryViewHolder;
 import com.meamobile.printicular_sdk.user_interface.common.StoreDetailsViewHolder;
 import com.meamobile.printicular_sdk.user_interface.store_search.StoreSearchActivity;
 
@@ -42,15 +43,10 @@ public class ManageOrderActivity extends CheckoutActivity
     private Subscription mSubscriptionLoadingAddresses;
 
     //UI
+    private OrderSummaryViewHolder mOrderSummaryViewHolder;
     private StoreDetailsViewHolder mStoreDetailsViewHolder;
     private AddressDetailsViewHolder mAddressDetailsViewHolder;
     private LinearLayout mLinearLayoutPaymentDetails;
-    private TextView
-            mTextViewQuantity,
-            mTextViewShipping,
-            mTextViewTotal;
-
-
 
     @Override
     protected void onCreate(Bundle savedInstanceState)
@@ -136,12 +132,9 @@ public class ManageOrderActivity extends CheckoutActivity
 
     protected void loadComponents()
     {
-        mTextViewQuantity = (TextView) findViewById(R.id.textViewQuantity);
-        mTextViewShipping = (TextView) findViewById(R.id.textViewShipping);
-        mTextViewTotal = (TextView) findViewById(R.id.textViewTotal);
+        mOrderSummaryViewHolder = new OrderSummaryViewHolder(findViewById(R.id.relativeLayoutOrderSummary));
 
         mStoreDetailsViewHolder = new StoreDetailsViewHolder(findViewById(R.id.relativeLayoutOuter));
-        mStoreDetailsViewHolder.applyLayoutForManageOrderScreen();
         mStoreDetailsViewHolder.itemView.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -178,7 +171,9 @@ public class ManageOrderActivity extends CheckoutActivity
                 break;
         }
 
+        mOrderSummaryViewHolder.setupWithLineItems(mCartManager.getLineItems());
         mAddressDetailsViewHolder.setAddress(mCartManager.getCurrentAddress(), fulfillmentType);
+        mStoreDetailsViewHolder.applyLayoutForManageOrderScreen();
     }
 
     private void displayCurrentSelectedStore()
