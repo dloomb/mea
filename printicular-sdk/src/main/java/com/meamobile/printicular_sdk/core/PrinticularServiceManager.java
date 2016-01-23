@@ -9,6 +9,7 @@ import android.util.Log;
 import com.google.android.gms.maps.model.LatLng;
 import com.meamobile.printicular_sdk.core.models.AccessToken;
 import com.meamobile.printicular_sdk.core.models.*;
+import com.meamobile.printicular_sdk.core.rx.transformers.BlockingLoadTransformer;
 
 import java.util.ArrayList;
 import java.util.Calendar;
@@ -70,10 +71,12 @@ public class PrinticularServiceManager
 
         validateAccessToken()
                 .retry(5)
-                .subscribe((tRes) -> {
-                    refreshPrintServices().retry(5).subscribe((pRes) -> {
-                    }, (error) -> Log.e(TAG, error.getLocalizedMessage()));
-                }, (error) -> Log.e(TAG, error.getLocalizedMessage()));
+                .flatMap(x -> (Observable) refreshPrintServices())
+                .lift(new BlockingLoadTransformer(mContext))
+                .subscribe();
+        //TODO Figure out how to re implement error handling
+//                        (tRes) -> {},
+//                        (error) -> Log.e(TAG, error.getMessage()));
     }
 
 

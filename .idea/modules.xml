@@ -2,11 +2,9 @@
 <project version="4">
   <component name="ProjectModuleManager">
     <modules>
-      <module fileurl="file://$PROJECT_DIR$/Printicular.iml" filepath="$PROJECT_DIR$/Printicular.iml" />
       <module fileurl="file://$PROJECT_DIR$/app/app.iml" filepath="$PROJECT_DIR$/app/app.iml" />
       <module fileurl="file://$PROJECT_DIR$/photokit/photokit.iml" filepath="$PROJECT_DIR$/photokit/photokit.iml" />
       <module fileurl="file://$PROJECT_DIR$/printicular-android.iml" filepath="$PROJECT_DIR$/printicular-android.iml" />
-      <module fileurl="file://$PROJECT_DIR$/printicular-sdk/printicular-sdk.iml" filepath="$PROJECT_DIR$/printicular-sdk/printicular-sdk.iml" />
       <module fileurl="file://$PROJECT_DIR$/printicular-sdk/printicular-sdk.iml" filepath="$PROJECT_DIR$/printicular-sdk/printicular-sdk.iml" />
     </modules>
   </component>

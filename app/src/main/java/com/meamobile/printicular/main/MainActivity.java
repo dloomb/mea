@@ -218,7 +218,7 @@ public class MainActivity extends AuthenticatableActivity implements ExplorerFra
     protected void onResume()
     {
         super.onResume();
-        determineLocation();
+//        determineLocation();
 
         //For Testing a Activity
         new Handler(Looper.getMainLooper()).postDelayed(new Runnable() {@Override public void run()
