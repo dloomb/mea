@@ -16,11 +16,20 @@
         android:theme="@style/ThemeOverlay.AppCompat.Dark.ActionBar"
         app:popupTheme="@style/ThemeOverlay.AppCompat.Light"/>
 
+    <Button
+        android:id="@+id/buttonStartOver"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_alignParentBottom="true"
+        android:text="Start Over"
+        android:onClick="onStartOverButtonClicked"/>
+
     <TextView
         android:id="@+id/title"
         android:layout_below="@id/toolbar"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
+        android:layout_margin="8dp"
         android:text="OUTPUT"
         android:textAlignment="center"/>
 
@@ -29,6 +38,8 @@
         android:padding="8dp"
         android:layout_below="@id/title"
         android:layout_width="match_parent"
-        android:layout_height="match_parent"/>
+        android:layout_height="match_parent"
+        android:layout_above="@id/buttonStartOver"/>
+
 
 </RelativeLayout>

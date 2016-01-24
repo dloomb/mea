@@ -10,7 +10,7 @@ import com.meamobile.printicular_sdk.R;
 public class CheckoutActivity extends ActionBarActivity
 {
     public static final String EXTRA_DONE_BUTTON_ENABLED = "com.meamobile.printicular_sdk.user_interface.checkout_activity.done_button_enabled";
-    private boolean mHasLaidOutActionbar;
+    protected boolean mHasLaidOutActionbar;
 
     @Override
     protected void onCreate(Bundle savedInstanceState)

@@ -48,6 +48,8 @@ public class PrinticularCartManager
     private Store mCurrentStore;
     private Address mCurrentAddress;
 
+    private Class mRootActivty;
+
     protected PrinticularCartManager()
     {
         mLineItems = new ArrayList<>();
@@ -77,6 +79,7 @@ public class PrinticularCartManager
         mCurrentStore = null;
         mProductsByRatio = null;
     }
+
 
     ///-----------------------------------------------------------
     /// @name Image Handling
@@ -316,9 +319,13 @@ public class PrinticularCartManager
         return mCurrentAddress;
     }
 
+    public void setRootActivty(Class activtyClass) {
+        mRootActivty = activtyClass;
+    }
 
-
-
+    public Class getRootActivty() {
+        return mRootActivty;
+    }
 
     ///-----------------------------------------------------------
     /// @name Helpers

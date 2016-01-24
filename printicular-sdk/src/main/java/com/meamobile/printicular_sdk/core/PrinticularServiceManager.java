@@ -1,6 +1,7 @@
 package com.meamobile.printicular_sdk.core;
 
 
+import android.app.Activity;
 import android.content.Context;
 import android.content.SharedPreferences;
 import android.text.TextUtils;
@@ -9,7 +10,7 @@ import android.util.Log;
 import com.google.android.gms.maps.model.LatLng;
 import com.meamobile.printicular_sdk.core.models.AccessToken;
 import com.meamobile.printicular_sdk.core.models.*;
-import com.meamobile.printicular_sdk.core.rx.transformers.BlockingLoadTransformer;
+import com.meamobile.printicular_sdk.user_interface.common.BlockingLoadIndicator;
 
 import java.util.ArrayList;
 import java.util.Calendar;
@@ -69,14 +70,12 @@ public class PrinticularServiceManager
         mContext = context;
         mEnvironment = environment;
 
+
         validateAccessToken()
                 .retry(5)
-                .flatMap(x -> (Observable) refreshPrintServices())
-                .lift(new BlockingLoadTransformer(mContext))
-                .subscribe();
-        //TODO Figure out how to re implement error handling
-//                        (tRes) -> {},
-//                        (error) -> Log.e(TAG, error.getMessage()));
+                .flatMap((x) -> refreshPrintServices())
+                .subscribe((x) -> {
+                }, (e) -> Log.e(TAG, e.getLocalizedMessage()));
     }
 
 
@@ -115,14 +114,11 @@ public class PrinticularServiceManager
 
         return client.post("oauth/access_token", params)
                 .flatMap(response -> {
-                    if (response.get("error") == null)
-                    {
+                    if (response.get("error") == null) {
                         setAccessTokenFromResponse(response);
                         Log.d(TAG, "OAuth Success");
                         return Observable.just(mAccessToken);
-                    }
-                    else
-                    {
+                    } else {
                         return Observable.error(new RuntimeException((String) response.get("error_description")));
                     }
                 });

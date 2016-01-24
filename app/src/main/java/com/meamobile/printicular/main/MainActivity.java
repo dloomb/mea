@@ -43,17 +43,23 @@ import com.meamobile.printicular.settings.LocationPickerDialog;
 import com.meamobile.printicular.settings.SettingsActivity;
 import com.meamobile.printicular_sdk.core.PrinticularServiceManager;
 import com.meamobile.printicular_sdk.core.PrinticularServiceManager.PrinticularEnvironment;
+import com.meamobile.printicular_sdk.core.models.Image;
 import com.meamobile.printicular_sdk.core.models.PrintService;
 import com.meamobile.printicular_sdk.user_interface.CheckoutActivity;
 import com.meamobile.printicular_sdk.user_interface.address.AddressEntryActivity;
 import com.meamobile.printicular_sdk.user_interface.ManageOrderActivity;
+import com.meamobile.printicular_sdk.user_interface.common.BlockingLoadIndicator;
 import com.meamobile.printicular_sdk.user_interface.store_search.StoreSearchActivity;
 
+import java.util.List;
 import java.util.Locale;
 
 
 import android.os.Handler;
 import android.os.Looper;
+
+import rx.Observable;
+import rx.Subscriber;
 
 public class MainActivity extends AuthenticatableActivity implements ExplorerFragmentDelegate
 {
@@ -86,6 +92,8 @@ public class MainActivity extends AuthenticatableActivity implements ExplorerFra
 
         //Setup UserDefaults Singleton
         UserDefaults.getInstance().setContext(this);
+
+        mCartManager.setRootActivty(MainActivity.class);
 
         mCartFragment = (CartFragment) getSupportFragmentManager().findFragmentById(R.id.cartFragment);
 
@@ -304,6 +312,8 @@ public class MainActivity extends AuthenticatableActivity implements ExplorerFra
 
         mCartManager.setCurrentPrintService(service);
         mServiceManager.registerImages(mCartManager.getImages())
+                .retry(5)
+                .lift(new BlockingLoadIndicator(this))
                 .subscribe(rr -> {
 
                     PrintService currentService = mCartManager.getCurrentPrintService();
@@ -312,10 +322,8 @@ public class MainActivity extends AuthenticatableActivity implements ExplorerFra
                     if (mCartManager.getCurrentAddress() == null) {
                         i.setClass(MainActivity.this, AddressEntryActivity.class);
                         i.putExtra(CheckoutActivity.EXTRA_DONE_BUTTON_ENABLED, true);
-                    }
-                    else if (mCartManager.getCurrentStore() == null
-                            && currentService.getFulFillmentType() == PrintService.FulfillmentType.PICKUP)
-                    {
+                    } else if (mCartManager.getCurrentStore() == null
+                            && currentService.getFulFillmentType() == PrintService.FulfillmentType.PICKUP) {
                         i.setClass(MainActivity.this, StoreSearchActivity.class);
                         i.putExtra(CheckoutActivity.EXTRA_DONE_BUTTON_ENABLED, true);
                     }
