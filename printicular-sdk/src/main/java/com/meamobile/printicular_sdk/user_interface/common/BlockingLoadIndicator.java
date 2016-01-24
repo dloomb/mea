@@ -20,16 +20,25 @@ import com.meamobile.printicular_sdk.R;
 import rx.Observable.Operator;
 import rx.Subscriber;
 
-public class BlockingLoadIndicator implements Operator<Object, Object> {
-    Activity mActivity;
-    BlockingDialog mDialog;
+public class BlockingLoadIndicator implements Operator<Object, Object>
+{
+    private Activity mActivity;
+    private BlockingDialog mDialog;
+    private Subscriber mSubscriber;
 
-    public BlockingLoadIndicator(Activity activity) {
+    public BlockingLoadIndicator(Activity activity)
+    {
         mActivity = activity;
+    }
+
+    public void cancelOperation()
+    {
+        mSubscriber.unsubscribe();
     }
 
     @Override
     public Subscriber<? super Object> call(Subscriber<? super Object> subscriber) {
+        mSubscriber = subscriber;
         return new Subscriber<Object>() {
             @Override
             public void onCompleted() {
@@ -51,10 +60,8 @@ public class BlockingLoadIndicator implements Operator<Object, Object> {
             @Override
             public void onStart() {
 
-                mDialog = new BlockingDialog(mActivity);
+                mDialog = new BlockingDialog(mActivity, BlockingLoadIndicator.this);
                 mDialog.show();
-
-//                show();
 
                 subscriber.onStart();
             }
@@ -82,12 +89,16 @@ public class BlockingLoadIndicator implements Operator<Object, Object> {
 
 class BlockingDialog extends Dialog implements DialogInterface.OnKeyListener
 {
-    public BlockingDialog(Context context) {
+    private BlockingLoadIndicator mOperator;
+
+    public BlockingDialog(Context context, BlockingLoadIndicator operator) {
         super(context);
         requestWindowFeature(Window.FEATURE_NO_TITLE);
         setContentView(R.layout.template_blocking_loading_indicator);
         setCancelable(false);
         setOnKeyListener(this);
+
+        mOperator = operator;
 
         ImageView iv = (ImageView) findViewById(R.id.imageViewAnimation);
         iv.setBackgroundResource(R.drawable.loading_animation);
@@ -103,7 +114,9 @@ class BlockingDialog extends Dialog implements DialogInterface.OnKeyListener
         b.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-
+                //Not workign yet
+//                mOperator.cancelOperation();
+//                BlockingDialog.this.dismiss();
             }
         });
     }

@@ -16,6 +16,55 @@
         android:theme="@style/ThemeOverlay.AppCompat.Dark.ActionBar"
         app:popupTheme="@style/ThemeOverlay.AppCompat.Light"/>
 
+    <RelativeLayout
+        android:id="@+id/relativeLayoutHeader"
+        android:layout_below="@id/toolbar"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="8dp"
+        android:layout_marginLeft="8dp"
+        android:layout_marginRight="8dp"
+        android:padding="8dp"
+        android:background="@color/white">
+
+        <ImageView
+            android:id="@+id/imageViewLogo"
+            android:layout_width="50dp"
+            android:layout_height="50dp"
+            android:layout_marginRight="8dp"
+            android:src="@drawable/loading_0" />
+
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_toRightOf="@id/imageViewLogo"
+            android:text="Thank you for using Printicular.\nYou will receive a confirmation email shortly."
+            android:textAppearance="?android:attr/textAppearanceMedium"
+            android:gravity="center_horizontal"/>
+
+
+    </RelativeLayout>
+
+    <View
+        android:id="@+id/viewHeaderElevation"
+        android:layout_below="@id/relativeLayoutHeader"
+        android:layout_width="match_parent"
+        android:layout_height="2dp"
+        android:layout_marginBottom="8dp"
+        android:background="@color/shadow"/>
+
+
+    <LinearLayout
+        android:orientation="vertical"
+        android:layout_below="@id/viewHeaderElevation"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content">
+        <include layout="@layout/template_address_view_holder"/>
+        <include layout="@layout/template_store_view_holder"/>
+        <include layout="@layout/template_manage_order_details"/>
+    </LinearLayout>
+
+
     <Button
         android:id="@+id/buttonStartOver"
         android:layout_width="match_parent"
@@ -23,23 +72,5 @@
         android:layout_alignParentBottom="true"
         android:text="Start Over"
         android:onClick="onStartOverButtonClicked"/>
-
-    <TextView
-        android:id="@+id/title"
-        android:layout_below="@id/toolbar"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_margin="8dp"
-        android:text="OUTPUT"
-        android:textAlignment="center"/>
-
-    <TextView
-        android:id="@+id/textView"
-        android:padding="8dp"
-        android:layout_below="@id/title"
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:layout_above="@id/buttonStartOver"/>
-
 
 </RelativeLayout>

@@ -11,7 +11,7 @@
             android:value="@string/google_places_client_id"/>
 
         <activity
-            android:name=".user_interface.ManageOrderActivity"
+            android:name=".user_interface.manage_order.ManageOrderActivity"
             android:label="@string/activity_manage_order_title">
         </activity>
         <activity

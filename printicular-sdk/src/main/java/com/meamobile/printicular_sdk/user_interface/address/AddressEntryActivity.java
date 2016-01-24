@@ -20,7 +20,7 @@ import com.meamobile.printicular_sdk.core.models.Address;
 import com.meamobile.printicular_sdk.core.models.PrintService;
 import com.meamobile.printicular_sdk.core.models.Territory;
 import com.meamobile.printicular_sdk.user_interface.CheckoutActivity;
-import com.meamobile.printicular_sdk.user_interface.ManageOrderActivity;
+import com.meamobile.printicular_sdk.user_interface.manage_order.ManageOrderActivity;
 import com.meamobile.printicular_sdk.user_interface.store_search.StoreSearchActivity;
 
 import java.util.ArrayList;

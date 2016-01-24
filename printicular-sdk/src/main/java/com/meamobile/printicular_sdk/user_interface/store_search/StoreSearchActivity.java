@@ -42,7 +42,7 @@ import com.meamobile.printicular_sdk.core.models.Store;
 import com.meamobile.printicular_sdk.user_interface.CheckoutActivity;
 import com.meamobile.printicular_sdk.user_interface.ItemClickSupport;
 import com.meamobile.printicular_sdk.user_interface.ItemClickSupport.OnItemClickListener;
-import com.meamobile.printicular_sdk.user_interface.ManageOrderActivity;
+import com.meamobile.printicular_sdk.user_interface.manage_order.ManageOrderActivity;
 import com.meamobile.printicular_sdk.user_interface.UserInterfaceUtil;
 
 import java.util.ArrayList;

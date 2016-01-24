@@ -1,4 +1,4 @@
-package com.meamobile.printicular_sdk.user_interface;
+package com.meamobile.printicular_sdk.user_interface.manage_order;
 
 import android.app.AlertDialog;
 import android.content.Intent;
@@ -13,8 +13,11 @@ import com.meamobile.printicular_sdk.core.PrinticularServiceManager;
 import com.meamobile.printicular_sdk.core.models.Address;
 import com.meamobile.printicular_sdk.core.models.PrintService.FulfillmentType;
 import com.meamobile.printicular_sdk.core.models.Store;
+import com.meamobile.printicular_sdk.user_interface.CheckoutActivity;
+import com.meamobile.printicular_sdk.user_interface.ReceiptActivity;
 import com.meamobile.printicular_sdk.user_interface.address.AddressDetailsViewHolder;
 import com.meamobile.printicular_sdk.user_interface.address.AddressEntryActivity;
+import com.meamobile.printicular_sdk.user_interface.common.BlockingLoadIndicator;
 import com.meamobile.printicular_sdk.user_interface.common.OrderSummaryViewHolder;
 import com.meamobile.printicular_sdk.user_interface.common.StoreDetailsViewHolder;
 import com.meamobile.printicular_sdk.user_interface.store_search.StoreSearchActivity;
@@ -69,13 +72,14 @@ public class ManageOrderActivity extends CheckoutActivity
     {
         mCartManager.createNewOrderInstance()
                 .flatMap(mServiceManger::submitOrder)
+                .lift(new BlockingLoadIndicator(this))
                 .subscribe(order -> {
 
                     Log.d(TAG, "Order Done");
 
-                    Intent i = new Intent(ManageOrderActivity.this, ReceiptActivity.class);
-                    i.putExtra("ORDER_JSON", order.toJsonString());
-                    startActivity(i);
+//                    Intent i = new Intent(ManageOrderActivity.this, ReceiptActivity.class);
+//                    i.putExtra("ORDER_JSON", order.toJsonString());
+//                    startActivity(i);
 
                 }, error -> {
                     error.printStackTrace();

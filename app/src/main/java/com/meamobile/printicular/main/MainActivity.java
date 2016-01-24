@@ -43,23 +43,18 @@ import com.meamobile.printicular.settings.LocationPickerDialog;
 import com.meamobile.printicular.settings.SettingsActivity;
 import com.meamobile.printicular_sdk.core.PrinticularServiceManager;
 import com.meamobile.printicular_sdk.core.PrinticularServiceManager.PrinticularEnvironment;
-import com.meamobile.printicular_sdk.core.models.Image;
 import com.meamobile.printicular_sdk.core.models.PrintService;
 import com.meamobile.printicular_sdk.user_interface.CheckoutActivity;
 import com.meamobile.printicular_sdk.user_interface.address.AddressEntryActivity;
-import com.meamobile.printicular_sdk.user_interface.ManageOrderActivity;
+import com.meamobile.printicular_sdk.user_interface.manage_order.ManageOrderActivity;
 import com.meamobile.printicular_sdk.user_interface.common.BlockingLoadIndicator;
 import com.meamobile.printicular_sdk.user_interface.store_search.StoreSearchActivity;
 
-import java.util.List;
 import java.util.Locale;
 
 
 import android.os.Handler;
 import android.os.Looper;
-
-import rx.Observable;
-import rx.Subscriber;
 
 public class MainActivity extends AuthenticatableActivity implements ExplorerFragmentDelegate
 {
