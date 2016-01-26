@@ -34,16 +34,19 @@ import com.meamobile.photokit.core.UserDefaults;
 import com.meamobile.photokit.dropbox.DropboxSource;
 import com.meamobile.photokit.user_interface.ExplorerFragment;
 import com.meamobile.photokit.user_interface.ExplorerFragment.ExplorerFragmentDelegate;
+
+import com.meamobile.printicular.R;
 import com.meamobile.printicular.AuthenticatableActivity;
 import com.meamobile.printicular.utilities.LocationUtil;
-import com.meamobile.printicular.R;
 import com.meamobile.printicular.main.cart.CartFragment;
 import com.meamobile.printicular.main.cart.PhotoKitCartManager;
 import com.meamobile.printicular.settings.LocationPickerDialog;
 import com.meamobile.printicular.settings.SettingsActivity;
+
 import com.meamobile.printicular_sdk.core.PrinticularServiceManager;
 import com.meamobile.printicular_sdk.core.PrinticularServiceManager.PrinticularEnvironment;
 import com.meamobile.printicular_sdk.core.models.PrintService;
+import com.meamobile.printicular_sdk.core.models.PrintService.FulfillmentType;
 import com.meamobile.printicular_sdk.user_interface.CheckoutActivity;
 import com.meamobile.printicular_sdk.user_interface.address.AddressEntryActivity;
 import com.meamobile.printicular_sdk.user_interface.manage_order.ManageOrderActivity;
@@ -255,10 +258,15 @@ public class MainActivity extends AuthenticatableActivity implements ExplorerFra
 
     public void onDeliverButtonPressed(View v)
     {
-
+        onPrintButtonPressed(FulfillmentType.DELIVERY);
     }
 
     public void onPickupButtonPressed(View v)
+    {
+        onPrintButtonPressed(FulfillmentType.PICKUP);
+    }
+
+    protected void onPrintButtonPressed(FulfillmentType fulfillmentType)
     {
         if (!checkCartValidity())
         {
@@ -278,7 +286,7 @@ public class MainActivity extends AuthenticatableActivity implements ExplorerFra
                 {
                     mCountryLocale = country;
                     LocationUtil.setUserSavedCountry(country);
-                    handlePickupPressed();
+                    registerImagesThenPushToCheckout(fulfillmentType);
                     dialog.dismiss();
                 }
 
@@ -291,19 +299,12 @@ public class MainActivity extends AuthenticatableActivity implements ExplorerFra
             return;
         }
 
-        handlePickupPressed();
+        registerImagesThenPushToCheckout(fulfillmentType);
     }
 
-    protected void handlePickupPressed()
+    protected void registerImagesThenPushToCheckout(FulfillmentType fulfillmentType)
     {
-        PrintService service = mServiceManager.getPrintServiceWithId(3); // Should eventually be pulled based on Territory Model
-
-        switch (mCountryLocale.getISO3Country())
-        {
-            case "NZL":
-                service = PrinticularServiceManager.getInstance().getPrintServiceWithId(3);
-                break;
-        }
+        PrintService service = getPrintServiceForCurrentCountry(fulfillmentType);
 
         mCartManager.setCurrentPrintService(service);
         mServiceManager.registerImages(mCartManager.getImages())
@@ -314,11 +315,14 @@ public class MainActivity extends AuthenticatableActivity implements ExplorerFra
                     PrintService currentService = mCartManager.getCurrentPrintService();
                     Intent i = new Intent(MainActivity.this, ManageOrderActivity.class);
 
-                    if (mCartManager.getCurrentAddress() == null) {
+                    if (mCartManager.getCurrentAddress() == null)
+                    {
                         i.setClass(MainActivity.this, AddressEntryActivity.class);
                         i.putExtra(CheckoutActivity.EXTRA_DONE_BUTTON_ENABLED, true);
-                    } else if (mCartManager.getCurrentStore() == null
-                            && currentService.getFulFillmentType() == PrintService.FulfillmentType.PICKUP) {
+                    }
+                    else if (mCartManager.getCurrentStore() == null
+                            && currentService.getFulFillmentType() == PrintService.FulfillmentType.PICKUP)
+                    {
                         i.setClass(MainActivity.this, StoreSearchActivity.class);
                         i.putExtra(CheckoutActivity.EXTRA_DONE_BUTTON_ENABLED, true);
                     }
@@ -326,10 +330,31 @@ public class MainActivity extends AuthenticatableActivity implements ExplorerFra
                     startActivity(i);
 
                 }, error -> {
-
+                    error.printStackTrace();
+                    new AlertDialog.Builder(this)
+                            .setMessage(error.getMessage())
+                            .setNegativeButton("Ok", null)
+                            .show();
                 });
 
     }
+
+
+    protected PrintService getPrintServiceForCurrentCountry(PrintService.FulfillmentType fulfillmentType)
+    {
+        int pickupId = 0, deliveryId = 0;
+
+        switch (mCountryLocale.getISO3Country())
+        {
+            case "NZL":
+                pickupId = 3;
+                deliveryId = 5;
+                break;
+        }
+
+        return mServiceManager.getPrintServiceWithId(fulfillmentType == PrintService.FulfillmentType.PICKUP ? pickupId : deliveryId); // Should eventually be pulled based on Territory Model
+    }
+
 
     private boolean checkCartValidity()
     {

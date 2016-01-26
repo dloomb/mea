@@ -42,6 +42,7 @@ import com.meamobile.printicular_sdk.core.models.Store;
 import com.meamobile.printicular_sdk.user_interface.CheckoutActivity;
 import com.meamobile.printicular_sdk.user_interface.ItemClickSupport;
 import com.meamobile.printicular_sdk.user_interface.ItemClickSupport.OnItemClickListener;
+import com.meamobile.printicular_sdk.user_interface.common.GooglePlacesPredictionsRecyclerViewAdapter;
 import com.meamobile.printicular_sdk.user_interface.manage_order.ManageOrderActivity;
 import com.meamobile.printicular_sdk.user_interface.UserInterfaceUtil;
 
@@ -61,7 +62,7 @@ public class StoreSearchActivity
     private GoogleApiClient mGoogleApiClient;
     private GooglePlacesPredictionsRecyclerViewAdapter mPlacesRecyclerAdapter;
 
-    private Long mLastSearchTextChangeTimestamp;
+    private long mLastSearchTextChangeTimestamp;
     private List<AutocompletePrediction> mAutocompletePredictions;
     private AutocompletePrediction mSelectedAutocompletePrediction;
 
@@ -105,7 +106,7 @@ public class StoreSearchActivity
         mStoresRecyclerView.setLayoutManager(new GridLayoutManager(this, 1));
         ItemClickSupport.addTo(mStoresRecyclerView).setOnItemClickListener(this);
 
-        mEditTextSearch = (EditText) findViewById(R.id.editTextSearch);
+        mEditTextSearch = (EditText) findViewById(R.id.editText);
         mEditTextSearch.setImeActionLabel(getString(R.string.search), EditorInfo.IME_ACTION_SEARCH);
         mEditTextSearch.setOnEditorActionListener(this);
         mEditTextSearch.addTextChangedListener(this);
@@ -142,7 +143,7 @@ public class StoreSearchActivity
             mSelectedAutocompletePrediction = mAutocompletePredictions.get(position);
             mEditTextSearch.setText(mSelectedAutocompletePrediction.getFullText(null));
             mPlacesRecyclerAdapter.setGooglePlacesPredictions(null);
-            UserInterfaceUtil.HideKeyboard(this);
+            UserInterfaceUtil.hideKeyboard(this);
 
             getLatLngFromUserSelection();
         }
@@ -173,7 +174,7 @@ public class StoreSearchActivity
         if (actionId == EditorInfo.IME_ACTION_SEARCH)
         {
             runGooglePlacesSearch();
-            UserInterfaceUtil.HideKeyboard(this);
+            UserInterfaceUtil.hideKeyboard(this);
             return true;
         }
 

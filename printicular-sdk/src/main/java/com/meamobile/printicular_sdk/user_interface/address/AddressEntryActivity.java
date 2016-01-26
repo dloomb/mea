@@ -3,14 +3,19 @@ package com.meamobile.printicular_sdk.user_interface.address;
 import android.app.AlertDialog;
 import android.content.Intent;
 import android.os.Bundle;
+import android.support.v7.widget.GridLayoutManager;
+import android.support.v7.widget.RecyclerView;
 import android.text.Editable;
 import android.text.TextUtils;
 import android.text.TextWatcher;
 import android.util.Log;
+import android.view.KeyEvent;
 import android.view.View;
+import android.view.inputmethod.EditorInfo;
 import android.widget.EditText;
 import android.widget.LinearLayout;
 import android.widget.RelativeLayout;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import com.meamobile.printicular_sdk.R;
@@ -20,6 +25,9 @@ import com.meamobile.printicular_sdk.core.models.Address;
 import com.meamobile.printicular_sdk.core.models.PrintService;
 import com.meamobile.printicular_sdk.core.models.Territory;
 import com.meamobile.printicular_sdk.user_interface.CheckoutActivity;
+import com.meamobile.printicular_sdk.user_interface.ItemClickSupport;
+import com.meamobile.printicular_sdk.user_interface.common.GooglePlacesPredictionsRecyclerViewAdapter;
+import com.meamobile.printicular_sdk.user_interface.common.GooglePlacesSearchView;
 import com.meamobile.printicular_sdk.user_interface.manage_order.ManageOrderActivity;
 import com.meamobile.printicular_sdk.user_interface.store_search.StoreSearchActivity;
 
@@ -67,8 +75,9 @@ public class AddressEntryActivity extends CheckoutActivity
             mViewAutomaticSelectionDetail,
             mViewManualSelectionDetail;
 
+    private GooglePlacesSearchView mSearchView;
+
     private EditText
-            mEditTextSearch,
             mEditTextName,
             mEditTextEmail,
             mEditTextPhone,
@@ -100,6 +109,11 @@ public class AddressEntryActivity extends CheckoutActivity
         mRelativeLayoutAutomaticSearch = (RelativeLayout) findViewById(R.id.relativeLayoutAutomaticSearch);
         mLinearLayoutManualSearch = (LinearLayout) findViewById(R.id.linearLayoutManualSearch);
 
+        mSearchView = new GooglePlacesSearchView(findViewById(R.id.includeSearchView), this, null);
+
+
+
+
         mViewAutomaticSelectionDetail = findViewById(R.id.viewAutomaticSelectionDetail);
         mViewManualSelectionDetail = findViewById(R.id.viewManualSelectionDetail);
 
@@ -110,6 +124,23 @@ public class AddressEntryActivity extends CheckoutActivity
         loadOrSetupAddress();
         layoutForCurrentSearchMode();
     }
+
+    @Override
+    protected void onStart()
+    {
+        super.onStart();
+
+        mSearchView.startClient();
+    }
+
+    @Override
+    protected void onStop()
+    {
+        super.onStop();
+
+        mSearchView.stopClient();
+    }
+
 
     ///-----------------------------------------------------------
     /// @name Actions
@@ -147,7 +178,7 @@ public class AddressEntryActivity extends CheckoutActivity
     {
         mSearchMode = SearchMode.AUTOMATIC;
         layoutForCurrentSearchMode();
-        mEditTextSearch.requestFocus();
+        mSearchView.requestFocus();
     }
 
     public void onTypeAddressClicked(View v)
@@ -213,17 +244,12 @@ public class AddressEntryActivity extends CheckoutActivity
 
 
 
-
-
     ///-----------------------------------------------------------
     /// @name TextWatcher / Address Changing
     ///-----------------------------------------------------------
 
     protected void setupEditTextListeners()
     {
-        (mEditTextSearch = (EditText) findViewById(R.id.editTextSearch))
-                .addTextChangedListener(new SearchTextWatcher());
-
         (mEditTextName = (EditText) findViewById(R.id.editTextName))
                 .addTextChangedListener(new DetailsTextWatcher(mEditTextName, Field.NAME));
 
@@ -257,29 +283,6 @@ public class AddressEntryActivity extends CheckoutActivity
 
                     }
                 });
-    }
-
-
-    class SearchTextWatcher implements TextWatcher
-    {
-
-        @Override
-        public void beforeTextChanged(CharSequence s, int start, int count, int after)
-        {
-
-        }
-
-        @Override
-        public void onTextChanged(CharSequence s, int start, int before, int count)
-        {
-
-        }
-
-        @Override
-        public void afterTextChanged(Editable s)
-        {
-
-        }
     }
 
 

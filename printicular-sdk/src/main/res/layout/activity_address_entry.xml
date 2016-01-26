@@ -78,7 +78,21 @@
                 android:layout_height="wrap_content"
                 android:layout_marginBottom="8dp">
 
-                <include layout="@layout/template_searchview"/>
+                <include layout="@layout/template_searchview" android:id="@+id/includeSearchView"/>
+
+                <TextView
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_below="@id/includeSearchView"
+                    android:layout_marginTop="8dp"
+                    android:layout_marginLeft="8dp"
+                    android:layout_marginRight="8dp"
+                    android:layout_marginBottom="100dp"
+                    android:text="@string/address_entry_instruction"
+                    android:textAppearance="?android:attr/textAppearanceMedium"
+                    android:gravity="center"/>
+
+
 
             </RelativeLayout>
 
