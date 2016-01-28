@@ -5,6 +5,7 @@ printicular-android uses Java 8 and a thirdparty tool called Retrolambda (For ba
 This means you must have a environment variable set for JAVA8_HOME which points to your version of Java 8.
 
 This can be different for each machine, hence the enviornment variable.
+
 ***Mac*** might look like this ```/Library/Java/JavaVirtualMachines/jdk1.8.0_60.jdk/Contents/Home```
 for mac, you will also need to start android studio from the terminal to get the env_var into it.
 
