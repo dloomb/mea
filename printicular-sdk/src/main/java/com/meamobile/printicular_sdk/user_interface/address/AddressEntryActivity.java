@@ -20,6 +20,8 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.google.android.gms.location.places.AutocompletePrediction;
+import com.google.android.gms.location.places.Place;
+import com.google.android.gms.location.places.ui.PlaceAutocomplete;
 import com.meamobile.printicular_sdk.R;
 import com.meamobile.printicular_sdk.core.PrinticularCartManager;
 import com.meamobile.printicular_sdk.core.PrinticularServiceManager;
@@ -111,7 +113,7 @@ public class AddressEntryActivity extends CheckoutActivity implements GooglePlac
         mRelativeLayoutAutomaticSearch = (RelativeLayout) findViewById(R.id.relativeLayoutAutomaticSearch);
         mLinearLayoutManualSearch = (LinearLayout) findViewById(R.id.linearLayoutManualSearch);
 
-        mSearchView = new GooglePlacesSearchView(findViewById(R.id.includeSearchView), this);
+        mSearchView = new GooglePlacesSearchView(findViewById(R.id.includeSearchView), this, false /* Do not need Latitude and Longitude */);
 
         mViewAutomaticSelectionDetail = findViewById(R.id.viewAutomaticSelectionDetail);
         mViewManualSelectionDetail = findViewById(R.id.viewManualSelectionDetail);
@@ -156,7 +158,8 @@ public class AddressEntryActivity extends CheckoutActivity implements GooglePlac
     @Override
     public void onPlaceSelected(AutocompletePrediction prediction)
     {
-
+        mSearchMode = SearchMode.MANUAL;
+        layoutForCurrentSearchMode();
     }
 
     @Override

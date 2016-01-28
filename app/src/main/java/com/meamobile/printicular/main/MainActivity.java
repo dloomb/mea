@@ -230,7 +230,7 @@ public class MainActivity extends AuthenticatableActivity implements ExplorerFra
         new Handler(Looper.getMainLooper()).postDelayed(new Runnable() {@Override public void run()
         {
             Intent i = new Intent(MainActivity.this, StoreSearchActivity.class);
-            startActivity(i);
+//            startActivity(i);
         }}, 500);
     }
 

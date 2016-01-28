@@ -58,6 +58,7 @@ public class GooglePlacesSearchView implements
     private List<AutocompletePrediction> mAutocompletePredictions;
     private AutocompletePrediction mSelectedAutocompletePrediction;
 
+    private boolean mShouldRunLatLngSearch = false;
     private GooglePlacesSearchViewListener mListener;
     private GoogleApiClient mGoogleApiClient;
     private GooglePlacesPredictionsRecyclerViewAdapter mPlacesRecyclerAdapter;
@@ -67,6 +68,11 @@ public class GooglePlacesSearchView implements
     private EditText mEditText;
 
     public GooglePlacesSearchView(View view, GooglePlacesSearchViewListener listener)
+    {
+        this(view, listener, false);
+    }
+
+    public GooglePlacesSearchView(View view, GooglePlacesSearchViewListener listener, boolean needsLatitudeAndLongitude)
     {
         mListener = listener;
 
@@ -121,7 +127,10 @@ public class GooglePlacesSearchView implements
         UserInterfaceUtil.hideKeyboard(mEditText);
 
         mListener.onPlaceSelected(mSelectedAutocompletePrediction);
-        getLatLngFromUserSelection(mSelectedAutocompletePrediction);
+
+        if(mShouldRunLatLngSearch) {
+            getLatLngFromUserSelection(mSelectedAutocompletePrediction);
+        }
     }
 
 
