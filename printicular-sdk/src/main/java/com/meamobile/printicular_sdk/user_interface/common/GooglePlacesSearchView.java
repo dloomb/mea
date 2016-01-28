@@ -2,6 +2,8 @@ package com.meamobile.printicular_sdk.user_interface.common;
 
 import android.app.Activity;
 import android.os.Bundle;
+import android.os.Handler;
+import android.os.Looper;
 import android.support.v7.widget.GridLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.text.Editable;
@@ -26,10 +28,12 @@ import com.google.android.gms.location.places.AutocompletePredictionBuffer;
 import com.google.android.gms.location.places.Place;
 import com.google.android.gms.location.places.PlaceBuffer;
 import com.google.android.gms.location.places.Places;
+import com.google.android.gms.maps.model.LatLng;
 import com.meamobile.printicular_sdk.R;
 import com.meamobile.printicular_sdk.user_interface.ItemClickSupport;
 import com.meamobile.printicular_sdk.user_interface.UserInterfaceUtil;
 
+import java.util.Date;
 import java.util.List;
 
 public class GooglePlacesSearchView implements
@@ -44,7 +48,10 @@ public class GooglePlacesSearchView implements
 
     public interface GooglePlacesSearchViewListener
     {
-        void onPlaceSelected();
+        void onResultSetChanged();
+        void onPlaceSelected(AutocompletePrediction prediction);
+        void onPlaceCoordinatesFound(AutocompletePrediction prediction, double latitude, double longitude);
+        Activity getParentActvity();
     }
 
     private long mLastSearchTextChangeTimestamp;
@@ -59,25 +66,24 @@ public class GooglePlacesSearchView implements
     private RecyclerView mRecyclerView;
     private EditText mEditText;
 
-    public GooglePlacesSearchView(View view, Activity activity, GooglePlacesSearchViewListener listener)
+    public GooglePlacesSearchView(View view, GooglePlacesSearchViewListener listener)
     {
         mListener = listener;
-
 
         mRecyclerView = (RecyclerView) view.findViewById(R.id.recyclerView);
         mPlacesRecyclerAdapter = new GooglePlacesPredictionsRecyclerViewAdapter(mRecyclerView);
         mRecyclerView.setAdapter(mPlacesRecyclerAdapter);
-        mRecyclerView.setLayoutManager(new GridLayoutManager(activity, 1));
+        mRecyclerView.setLayoutManager(new GridLayoutManager(listener.getParentActvity(), 1));
         ItemClickSupport.addTo(mRecyclerView).setOnItemClickListener(this);
 
         mEditText = (EditText) view.findViewById(R.id.editText);
-        mEditText.setImeActionLabel(activity.getString(R.string.search), EditorInfo.IME_ACTION_SEARCH);
+        mEditText.setImeActionLabel(listener.getParentActvity().getString(R.string.search), EditorInfo.IME_ACTION_SEARCH);
         mEditText.setOnEditorActionListener(this);
         mEditText.addTextChangedListener(this);
 
 
         mGoogleApiClient = new GoogleApiClient
-                .Builder(activity)
+                .Builder(listener.getParentActvity())
                 .addApi(Places.GEO_DATA_API)
                 .addApi(Places.PLACE_DETECTION_API)
                 .addConnectionCallbacks(this)
@@ -114,7 +120,8 @@ public class GooglePlacesSearchView implements
         mPlacesRecyclerAdapter.setGooglePlacesPredictions(null);
         UserInterfaceUtil.hideKeyboard(mEditText);
 
-        getLatLngFromUserSelection();
+        mListener.onPlaceSelected(mSelectedAutocompletePrediction);
+        getLatLngFromUserSelection(mSelectedAutocompletePrediction);
     }
 
 
@@ -123,10 +130,16 @@ public class GooglePlacesSearchView implements
     /// @name Search EditText
     ///-----------------------------------------------------------
 
-
     @Override
     public boolean onEditorAction(TextView v, int actionId, KeyEvent event)
     {
+        if (actionId == EditorInfo.IME_ACTION_SEARCH)
+        {
+            runGooglePlacesAutoComplete();
+            UserInterfaceUtil.hideKeyboard(v);
+            return true;
+        }
+
         return false;
     }
 
@@ -136,7 +149,19 @@ public class GooglePlacesSearchView implements
     @Override
     public void onTextChanged(CharSequence s, int start, int before, int count)
     {
+        mLastSearchTextChangeTimestamp = new Date().getTime();
+        final long timestamp = mLastSearchTextChangeTimestamp;
 
+        if (s.length() > 3)
+        {
+            new Handler(Looper.getMainLooper()).postDelayed(new Runnable() {@Override public void run()
+            {
+                if (timestamp == mLastSearchTextChangeTimestamp)
+                {
+                    runGooglePlacesAutoComplete();
+                }
+            }}, 200);
+        }
     }
 
     @Override
@@ -205,25 +230,23 @@ public class GooglePlacesSearchView implements
         Log.e(TAG, "Google Api Client is not connected");
     }
 
-    protected void getLatLngFromUserSelection()
+    protected void getLatLngFromUserSelection(AutocompletePrediction prediction)
     {
         Places.GeoDataApi.getPlaceById(mGoogleApiClient, mSelectedAutocompletePrediction.getPlaceId())
-                .setResultCallback(new ResultCallback<PlaceBuffer>()
+                .setResultCallback(places ->
                 {
-                    @Override
-                    public void onResult(PlaceBuffer places)
+                    if (places.getStatus().isSuccess() && places.getCount() > 0)
                     {
-                        if (places.getStatus().isSuccess() && places.getCount() > 0)
-                        {
-                            final Place myPlace = places.get(0);
-                            Log.i(TAG, "Place found: " + myPlace.getName());
-                        }
-                        else
-                        {
-                            Log.e(TAG, "Place not found");
-                        }
-                        places.release();
+                        final Place place = places.get(0);
+                        Log.i(TAG, "Place found: " + place.getName());
+                        LatLng latLng = place.getLatLng();
+                        mListener.onPlaceCoordinatesFound(prediction, latLng.latitude, latLng.longitude);
                     }
+                    else
+                    {
+                        Log.e(TAG, "Place not found");
+                    }
+                    places.release();
                 });
     }
 

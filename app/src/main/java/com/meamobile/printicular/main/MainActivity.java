@@ -229,8 +229,8 @@ public class MainActivity extends AuthenticatableActivity implements ExplorerFra
         //For Testing a Activity
         new Handler(Looper.getMainLooper()).postDelayed(new Runnable() {@Override public void run()
         {
-            Intent i = new Intent(MainActivity.this, AddressEntryActivity.class);
-//            startActivity(i);
+            Intent i = new Intent(MainActivity.this, StoreSearchActivity.class);
+            startActivity(i);
         }}, 500);
     }
 

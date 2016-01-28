@@ -1,5 +1,6 @@
 package com.meamobile.printicular_sdk.user_interface.address;
 
+import android.app.Activity;
 import android.app.AlertDialog;
 import android.content.Intent;
 import android.os.Bundle;
@@ -18,6 +19,7 @@ import android.widget.RelativeLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.google.android.gms.location.places.AutocompletePrediction;
 import com.meamobile.printicular_sdk.R;
 import com.meamobile.printicular_sdk.core.PrinticularCartManager;
 import com.meamobile.printicular_sdk.core.PrinticularServiceManager;
@@ -37,7 +39,7 @@ import java.util.Locale;
 import java.util.regex.Pattern;
 
 
-public class AddressEntryActivity extends CheckoutActivity
+public class AddressEntryActivity extends CheckoutActivity implements GooglePlacesSearchView.GooglePlacesSearchViewListener
 {
     private static final String TAG = "MEA.AddressEntryAct";
 
@@ -109,10 +111,7 @@ public class AddressEntryActivity extends CheckoutActivity
         mRelativeLayoutAutomaticSearch = (RelativeLayout) findViewById(R.id.relativeLayoutAutomaticSearch);
         mLinearLayoutManualSearch = (LinearLayout) findViewById(R.id.linearLayoutManualSearch);
 
-        mSearchView = new GooglePlacesSearchView(findViewById(R.id.includeSearchView), this, null);
-
-
-
+        mSearchView = new GooglePlacesSearchView(findViewById(R.id.includeSearchView), this);
 
         mViewAutomaticSelectionDetail = findViewById(R.id.viewAutomaticSelectionDetail);
         mViewManualSelectionDetail = findViewById(R.id.viewManualSelectionDetail);
@@ -140,6 +139,41 @@ public class AddressEntryActivity extends CheckoutActivity
 
         mSearchView.stopClient();
     }
+
+
+
+    ///-----------------------------------------------------------
+    /// @name GooglePlacesSearchView Listener
+    ///-----------------------------------------------------------
+
+
+    @Override
+    public void onResultSetChanged()
+    {
+
+    }
+
+    @Override
+    public void onPlaceSelected(AutocompletePrediction prediction)
+    {
+
+    }
+
+    @Override
+    public void onPlaceCoordinatesFound(AutocompletePrediction prediction, double latitude, double longitude)
+    {
+
+    }
+
+    @Override
+    public Activity getParentActvity()
+    {
+        return this;
+    }
+
+
+
+
 
 
     ///-----------------------------------------------------------

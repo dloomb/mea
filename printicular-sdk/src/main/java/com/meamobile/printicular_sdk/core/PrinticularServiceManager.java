@@ -168,13 +168,13 @@ public class PrinticularServiceManager
     /// @name Stores
     ///-----------------------------------------------------------
 
-    public Observable<Map<Long, Store>> searchForStores(PrintService printService, LatLng location, String[] productIds)
+    public Observable<Map<Long, Store>> searchForStores(PrintService printService, double latitude, double longitude, String[] productIds)
     {
         long printServiceId = printService.getId();
 
         Map<String, String> parameters = new HashMap<>();
-        parameters.put("sort[latitude]", location.latitude + "");
-        parameters.put("sort[longitude]", location.longitude + "");
+        parameters.put("sort[latitude]", latitude + "");
+        parameters.put("sort[longitude]", longitude + "");
 
         if (productIds != null && productIds.length > 0)
         {

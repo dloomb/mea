@@ -1,5 +1,6 @@
 package com.meamobile.printicular_sdk.user_interface.common;
 
+import android.content.res.Resources;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -57,7 +58,7 @@ public class GooglePlacesPredictionsRecyclerViewAdapter extends RecyclerView.Ada
         }
         else
         {
-            params.height = ViewGroup.LayoutParams.MATCH_PARENT;
+            params.height = mPredictions.size() * 50 * (int)Resources.getSystem().getDisplayMetrics().density;;// ViewGroup.LayoutParams.WRAP_CONTENT;
         }
     }
 
