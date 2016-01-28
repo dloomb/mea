@@ -17,8 +17,10 @@ public class AccessToken
     private static String ACCESS_TOKEN_FILENAME = "com.meamobile.printicular_sdk.access_token";
 
     private Date mExpiryDate;
-    private String mToken;
-    private String mRefreshToken;
+
+    private String
+            mToken,
+            mRefreshToken;
 
     public AccessToken(String token, String refresh, Date expiry)
     {

@@ -102,4 +102,9 @@ public class StoreDetailsViewHolder extends RecyclerView.ViewHolder
         GridLayoutManager.LayoutParams params = (GridLayoutManager.LayoutParams) mRelativeLayoutOuter.getLayoutParams();
         params.setMargins(l * d, t * d, r * d, b * d);
     }
+
+    public void applyLayoutForManageOrderScreen() {
+        mViewBrandDetail.getLayoutParams().width = 0;
+        mImageViewStoreLogo.setScaleType(ImageView.ScaleType.FIT_START);
+    }
 }

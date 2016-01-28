@@ -13,30 +13,12 @@ import java.util.Map;
 
 import static org.junit.Assert.*;
 
-public class ImageTest
+public class ImageTest extends ModelTest
 {
     private static final String EXTERNAL_URL = "https://scontent-sea1-1.xx.fbcdn.net/hphotos-xat1/v/t1.0-9/11088406_1397148517272868_4043863592218515543_n.jpg?oh=3785879beb07bdc1b7faf0cc3f0121f5&oe=5649480D";
     private static final String KEY = "dev/users/00-dummy/TestToken/4c25ba9d45f7936772f61db6a1b6836d-15095.jpeg";
 
-    protected Image getNewRemoteImageInstance()
-    {
-        Map<String, Object> map = new Gson().fromJson(JSONResource.RAW_IMAGE_JSON, new TypeToken<Map<String, Object>>() {}.getType());
 
-        Map<String, Map> objects = Model.hydrate(map);
-
-        Image image = (Image) objects.get("images").get(3l);
-        return image;
-    }
-
-    protected Image getNewLocalImageInstance()
-    {
-        Map<String, Object> map = new Gson().fromJson(JSONResource.RAW_IMAGE_JSON, new TypeToken<Map<String, Object>>() {}.getType());
-
-        Map<String, Map> objects = Model.hydrate(map);
-
-        Image image = (Image) objects.get("images").get(9l);
-        return image;
-    }
 
     protected Date dateFromString(String s) {
         try
@@ -49,6 +31,14 @@ public class ImageTest
             return null;
         }
     }
+
+
+    @Test
+    public void it_has_the_correct_type() {
+        Image image = new Image();
+        assertEquals("images", image.getType());
+    }
+
 
 
     @Test
@@ -132,4 +122,32 @@ public class ImageTest
 
         assertNull(attributes.get("external_url"));
     }
+
+    @Test
+    public void it_updates_correctly()
+    {
+        Image i1 = getNewLocalImageInstance();
+        Image i2 = getNewLocalImageInstance();
+
+        String key = "/dev/printicular-server/00-dummy/a-test-filename.jpg";
+
+        i2.setKey(key);
+        i2.setFilename("a-test-filename.jpg");
+        i2.setChecksum("aaaa-bbb-ccc-dddd");
+        i2.setBytesize(12345);
+        i2.setWidth(123);
+        i2.setHeight(124);
+
+        i1.update(i2);
+
+        assertEquals(key, i1.getKey());
+        assertEquals("a-test-filename.jpg", i1.getFilename());
+        assertEquals("aaaa-bbb-ccc-dddd", i1.getChecksum());
+        assertEquals(12345, i1.getBytesize());
+        assertEquals(123, i1.getWidth());
+        assertEquals(124, i1.getHeight());
+
+
+    }
+
 }

@@ -3,10 +3,10 @@
     <item name="white" type="color">#FFF</item>
     <item name="text_dark" type="color">#FF333333</item>
     <item name="text_semi_dark" type="color">#FF666666</item>
-    <item name="accessory_button_dark" type="color">#FF95a5a6</item>
+    <item name="accessory_button_dark" type="color">#FFb9b9b9</item>
     <item name="shadow" type="color">#FFDDDDDD</item>
     <item name="selection_yellow" type="color">#FFffc613</item>
-    <item name="button_red" type="color">#FFFF0012</item>
+    <item name="button_red" type="color">#FFca2026</item>
 
 
     <color name="store_color_walgreens">#FFca2026</color>

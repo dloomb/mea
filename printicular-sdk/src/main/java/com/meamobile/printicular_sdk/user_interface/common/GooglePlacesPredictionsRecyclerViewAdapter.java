@@ -1,11 +1,10 @@
-package com.meamobile.printicular_sdk.user_interface.store_search;
+package com.meamobile.printicular_sdk.user_interface.common;
 
+import android.content.res.Resources;
 import android.support.v7.widget.RecyclerView;
-import android.text.style.CharacterStyle;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.FrameLayout;
 import android.widget.TextView;
 
 import com.google.android.gms.location.places.AutocompletePrediction;
@@ -27,14 +26,14 @@ public class GooglePlacesPredictionsRecyclerViewAdapter extends RecyclerView.Ada
     public RecyclerView.ViewHolder onCreateViewHolder(final ViewGroup parent, int viewType)
     {
         View v = LayoutInflater.from(parent.getContext()).inflate(R.layout.template_store_search_google_places_result_view_holder, parent, false);
-        return new StoreSearchGoolgePlacesResultViewHolder(v);
+        return new GooglePlacesResultViewHolder(v);
     }
 
     @Override
     public void onBindViewHolder(RecyclerView.ViewHolder holder, int position)
     {
         AutocompletePrediction prediction = mPredictions.get(position);
-        ((StoreSearchGoolgePlacesResultViewHolder) holder).setGooglePlacesPrediction(prediction);
+        ((GooglePlacesResultViewHolder) holder).setGooglePlacesPrediction(prediction);
     }
 
     @Override
@@ -59,15 +58,15 @@ public class GooglePlacesPredictionsRecyclerViewAdapter extends RecyclerView.Ada
         }
         else
         {
-            params.height = ViewGroup.LayoutParams.MATCH_PARENT;
+            params.height = mPredictions.size() * 50 * (int)Resources.getSystem().getDisplayMetrics().density;;// ViewGroup.LayoutParams.WRAP_CONTENT;
         }
     }
 
-    class StoreSearchGoolgePlacesResultViewHolder extends RecyclerView.ViewHolder
+    class GooglePlacesResultViewHolder extends RecyclerView.ViewHolder
     {
         private TextView mTextView;
 
-        public StoreSearchGoolgePlacesResultViewHolder(View itemView)
+        public GooglePlacesResultViewHolder(View itemView)
         {
             super(itemView);
 

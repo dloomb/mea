@@ -1,6 +1,7 @@
 package com.meamobile.printicular_sdk.core;
 
 
+import android.app.Activity;
 import android.content.Context;
 import android.content.SharedPreferences;
 import android.text.TextUtils;
@@ -9,10 +10,13 @@ import android.util.Log;
 import com.google.android.gms.maps.model.LatLng;
 import com.meamobile.printicular_sdk.core.models.AccessToken;
 import com.meamobile.printicular_sdk.core.models.*;
+import com.meamobile.printicular_sdk.user_interface.common.BlockingLoadIndicator;
 
+import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.UUID;
 
@@ -66,12 +70,12 @@ public class PrinticularServiceManager
         mContext = context;
         mEnvironment = environment;
 
-        Observable.concat(validateAccessToken(), refreshPrintServices())
+
+        validateAccessToken()
                 .retry(5)
-                .doOnError(e -> {
-                    Log.e(TAG, e.getLocalizedMessage());
-                })
-                .subscribe();
+                .flatMap((x) -> refreshPrintServices())
+                .subscribe((x) -> {
+                }, (e) -> Log.e(TAG, e.getLocalizedMessage()));
     }
 
 
@@ -110,14 +114,11 @@ public class PrinticularServiceManager
 
         return client.post("oauth/access_token", params)
                 .flatMap(response -> {
-                    if (response.get("error") == null)
-                    {
+                    if (response.get("error") == null) {
                         setAccessTokenFromResponse(response);
                         Log.d(TAG, "OAuth Success");
                         return Observable.just(mAccessToken);
-                    }
-                    else
-                    {
+                    } else {
                         return Observable.error(new RuntimeException((String) response.get("error_description")));
                     }
                 });
@@ -167,13 +168,13 @@ public class PrinticularServiceManager
     /// @name Stores
     ///-----------------------------------------------------------
 
-    public Observable<Map<Long, Store>> searchForStores(PrintService printService, LatLng location, String[] productIds)
+    public Observable<Map<Long, Store>> searchForStores(PrintService printService, double latitude, double longitude, String[] productIds)
     {
         long printServiceId = printService.getId();
 
         Map<String, String> parameters = new HashMap<>();
-        parameters.put("sort[latitude]", location.latitude + "");
-        parameters.put("sort[longitude]", location.longitude + "");
+        parameters.put("sort[latitude]", latitude + "");
+        parameters.put("sort[longitude]", longitude + "");
 
         if (productIds != null && productIds.length > 0)
         {
@@ -261,6 +262,74 @@ public class PrinticularServiceManager
     {
         return (mAddresses == null || mAddressesTimeStamp == null || mAddressesTimeStamp.before(new Date()));
     }
+
+
+
+
+
+    ///-----------------------------------------------------------
+    /// @name Images
+    ///-----------------------------------------------------------
+
+    public Observable<List<Image>> registerImages(List<Image> images)
+    {
+        List<Map> imageData = new ArrayList<>();
+        Map<String, Image> imageMap = new HashMap<>();
+
+        for (Image image : images) {
+            imageData.add(image.evaporate().get("data"));
+            imageMap.put(image.getReferencableString(), image);
+        }
+
+        Map<String, String> meta = new HashMap<>();
+        meta.put("device_token", getUniqueIdentifer());
+
+        Map<String, Object> data = new HashMap<>();
+        data.put("data", imageData);
+        data.put("meta", meta);
+
+        APIClient client = new APIClient(getBaseUrlForEnvironment());
+        return client.post("users/0/images", data, mAccessToken)
+                .flatMap(r -> {
+                    Map<String, Map> objects = Model.hydrate(r);
+                    Map<Long, Image> models = objects.get("images");
+                    List<Image> modelsList = new ArrayList<>(models.values());
+
+                    for (Image i : modelsList)
+                    {
+                        Image old = imageMap.get(i.getReferencableString());
+                        old.update(i);
+                    }
+
+                    return Observable.just(images);
+                });
+    }
+
+
+
+
+    ///-----------------------------------------------------------
+    /// @name Orders
+    ///-----------------------------------------------------------
+
+    public Observable<Order> submitOrder(Order order)
+    {
+        Map<String, Map> params = order.evaporate();
+
+        APIClient client = new APIClient(getBaseUrlForEnvironment());
+        return client.post("users/0/orders?deviceToken=" + getUniqueIdentifer(), params, mAccessToken)
+                .flatMap(r -> {
+                    Log.d(TAG, "Order submitted successfully");
+
+                    Map objects = (Map) Model.hydrate(r);
+                    Map <Long, Order> orders = (Map<Long, Order>) objects.get("orders");
+                    Order newOrder = orders.values().iterator().next();
+                    order.update(newOrder);
+
+                    return Observable.just(order);
+                });
+    }
+
 
 
     ///-----------------------------------------------------------

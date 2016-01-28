@@ -34,19 +34,24 @@ import com.meamobile.photokit.core.UserDefaults;
 import com.meamobile.photokit.dropbox.DropboxSource;
 import com.meamobile.photokit.user_interface.ExplorerFragment;
 import com.meamobile.photokit.user_interface.ExplorerFragment.ExplorerFragmentDelegate;
+
+import com.meamobile.printicular.R;
 import com.meamobile.printicular.AuthenticatableActivity;
 import com.meamobile.printicular.utilities.LocationUtil;
-import com.meamobile.printicular.R;
 import com.meamobile.printicular.main.cart.CartFragment;
 import com.meamobile.printicular.main.cart.PhotoKitCartManager;
 import com.meamobile.printicular.settings.LocationPickerDialog;
 import com.meamobile.printicular.settings.SettingsActivity;
-import com.meamobile.printicular_sdk.core.PrinticularCartManager;
+
 import com.meamobile.printicular_sdk.core.PrinticularServiceManager;
 import com.meamobile.printicular_sdk.core.PrinticularServiceManager.PrinticularEnvironment;
 import com.meamobile.printicular_sdk.core.models.PrintService;
+import com.meamobile.printicular_sdk.core.models.PrintService.FulfillmentType;
+import com.meamobile.printicular_sdk.user_interface.CheckoutActivity;
 import com.meamobile.printicular_sdk.user_interface.address.AddressEntryActivity;
-import com.meamobile.printicular_sdk.user_interface.ManageOrderActivity;
+import com.meamobile.printicular_sdk.user_interface.manage_order.ManageOrderActivity;
+import com.meamobile.printicular_sdk.user_interface.common.BlockingLoadIndicator;
+import com.meamobile.printicular_sdk.user_interface.store_search.StoreSearchActivity;
 
 import java.util.Locale;
 
@@ -85,6 +90,8 @@ public class MainActivity extends AuthenticatableActivity implements ExplorerFra
 
         //Setup UserDefaults Singleton
         UserDefaults.getInstance().setContext(this);
+
+        mCartManager.setRootActivty(MainActivity.class);
 
         mCartFragment = (CartFragment) getSupportFragmentManager().findFragmentById(R.id.cartFragment);
 
@@ -210,19 +217,20 @@ public class MainActivity extends AuthenticatableActivity implements ExplorerFra
 
         mCartManager.setContext(this);
         mCartManager.setCurrentStore(mCartManager.loadSavedStore());
+        mCartManager.setCurrentAddress(mCartManager.loadSavedAddress());
     }
 
     @Override
     protected void onResume()
     {
         super.onResume();
-        determineLocation();
+//        determineLocation();
 
-        //For Testing A Activity
+        //For Testing a Activity
         new Handler(Looper.getMainLooper()).postDelayed(new Runnable() {@Override public void run()
         {
-            Intent i = new Intent(MainActivity.this, AddressEntryActivity.class);
-//            startActivity(i);
+            Intent i = new Intent(MainActivity.this, StoreSearchActivity.class);
+            startActivity(i);
         }}, 500);
     }
 
@@ -243,22 +251,6 @@ public class MainActivity extends AuthenticatableActivity implements ExplorerFra
     /// @name Button Actions
     ///-----------------------------------------------------------
 
-    private boolean checkCartValidity()
-    {
-        if (mCartManager.getImageCount() == 0)
-        {
-            new AlertDialog.Builder(this)
-                    .setTitle("Oops you haven't selected any images")
-                    .setMessage("Please select some images to continue")
-                    .setPositiveButton("Ok", null)
-                    .create()
-                    .show();
-
-            return false;
-        }
-        return true;
-    }
-
     public void onNextButtonPressed(View v)
     {
 
@@ -266,10 +258,15 @@ public class MainActivity extends AuthenticatableActivity implements ExplorerFra
 
     public void onDeliverButtonPressed(View v)
     {
-
+        onPrintButtonPressed(FulfillmentType.DELIVERY);
     }
 
     public void onPickupButtonPressed(View v)
+    {
+        onPrintButtonPressed(FulfillmentType.PICKUP);
+    }
+
+    protected void onPrintButtonPressed(FulfillmentType fulfillmentType)
     {
         if (!checkCartValidity())
         {
@@ -289,7 +286,7 @@ public class MainActivity extends AuthenticatableActivity implements ExplorerFra
                 {
                     mCountryLocale = country;
                     LocationUtil.setUserSavedCountry(country);
-                    handlePickupPressed();
+                    registerImagesThenPushToCheckout(fulfillmentType);
                     dialog.dismiss();
                 }
 
@@ -302,24 +299,77 @@ public class MainActivity extends AuthenticatableActivity implements ExplorerFra
             return;
         }
 
-        handlePickupPressed();
+        registerImagesThenPushToCheckout(fulfillmentType);
     }
 
-    protected void handlePickupPressed()
+    protected void registerImagesThenPushToCheckout(FulfillmentType fulfillmentType)
     {
-        PrintService service = PrinticularServiceManager.getInstance().getPrintServiceWithId(3); // Should eventually be pulled based on Territory Model
+        PrintService service = getPrintServiceForCurrentCountry(fulfillmentType);
+
+        mCartManager.setCurrentPrintService(service);
+        mServiceManager.registerImages(mCartManager.getImages())
+                .retry(5)
+                .lift(new BlockingLoadIndicator(this))
+                .subscribe(rr -> {
+
+                    PrintService currentService = mCartManager.getCurrentPrintService();
+                    Intent i = new Intent(MainActivity.this, ManageOrderActivity.class);
+
+                    if (mCartManager.getCurrentAddress() == null)
+                    {
+                        i.setClass(MainActivity.this, AddressEntryActivity.class);
+                        i.putExtra(CheckoutActivity.EXTRA_DONE_BUTTON_ENABLED, true);
+                    }
+                    else if (mCartManager.getCurrentStore() == null
+                            && currentService.getFulFillmentType() == PrintService.FulfillmentType.PICKUP)
+                    {
+                        i.setClass(MainActivity.this, StoreSearchActivity.class);
+                        i.putExtra(CheckoutActivity.EXTRA_DONE_BUTTON_ENABLED, true);
+                    }
+
+                    startActivity(i);
+
+                }, error -> {
+                    error.printStackTrace();
+                    new AlertDialog.Builder(this)
+                            .setMessage(error.getMessage())
+                            .setNegativeButton("Ok", null)
+                            .show();
+                });
+
+    }
+
+
+    protected PrintService getPrintServiceForCurrentCountry(PrintService.FulfillmentType fulfillmentType)
+    {
+        int pickupId = 0, deliveryId = 0;
 
         switch (mCountryLocale.getISO3Country())
         {
             case "NZL":
-                service = PrinticularServiceManager.getInstance().getPrintServiceWithId(3);
+                pickupId = 3;
+                deliveryId = 5;
                 break;
         }
 
-        PrinticularCartManager.getInstance().setCurrentPrintService(service);
+        return mServiceManager.getPrintServiceWithId(fulfillmentType == PrintService.FulfillmentType.PICKUP ? pickupId : deliveryId); // Should eventually be pulled based on Territory Model
+    }
 
-        Intent i = new Intent(MainActivity.this, ManageOrderActivity.class);
-        startActivity(i);
+
+    private boolean checkCartValidity()
+    {
+        if (mCartManager.getImageCount() == 0)
+        {
+            new AlertDialog.Builder(this)
+                    .setTitle("Oops you haven't selected any images")
+                    .setMessage("Please select some images to continue")
+                    .setPositiveButton("Ok", null)
+                    .create()
+                    .show();
+
+            return false;
+        }
+        return true;
     }
 
 

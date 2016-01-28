@@ -76,7 +76,7 @@ public class InstagramCollection extends Collection
                                 String next = (String) pagination.get("next_url");
                                 if (next != null && next.contains("user"))
                                 {
-                                    loadAssetsWithUrl(next);
+//                                    loadAssetsWithUrl(next);
                                 }
                             }
                         },

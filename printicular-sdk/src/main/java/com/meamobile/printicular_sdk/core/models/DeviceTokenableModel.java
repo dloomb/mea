@@ -4,7 +4,7 @@ import java.util.Map;
 
 public class DeviceTokenableModel extends Model
 {
-    private String mDeviceToken;
+    protected String mDeviceToken;
 
     @Override
     public void populate(Map data)
@@ -24,6 +24,28 @@ public class DeviceTokenableModel extends Model
         }
     }
 
+    @Override
+    public Map<String, Map> evaporate()
+    {
+        Map <String, Map> data = super.evaporate();
+
+        Map<String, Object> attributes = findMapWithKey(data, "attributes");
+        if (attributes != null)
+        {
+            attributes.put("device_token", mDeviceToken);
+        }
+
+        return data;
+    }
+
+    @Override
+    public void update(Model model)
+    {
+        super.update(model);
+
+        DeviceTokenableModel dtModel = (DeviceTokenableModel) model;
+        mDeviceToken = (String) isSetOr(dtModel.getDeviceToken(), mDeviceToken);
+    }
 
     public String getDeviceToken()
     {

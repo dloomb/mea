@@ -16,6 +16,8 @@ import java.util.Map;
 
 import rx.Observable;
 import rx.Subscriber;
+import rx.android.schedulers.AndroidSchedulers;
+import rx.schedulers.Schedulers;
 import rx.subjects.PublishSubject;
 
 
@@ -63,7 +65,7 @@ public class Collection implements Parcelable, Observable.OnSubscribe<Object>
     protected Source mSource;
     protected String mTitle;
     protected Asset mCoverAsset;
-    protected Subscriber mLoadSubscriber;
+    protected Subscriber<Object> mLoadSubscriber;
     protected Activity mActivityContext;
 
     public Collection()
@@ -94,6 +96,12 @@ public class Collection implements Parcelable, Observable.OnSubscribe<Object>
         return numberOfAssets() + numberOfCollections();
     }
 
+    public void setCollectionObserver(CollectionObserver observer)
+    {
+        mObserver = observer;
+    }
+
+
     //---------------------------------
     //          Collections
     //---------------------------------
@@ -108,10 +116,6 @@ public class Collection implements Parcelable, Observable.OnSubscribe<Object>
             mObserver.collectionDidAddCollectionAtIndex(this, collection, i);
         }
 
-        if (mLoadSubscriber != null)
-        {
-            mLoadSubscriber.onNext(1.0d);
-        }
     }
 
     public int numberOfCollections()
@@ -136,14 +140,11 @@ public class Collection implements Parcelable, Observable.OnSubscribe<Object>
         int i = mAssets.size();
         mAssets.add(asset);
 
+
+
         if (mObserver != null)
         {
             mObserver.collectionDidAddAssetAtIndex(this, asset, i);
-        }
-
-        if (mLoadSubscriber != null)
-        {
-            mLoadSubscriber.onNext(1.0d);
         }
     }
 
@@ -172,20 +173,14 @@ public class Collection implements Parcelable, Observable.OnSubscribe<Object>
 
         if (getType() != CollectionType.Root)
         {
-//            Date now = new Date();
-//            Calendar calendar = Calendar.getInstance();
-//            calendar.setTime(now);
-//            calendar.add(Calendar.HOUR, 1);
-//
-//            if (mLastLoaded != null &&  now.before(mLastLoaded))
-//            {
-//                mLastLoaded = now;
             mCollections = new ArrayList<Collection>();
             mAssets = new ArrayList<Asset>();
-//            }
         }
 
-        return Observable.create(this);
+        return Observable.create(this)
+                .doOnUnsubscribe(this::handleCancel)
+                .subscribeOn(Schedulers.io())
+                .observeOn(AndroidSchedulers.mainThread());
     }
 
 
@@ -195,6 +190,9 @@ public class Collection implements Parcelable, Observable.OnSubscribe<Object>
         mLoadSubscriber = subscriber;
     }
 
+    protected void handleCancel() {
+
+    }
 
 
     ///-----------------------------------------------------------

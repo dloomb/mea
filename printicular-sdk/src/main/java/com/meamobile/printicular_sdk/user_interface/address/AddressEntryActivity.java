@@ -1,18 +1,25 @@
 package com.meamobile.printicular_sdk.user_interface.address;
 
+import android.app.Activity;
 import android.app.AlertDialog;
-import android.graphics.PorterDuff;
+import android.content.Intent;
 import android.os.Bundle;
+import android.support.v7.widget.GridLayoutManager;
+import android.support.v7.widget.RecyclerView;
 import android.text.Editable;
+import android.text.TextUtils;
 import android.text.TextWatcher;
 import android.util.Log;
+import android.view.KeyEvent;
 import android.view.View;
-import android.widget.Button;
+import android.view.inputmethod.EditorInfo;
 import android.widget.EditText;
 import android.widget.LinearLayout;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
+import android.widget.Toast;
 
+import com.google.android.gms.location.places.AutocompletePrediction;
 import com.meamobile.printicular_sdk.R;
 import com.meamobile.printicular_sdk.core.PrinticularCartManager;
 import com.meamobile.printicular_sdk.core.PrinticularServiceManager;
@@ -20,15 +27,22 @@ import com.meamobile.printicular_sdk.core.models.Address;
 import com.meamobile.printicular_sdk.core.models.PrintService;
 import com.meamobile.printicular_sdk.core.models.Territory;
 import com.meamobile.printicular_sdk.user_interface.CheckoutActivity;
-import com.meamobile.printicular_sdk.user_interface.common.ObservableRelativeLayout;
+import com.meamobile.printicular_sdk.user_interface.ItemClickSupport;
+import com.meamobile.printicular_sdk.user_interface.common.GooglePlacesPredictionsRecyclerViewAdapter;
+import com.meamobile.printicular_sdk.user_interface.common.GooglePlacesSearchView;
+import com.meamobile.printicular_sdk.user_interface.manage_order.ManageOrderActivity;
+import com.meamobile.printicular_sdk.user_interface.store_search.StoreSearchActivity;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Locale;
+import java.util.regex.Pattern;
 
-import rx.android.schedulers.AndroidSchedulers;
 
-
-public class AddressEntryActivity extends CheckoutActivity
+public class AddressEntryActivity extends CheckoutActivity implements GooglePlacesSearchView.GooglePlacesSearchViewListener
 {
+    private static final String TAG = "MEA.AddressEntryAct";
+
     enum SearchMode
     {
         MANUAL,
@@ -50,24 +64,22 @@ public class AddressEntryActivity extends CheckoutActivity
 
     private SearchMode mSearchMode = SearchMode.AUTOMATIC;
 
-    private ObservableRelativeLayout
-            mRelativeLayoutMain;
-
     private RelativeLayout
-            mRelativeLayoutAutomaticSearch;
+            mRelativeLayoutMain,
+            mRelativeLayoutAutomaticSearch,
+            mRelativeLayoutNextButton;
 
     private LinearLayout
             mLinearLayoutSearchTabs,
             mLinearLayoutManualSearch;
 
-    private Button mButtonNext;
-
     private View
             mViewAutomaticSelectionDetail,
             mViewManualSelectionDetail;
 
+    private GooglePlacesSearchView mSearchView;
+
     private EditText
-            mEditTextSearch,
             mEditTextName,
             mEditTextEmail,
             mEditTextPhone,
@@ -80,6 +92,7 @@ public class AddressEntryActivity extends CheckoutActivity
 
     private int mOriginalHeight = 0;
     private Address mAddress;
+    private boolean mNextButtonEnabled = false;
     private PrinticularCartManager mCartManager = PrinticularCartManager.getInstance();
     private PrinticularServiceManager mServiceManager = PrinticularServiceManager.getInstance();
 
@@ -91,28 +104,115 @@ public class AddressEntryActivity extends CheckoutActivity
 
         setupEditTextListeners();
 
-        mButtonNext = (Button) findViewById(R.id.buttonNext);
-        mButtonNext.getBackground().setColorFilter(getResources().getColor(R.color.button_red), PorterDuff.Mode.MULTIPLY);
+        mRelativeLayoutNextButton = (RelativeLayout) findViewById(R.id.relativeLayoutNextButton);
 
-        mRelativeLayoutMain = (ObservableRelativeLayout) findViewById(R.id.relativeLayoutMain);
+        mRelativeLayoutMain = (RelativeLayout) findViewById(R.id.relativeLayoutMain);
         mLinearLayoutSearchTabs = (LinearLayout) findViewById(R.id.linearLayoutSearchTabs);
         mRelativeLayoutAutomaticSearch = (RelativeLayout) findViewById(R.id.relativeLayoutAutomaticSearch);
         mLinearLayoutManualSearch = (LinearLayout) findViewById(R.id.linearLayoutManualSearch);
 
+        mSearchView = new GooglePlacesSearchView(findViewById(R.id.includeSearchView), this);
+
         mViewAutomaticSelectionDetail = findViewById(R.id.viewAutomaticSelectionDetail);
         mViewManualSelectionDetail = findViewById(R.id.viewManualSelectionDetail);
 
-        setupNextButtonHidingListener();
+        if(!getIntent().getBooleanExtra(EXTRA_DONE_BUTTON_ENABLED, false)) {
+            mRelativeLayoutNextButton.setVisibility(View.GONE);
+        }
+
         loadOrSetupAddress();
         layoutForCurrentSearchMode();
     }
 
+    @Override
+    protected void onStart()
+    {
+        super.onStart();
+
+        mSearchView.startClient();
+    }
+
+    @Override
+    protected void onStop()
+    {
+        super.onStop();
+
+        mSearchView.stopClient();
+    }
+
+
+
+    ///-----------------------------------------------------------
+    /// @name GooglePlacesSearchView Listener
+    ///-----------------------------------------------------------
+
+
+    @Override
+    public void onResultSetChanged()
+    {
+
+    }
+
+    @Override
+    public void onPlaceSelected(AutocompletePrediction prediction)
+    {
+
+    }
+
+    @Override
+    public void onPlaceCoordinatesFound(AutocompletePrediction prediction, double latitude, double longitude)
+    {
+
+    }
+
+    @Override
+    public Activity getParentActvity()
+    {
+        return this;
+    }
+
+
+
+
+
+
+    ///-----------------------------------------------------------
+    /// @name Actions
+    ///-----------------------------------------------------------
+
+    public void onDoneButtonClicked(View v)
+    {
+        if (!validateEnteredAddress()) { return; }
+
+        mServiceManager.saveAddress(mAddress)
+                .subscribe(x -> {
+                    mCartManager.setCurrentAddress(x);
+                    mCartManager.saveAddress(x);
+
+                    Intent i = new Intent(AddressEntryActivity.this, ManageOrderActivity.class);
+
+                    if (mCartManager.getCurrentPrintService().getFulFillmentType() == PrintService.FulfillmentType.PICKUP
+                            && mCartManager.getCurrentStore() == null)
+                    {
+                        i.setClass(AddressEntryActivity.this, StoreSearchActivity.class);
+                        i.putExtra(StoreSearchActivity.EXTRA_STORE_SEARCH_PUSHTO_MANAGE_ORDER, true);
+                    }
+
+                    startActivity(i);
+
+                }, error -> {
+                    new AlertDialog.Builder(this)
+                            .setTitle("Address Error")
+                            .setMessage("Sorry, but we were unable to save your address at this time. Please check you internet connection and try again.")
+                            .show();
+                });
+    }
 
     public void onSearchAddressClicked(View v)
     {
         mSearchMode = SearchMode.AUTOMATIC;
         layoutForCurrentSearchMode();
-        mEditTextSearch.requestFocus();
+        mSearchView.requestFocus();
     }
 
     public void onTypeAddressClicked(View v)
@@ -120,27 +220,6 @@ public class AddressEntryActivity extends CheckoutActivity
         mSearchMode = SearchMode.MANUAL;
         layoutForCurrentSearchMode();
         mEditTextAddressLine1.requestFocus();
-    }
-
-    protected void setupNextButtonHidingListener()
-    {
-        mRelativeLayoutMain.getObservable()
-                .repeat()
-                .observeOn(AndroidSchedulers.mainThread())
-                .subscribe(x -> {
-
-                    if (mOriginalHeight == 0) {
-                        mOriginalHeight = x;
-                    }
-
-                    if (mOriginalHeight == x) {
-                        mButtonNext.setVisibility(View.VISIBLE);
-                    } else {
-                        mButtonNext.setVisibility(View.GONE);
-                    }
-
-                    Log.d("Height", "" + x);
-                });
     }
 
 
@@ -198,26 +277,6 @@ public class AddressEntryActivity extends CheckoutActivity
     }
 
 
-    ///-----------------------------------------------------------
-    /// @name Actions
-    ///-----------------------------------------------------------
-
-    public void onNextButtonClick(View v)
-    {
-        PrinticularServiceManager manager = PrinticularServiceManager.getInstance();
-
-        manager.saveAddress(mAddress)
-                .subscribe(x-> {
-                    mCartManager.setCurrentAddress(x);
-                    finish();
-                }, error -> {
-                    new AlertDialog.Builder(this)
-                            .setTitle("Address Error")
-                            .setMessage("Sorry, but we were unable to save your address at this time. Please check you internet connection and try again.")
-                            .show();
-                });
-    }
-
 
     ///-----------------------------------------------------------
     /// @name TextWatcher / Address Changing
@@ -225,9 +284,6 @@ public class AddressEntryActivity extends CheckoutActivity
 
     protected void setupEditTextListeners()
     {
-        (mEditTextSearch = (EditText) findViewById(R.id.editTextSearch))
-                .addTextChangedListener(new SearchTextWatcher());
-
         (mEditTextName = (EditText) findViewById(R.id.editTextName))
                 .addTextChangedListener(new DetailsTextWatcher(mEditTextName, Field.NAME));
 
@@ -261,29 +317,6 @@ public class AddressEntryActivity extends CheckoutActivity
 
                     }
                 });
-    }
-
-
-    class SearchTextWatcher implements TextWatcher
-    {
-
-        @Override
-        public void beforeTextChanged(CharSequence s, int start, int count, int after)
-        {
-
-        }
-
-        @Override
-        public void onTextChanged(CharSequence s, int start, int before, int count)
-        {
-
-        }
-
-        @Override
-        public void afterTextChanged(Editable s)
-        {
-
-        }
     }
 
 
@@ -353,4 +386,72 @@ public class AddressEntryActivity extends CheckoutActivity
         return new Territory(locale);
     }
 
+
+
+
+
+    ///-----------------------------------------------------------
+    /// @name Validation
+    ///-----------------------------------------------------------
+
+    protected boolean validateEnteredAddress() {
+        PrintService.FulfillmentType fulfillmentType = mCartManager.getCurrentPrintService().getFulFillmentType();
+
+        boolean valid = true;
+
+        List<String> reasons = new ArrayList<>();
+
+        switch (fulfillmentType) {
+
+            case DELIVERY:
+                //Validate Delivery Specific Fields
+
+            case PICKUP:
+
+                if (mAddress.getName() == null || mAddress.getName().length() == 0) {
+                    valid = false;
+                    reasons.add("Name Empty");
+                }
+
+                if (mAddress.getEmail() == null || mAddress.getEmail().length() == 0) {
+                    valid = false;
+                    reasons.add("Email Empty");
+                }
+                else if (!Pattern.compile("^[A-Z0-9._%+-]+@[A-Z0-9.-]+\\.[A-Z]{2,6}$", Pattern.CASE_INSENSITIVE).matcher(mAddress.getEmail()).matches()) {
+                    valid = false;
+                    reasons.add("Email not valid");
+                }
+
+                if (mAddress.getPhone() == null || mAddress.getPhone().length() == 0) {
+                    valid = false;
+                    reasons.add("Phone Empty");
+                }else if (!validatePhoneNumber(mAddress.getPhone())) {
+                    valid = false;
+                    reasons.add("Phone not valid");
+                }
+
+        }
+
+        Log.d(TAG, TextUtils.join(",", reasons));
+        if (reasons.size() != 0) {
+            Toast.makeText(this, TextUtils.join(",", reasons), Toast.LENGTH_LONG).show();
+        }
+
+        return valid;
+    }
+
+
+    private static boolean validatePhoneNumber(String phoneNo) {
+        //validate phone numbers of format "1234567890"
+        if (phoneNo.matches("\\d{10}")) return true;
+            //validating phone number with -, . or spaces
+        else if(phoneNo.matches("\\d{3}[-\\.\\s]\\d{3}[-\\.\\s]\\d{4}")) return true;
+            //validating phone number with extension length from 3 to 5
+        else if(phoneNo.matches("\\d{3}-\\d{3}-\\d{4}\\s(x|(ext))\\d{3,5}")) return true;
+            //validating phone number where area code is in braces ()
+        else if(phoneNo.matches("\\(\\d{3}\\)-\\d{3}-\\d{4}")) return true;
+            //return false if nothing matches the input
+        else return false;
+
+    }
 }

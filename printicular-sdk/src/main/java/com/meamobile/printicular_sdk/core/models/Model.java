@@ -23,13 +23,24 @@ public class Model
         LONG
     }
 
-    protected long mId;
-    protected String mType;
-    protected Date mCreatedAt, mUpdatedAt;
-    protected Map<String, Object> mRelationshipMap;
-    protected Map<String, Object> mMeta;
+    protected long mId = -1;
+
+    protected Date
+            mCreatedAt,
+            mUpdatedAt;
+
+    protected Map<String, Object>
+            mMeta,
+            mRelationshipMap;
+
+
 
     public Model(){}
+
+    ///-----------------------------------------------------------
+    /// @name Data Management
+    ///-----------------------------------------------------------
+
 
     public void populate(Map data)
     {
@@ -37,7 +48,6 @@ public class Model
         data = nestedData != null ? nestedData : data;
 
         mId = ((Number) data.get("id")).longValue();
-        mType = (String) data.get("type");
 
         Map attributes = (Map) data.get("attributes");
         if (attributes != null)
@@ -64,38 +74,23 @@ public class Model
 
     }
 
-    public long getId()
-    {
-        return mId;
-    }
+    public void update(Model model) {
+        mId = isSetOr(model.getId(), mId);
+        mCreatedAt = (Date) isSetOr(model.getCreatedAt(), mCreatedAt);
+        mUpdatedAt = (Date) isSetOr(model.getUpdatedAt(), mUpdatedAt);
 
-    public String getType()
-    {
-        return mType;
-    }
-
-    public Date getCreatedAt()
-    {
-        return mCreatedAt;
-    }
-
-    public Date getUpdatedAt()
-    {
-        return mUpdatedAt;
-    }
-
-    public Object getMeta(String key)
-    {
-        if (mMeta != null)
-        {
-            return mMeta.get(key);
+        if (model.getMeta() != null) {
+            mMeta.putAll(model.getMeta());
         }
-        return null;
-    }
 
-    public Map<String, Object> getMeta()
-    {
-        return mMeta;
+        if (model.getRelationshipsMap() != null) {
+            if (mRelationshipMap != null) {
+                mRelationshipMap.putAll(model.getRelationshipsMap());
+            }
+            else {
+                mRelationshipMap = model.getRelationshipsMap();
+            }
+        }
     }
 
 
@@ -216,7 +211,7 @@ public class Model
 
         safePut(attributes, "meta", mMeta);
 
-        safePut(attributes, "relationships", mRelationshipMap);
+        safePut(data, "relationships", mRelationshipMap, new HashMap<>());
 
         Map<String, Map> out = new HashMap();
         out.put("data", data);
@@ -234,25 +229,116 @@ public class Model
 
 
 
+
+    ///-----------------------------------------------------------
+    /// @name Property Access
+    ///-----------------------------------------------------------
+
+    public long getId()
+    {
+        return mId;
+    }
+
+    public String getType()
+    {
+        throw new RuntimeException("Cannot call getType on Base Model");
+    }
+
+    public Date getCreatedAt()
+    {
+        return mCreatedAt;
+    }
+
+    public Date getUpdatedAt()
+    {
+        return mUpdatedAt;
+    }
+
+    public Object getMeta(String key)
+    {
+        if (mMeta != null)
+        {
+            return mMeta.get(key);
+        }
+        return null;
+    }
+
+    public Map<String, Object> getMeta()
+    {
+        return mMeta;
+    }
+
+    protected Map<String, Object> getRelationshipsMap() {
+        return mRelationshipMap;
+    }
+
+    protected Map<String, Object> getDataWrappedResourceIdentifierObject()
+    {
+        Map out = new HashMap<>();
+        out.put("data", getResourceIdentifierObject());
+        return out;
+    }
+
+    protected Map<String, Object> getResourceIdentifierObject() {
+        Map data = new HashMap<>();
+        data.put("type", getType());
+        data.put("id", getId());
+        return data;
+    }
+
+
     ///-----------------------------------------------------------
     /// @name Helpers
     ///-----------------------------------------------------------
 
     protected void safePut(Map map, Object key, Object value)
     {
-        if (map != null && key != null && value != null)
+        safePut(map, key, value, null);
+    }
+
+    protected void safePut(Map map, Object key, Object value, Object fallback)
+    {
+        if (map != null && key != null)
         {
-            if (value instanceof Number && ((Number) value).intValue() == 0)
+            if (value != null)
             {
-                return;
+                if (value instanceof Number && ((Number) value).intValue() == 0)
+                {
+                    return;
+                }
+
+                map.put(key, value);
+            }
+            else if (fallback != null)
+            {
+                map.put(key, fallback);
             }
 
-            map.put(key, value);
         }
     }
 
     protected Object safeParse(Object input, ClassType wantedClass)
     {
+        if (input == null) {
+            switch (wantedClass)
+            {
+                case STRING:
+                    return null;
+
+                case INTEGER:
+                    return 0;
+
+                case LONG:
+                    return 0l;
+
+                case DOUBLE:
+                    return 0d;
+
+                case BOOLEAN:
+                    return false;
+            }
+        }
+
         if (input instanceof String)
         {
             switch (wantedClass)
@@ -268,6 +354,9 @@ public class Model
 
                 case DOUBLE:
                     return Double.parseDouble((String) input);
+
+                case BOOLEAN:
+                    return Boolean.parseBoolean((String) input);
             }
         }
 
@@ -296,6 +385,18 @@ public class Model
         {
             switch (wantedClass)
             {
+                case STRING:
+                    return ((boolean) input) ? "true" : "false";
+
+                case INTEGER:
+                    return ((boolean) input) ? 1 : 0;
+
+                case LONG:
+                    return ((boolean) input) ? 1l : 0l;
+
+                case DOUBLE:
+                    return ((boolean) input) ? 1.0d : 0.0d;
+
                 case BOOLEAN:
                     return input;
             }
@@ -353,6 +454,21 @@ public class Model
         }
 
         return result;
+    }
+
+    protected Object isSetOr(Object isValue, Object orValue) {
+        return isValue != null ? isValue : orValue;
+    }
+
+    protected long isSetOr(long isValue, long orValue) {
+        return isValue != -1 ? isValue : orValue;
+    }
+
+    protected int isSetOr(int isValue, int orValue) {
+        return isValue != -1 ? isValue : orValue;
+    }
+    protected double isSetOr(double isValue, double orValue) {
+        return isValue != -1 ? isValue : orValue;
     }
 
 }

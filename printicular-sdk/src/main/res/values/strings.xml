@@ -7,5 +7,7 @@
     <string name="activity_store_search_title">Find your nearest store</string>
     <string name="enter_city_state_zip">Enter your City &amp; State or Zip</string>
     <string name="search">search</string>
+    <string name="address_entry_instruction">Enter your address above to quickly give us all the information we need or select \'Type Address\'.</string>
+
 
 </resources>

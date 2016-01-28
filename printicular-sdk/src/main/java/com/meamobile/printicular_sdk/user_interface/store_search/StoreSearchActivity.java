@@ -1,5 +1,7 @@
 package com.meamobile.printicular_sdk.user_interface.store_search;
 
+import android.app.Activity;
+import android.content.Intent;
 import android.os.Bundle;
 import android.support.v7.widget.GridLayoutManager;
 import android.support.v7.widget.RecyclerView;
@@ -41,6 +43,9 @@ import com.meamobile.printicular_sdk.core.models.Store;
 import com.meamobile.printicular_sdk.user_interface.CheckoutActivity;
 import com.meamobile.printicular_sdk.user_interface.ItemClickSupport;
 import com.meamobile.printicular_sdk.user_interface.ItemClickSupport.OnItemClickListener;
+import com.meamobile.printicular_sdk.user_interface.common.GooglePlacesPredictionsRecyclerViewAdapter;
+import com.meamobile.printicular_sdk.user_interface.common.GooglePlacesSearchView;
+import com.meamobile.printicular_sdk.user_interface.manage_order.ManageOrderActivity;
 import com.meamobile.printicular_sdk.user_interface.UserInterfaceUtil;
 
 import java.util.ArrayList;
@@ -50,27 +55,24 @@ import java.util.List;
 
 public class StoreSearchActivity
         extends CheckoutActivity
-        implements OnEditorActionListener, TextWatcher, ResultCallback, OnConnectionFailedListener, ConnectionCallbacks, OnItemClickListener
+        implements OnItemClickListener, GooglePlacesSearchView.GooglePlacesSearchViewListener
 {
+    public static final String EXTRA_STORE_SEARCH_PUSHTO_MANAGE_ORDER = "com.meamobile.printicular_sdk.user_interface.store_search.pusto.mange_order_activity";
+
     private static final String TAG = "MEA.CheckoutActivity";
-
-    private GoogleApiClient mGoogleApiClient;
-    private GooglePlacesPredictionsRecyclerViewAdapter mPlacesRecyclerAdapter;
-
-    private Long mLastSearchTextChangeTimestamp;
-    private List<AutocompletePrediction> mAutocompletePredictions;
-    private AutocompletePrediction mSelectedAutocompletePrediction;
 
     private StoreResultsRecyclerViewAdapter mStoreRecyclerAdapter;
     private List<Store> mStoreResults;
+
+    private AutocompletePrediction mSelectedAutocompletePrediction;
 
     private PrinticularServiceManager mServiceManager = PrinticularServiceManager.getInstance();
     private PrinticularCartManager mCartManager = PrinticularCartManager.getInstance();
 
     private RecyclerView
-            mPlacesRecyclerView,
             mStoresRecyclerView;
-    private EditText mEditTextSearch;
+
+    private GooglePlacesSearchView mSearchView;
 
     @Override
     protected void onCreate(Bundle savedInstanceState)
@@ -78,21 +80,7 @@ public class StoreSearchActivity
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_store_search);
 
-        mGoogleApiClient = new GoogleApiClient
-                .Builder(this)
-                .addApi(Places.GEO_DATA_API)
-                .addApi(Places.PLACE_DETECTION_API)
-                .addConnectionCallbacks(this)
-                .addOnConnectionFailedListener(this)
-                .build();
-
-        mLastSearchTextChangeTimestamp = new Date().getTime();
-
-        mPlacesRecyclerView = (RecyclerView) findViewById(R.id.recyclerViewPlaces);
-        mPlacesRecyclerAdapter = new GooglePlacesPredictionsRecyclerViewAdapter(mPlacesRecyclerView);
-        mPlacesRecyclerView.setAdapter(mPlacesRecyclerAdapter);
-        mPlacesRecyclerView.setLayoutManager(new GridLayoutManager(this, 1));
-        ItemClickSupport.addTo(mPlacesRecyclerView).setOnItemClickListener(this);
+        mSearchView = new GooglePlacesSearchView(findViewById(R.id.includeSearchView), this);
 
         mStoreRecyclerAdapter = new StoreResultsRecyclerViewAdapter();
 
@@ -100,23 +88,18 @@ public class StoreSearchActivity
         mStoresRecyclerView.setAdapter(mStoreRecyclerAdapter);
         mStoresRecyclerView.setLayoutManager(new GridLayoutManager(this, 1));
         ItemClickSupport.addTo(mStoresRecyclerView).setOnItemClickListener(this);
-
-        mEditTextSearch = (EditText) findViewById(R.id.editTextSearch);
-        mEditTextSearch.setImeActionLabel(getString(R.string.search), EditorInfo.IME_ACTION_SEARCH);
-        mEditTextSearch.setOnEditorActionListener(this);
-        mEditTextSearch.addTextChangedListener(this);
     }
 
     @Override
     protected void onStart() {
         super.onStart();
-        mGoogleApiClient.connect();
+        mSearchView.startClient();
     }
 
     @Override
     protected void onStop() {
         super.onStop();
-        mGoogleApiClient.disconnect();
+        mSearchView.stopClient();
     }
 
     @Override
@@ -133,121 +116,19 @@ public class StoreSearchActivity
     @Override
     public void onItemClicked(RecyclerView recyclerView, int position, View v)
     {
-        if (recyclerView == mPlacesRecyclerView)
-        {
-            mSelectedAutocompletePrediction = mAutocompletePredictions.get(position);
-            mEditTextSearch.setText(mSelectedAutocompletePrediction.getFullText(null));
-            mPlacesRecyclerAdapter.setGooglePlacesPredictions(null);
-            UserInterfaceUtil.HideKeyboard(this);
-
-            getLatLngFromUserSelection();
-        }
-        else
+        if (recyclerView == mStoresRecyclerView)
         {
             Store s = mStoreResults.get(position);
             mCartManager.setCurrentStore(s);
             mCartManager.saveStore(s);
-            finish();
+
+            if (getIntent().getBooleanExtra(EXTRA_STORE_SEARCH_PUSHTO_MANAGE_ORDER, false)) {
+                Intent i = new Intent(StoreSearchActivity.this, ManageOrderActivity.class);
+                startActivity(i);
+            } else {
+                finish();
+            }
         }
-    }
-
-
-
-    ///-----------------------------------------------------------
-    /// @name SearchViewText
-    ///-----------------------------------------------------------
-
-    @Override
-    public boolean onEditorAction(TextView v, int actionId, KeyEvent event)
-    {
-        if (actionId == EditorInfo.IME_ACTION_SEARCH)
-        {
-            runGooglePlacesSearch();
-            UserInterfaceUtil.HideKeyboard(this);
-            return true;
-        }
-
-        return false;
-    }
-
-    @Override
-    public void beforeTextChanged(CharSequence s, int start, int count, int after) {}
-
-    @Override
-    public void onTextChanged(CharSequence s, int start, int before, int count)
-    {
-        mLastSearchTextChangeTimestamp = new Date().getTime();
-        final long timestamp = mLastSearchTextChangeTimestamp;
-
-        if (s.length() > 3)
-        {
-            new Handler(Looper.getMainLooper()).postDelayed(new Runnable() {@Override public void run()
-            {
-                if (timestamp == mLastSearchTextChangeTimestamp)
-                {
-                    runGooglePlacesSearch();
-                }
-            }}, 200);
-        }
-    }
-
-    @Override
-    public void afterTextChanged(Editable s) {}
-
-
-
-    ///-----------------------------------------------------------
-    /// @name GooglePlaces
-    ///-----------------------------------------------------------
-
-    @Override
-    public void onResult(Result result)
-    {
-        if (result.getStatus().isSuccess())
-        {
-            AutocompletePredictionBuffer buffer = (AutocompletePredictionBuffer) result;
-            mAutocompletePredictions = DataBufferUtils.freezeAndClose(buffer);
-            mPlacesRecyclerAdapter.setGooglePlacesPredictions(mAutocompletePredictions);
-            buffer.release();
-        }
-    }
-
-    @Override
-    public void onConnectionFailed(ConnectionResult connectionResult)
-    {
-        Log.e(TAG, connectionResult.toString());
-    }
-
-    @Override
-    public void onConnected(Bundle bundle) {}
-
-    @Override
-    public void onConnectionSuspended(int i) {}
-
-    protected void runGooglePlacesSearch()
-    {
-        if (mSelectedAutocompletePrediction != null)
-        {
-            //Dont run a search if the user already picked an address
-            return;
-        }
-
-        String text = mEditTextSearch.getText().toString();
-
-        if (mGoogleApiClient.isConnected())
-        {
-            Log.d(TAG, "Google Api Client will make query: " + text);
-            AutocompleteFilter autocompleteFilter = new AutocompleteFilter
-                    .Builder()
-                    .setTypeFilter(AutocompleteFilter.TYPE_FILTER_GEOCODE)
-                    .build();
-
-            PendingResult<AutocompletePredictionBuffer> results = Places.GeoDataApi.getAutocompletePredictions(mGoogleApiClient, text, null, autocompleteFilter);
-            results.setResultCallback(this);
-            return;
-        }
-
-        Log.e(TAG, "Google Api Client is not connected");
     }
 
 
@@ -256,12 +137,12 @@ public class StoreSearchActivity
     /// @name Printicular Server
     ///-----------------------------------------------------------
 
-    protected void runPrinticularStoreSearch(LatLng latLng)
+    protected void runPrinticularStoreSearch(double lat, double lng)
     {
         PrintService currentPrintService = mCartManager.getCurrentPrintService();
         currentPrintService = mServiceManager.getPrintServiceWithId(3);
 
-        mServiceManager.searchForStores(currentPrintService, latLng, null)
+        mServiceManager.searchForStores(currentPrintService, lat, lng, null)
                 .subscribe(
                         x -> {
                             mStoreResults = new ArrayList<>(x.values());
@@ -276,29 +157,35 @@ public class StoreSearchActivity
     }
 
 
-    protected void getLatLngFromUserSelection()
+    ///-----------------------------------------------------------
+    /// @name GooglePlacesSearchView Listener
+    ///-----------------------------------------------------------
+
+
+    @Override
+    public void onResultSetChanged()
     {
-        Places.GeoDataApi.getPlaceById(mGoogleApiClient, mSelectedAutocompletePrediction.getPlaceId())
-                .setResultCallback(new ResultCallback<PlaceBuffer>()
-                {
-                    @Override
-                    public void onResult(PlaceBuffer places)
-                    {
-                        if (places.getStatus().isSuccess() && places.getCount() > 0)
-                        {
-                            final Place myPlace = places.get(0);
-                            Log.i(TAG, "Place found: " + myPlace.getName());
-                            runPrinticularStoreSearch(myPlace.getLatLng());
-                        }
-                        else
-                        {
-                            Log.e(TAG, "Place not found");
-                        }
-                        places.release();
-                    }
-                });
+
     }
 
+    @Override
+    public void onPlaceSelected(AutocompletePrediction prediction)
+    {
+        mSelectedAutocompletePrediction = prediction;
+    }
 
+    @Override
+    public void onPlaceCoordinatesFound(AutocompletePrediction prediction, double latitude, double longitude)
+    {
+        if (mSelectedAutocompletePrediction == prediction)
+        {
+            runPrinticularStoreSearch(latitude, longitude);
+        }
+    }
 
+    @Override
+    public Activity getParentActvity()
+    {
+        return this;
+    }
 }

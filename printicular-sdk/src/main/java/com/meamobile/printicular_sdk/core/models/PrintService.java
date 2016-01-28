@@ -1,6 +1,7 @@
 package com.meamobile.printicular_sdk.core.models;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -34,18 +35,29 @@ public class PrintService extends Model
         }
     }
 
-    private String mName, mDisplayName, mDefaultCurrency;
-    private FulfillmentType mFulFillmentType;
-    private boolean mEnforceDefaultCurrency, mAutoConfirmable;
-    private List<Product> mProducts;
+    private String
+            mName,
+            mDisplayName,
+            mDefaultCurrency;
 
-    public PrintService(){}
+    private FulfillmentType mFulFillmentType;
+
+    private boolean mEnforceDefaultCurrency, mAutoConfirmable;
+
+    private List<Product> mProducts;
 
 
 
     ///-----------------------------------------------------------
     /// @name Super Overrides
     ///-----------------------------------------------------------
+
+
+    @Override
+    public String getType()
+    {
+        return "print_services";
+    }
 
     @Override
     public void populate(Map data)
@@ -82,6 +94,7 @@ public class PrintService extends Model
                 {
                     long priceId = ((Number) map.get("id")).longValue();
                     Product product = (Product) objects.get("products").get(priceId);
+                    product.setPrintService(PrintService.this);
                     mProducts.add(product);
                 }
             }
@@ -109,4 +122,5 @@ public class PrintService extends Model
     public List<Product> getProducts() {
         return mProducts;
     }
+
 }

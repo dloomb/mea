@@ -10,16 +10,18 @@ public class Address extends DeviceTokenableModel
     private Territory mTerritory;
 
     private String
+            mCity,
+            mName,
             mLine1,
             mLine2,
-            mCity,
+            mEmail,
+            mPhone,
             mState,
             mPostcode,
-            mPhone,
-            mEmail,
-            mName,
             mDeviceToken;
 
+
+    public Address(){}
 
     @Override
     public void populate(Map data) {

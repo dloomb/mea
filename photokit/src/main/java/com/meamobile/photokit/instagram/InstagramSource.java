@@ -98,7 +98,7 @@ public class InstagramSource extends Source
         params.put("redirect_uri", redirectUrl);
         params.put("code", code);
 
-        new JSONHttpClient().post("https://api.instagram.com/oauth/access_token", params)
+        new JSONHttpClient().post("https://api.instagram.com/oauth/access_token", params, true/* Form URL Encoded */)
                 .subscribe(x -> {
 
                     try

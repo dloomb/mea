@@ -49,6 +49,21 @@ public class Asset implements Parcelable
         return equals;
     }
 
+
+
+
+    ///-----------------------------------------------------------
+    /// @name Property Access
+    ///-----------------------------------------------------------
+
+    public int getWidth() {
+        return mWidth;
+    }
+
+    public int getHeight() {
+        return mHeight;
+    }
+
     ///-----------------------------------------------------------
     /// @name Parcelable
     ///-----------------------------------------------------------

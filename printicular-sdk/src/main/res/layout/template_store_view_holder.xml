@@ -10,14 +10,20 @@
     android:layout_marginBottom="4dp">
 
 
-
+    <View
+        android:id="@+id/viewBrandDetail"
+        android:layout_width="8dp"
+        android:layout_height="100dp"
+        android:layout_alignTop="@id/relativeLayoutInner"
+        android:layout_alignBottom="@id/relativeLayoutInner"
+        android:background="@color/store_color_warehouse_stationery"/>
 
 
     <RelativeLayout
-        android:id="@+id/relativeLayoutInner"
+        android:id="@id/relativeLayoutInner"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_marginLeft="8dp"
+        android:layout_toRightOf="@id/viewBrandDetail"
         android:padding="8dp">
 
         <TextView
@@ -29,11 +35,24 @@
             android:layout_marginBottom="10dp"/>
 
         <ImageView
+            android:id="@+id/imageViewAccessory"
+            android:layout_width="40dp"
+            android:layout_height="40dp"
+            android:paddingLeft="10dp"
+            android:paddingRight="0dp"
+            android:paddingBottom="10dp"
+            android:src="@drawable/vect_pencil"
+            android:tint="@color/accessory_button_dark"
+            android:layout_alignParentRight="true"
+            android:scaleType="fitCenter"/>
+
+        <ImageView
             android:id="@+id/imageViewStoreLogo"
             android:layout_width="match_parent"
             android:layout_height="40dp"
             android:layout_below="@id/textViewTitle"
             android:layout_marginBottom="5dp"
+            android:layout_marginRight="8dp"
             android:src="@drawable/warehouse_stationery_inverse_no_bg"
             android:contentDescription="@string/app_name"
             android:scaleType="fitEnd"/>
@@ -84,25 +103,8 @@
         </RelativeLayout>
 
 
-        <ImageView
-            android:id="@+id/imageViewAccessory"
-            android:layout_width="35dp"
-            android:layout_height="35dp"
-            android:layout_centerVertical="true"
-            android:src="@drawable/vect_pencil"
-            android:tint="@color/accessory_button_dark"
-            android:layout_alignParentRight="true"
-            android:scaleType="fitCenter"/>
-
     </RelativeLayout>
 
-    <View
-        android:id="@+id/viewBrandDetail"
-        android:layout_width="8dp"
-        android:layout_height="100dp"
-        android:layout_alignTop="@id/relativeLayoutInner"
-        android:layout_alignBottom="@id/relativeLayoutInner"
-        android:background="@color/store_color_warehouse_stationery"/>
 
     <View
         android:layout_width="1dp"
