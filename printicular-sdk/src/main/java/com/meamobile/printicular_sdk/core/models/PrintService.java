@@ -42,7 +42,9 @@ public class PrintService extends Model
 
     private FulfillmentType mFulFillmentType;
 
-    private boolean mEnforceDefaultCurrency, mAutoConfirmable;
+    private boolean
+            mEnforceDefaultCurrency,
+            mAutoConfirmable;
 
     private List<Product> mProducts;
 
@@ -71,8 +73,8 @@ public class PrintService extends Model
             mName = (String) attributes.get("name");
             mDisplayName = (String) attributes.get("display_name");
             mDefaultCurrency = (String) attributes.get("default_currency");
-            mEnforceDefaultCurrency = ((Number) attributes.get("enforce_currency")).intValue() == 1;
-            mAutoConfirmable = ((Number) attributes.get("auto_confirmable")).intValue() == 1;
+            mEnforceDefaultCurrency = (boolean) safeParse(attributes.get("enforce_currency"), ClassType.BOOLEAN);
+            mAutoConfirmable = (boolean) safeParse(attributes.get("auto_confirmable"), ClassType.BOOLEAN);
             mFulFillmentType = FulfillmentType.fromString((String) attributes.get("fulfillment_type"));
         }
     }
@@ -121,6 +123,10 @@ public class PrintService extends Model
 
     public List<Product> getProducts() {
         return mProducts;
+    }
+
+    public boolean isAutoConfirmable() {
+        return mAutoConfirmable;
     }
 
 }

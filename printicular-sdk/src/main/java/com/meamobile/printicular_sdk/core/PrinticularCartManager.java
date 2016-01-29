@@ -272,9 +272,13 @@ public class PrinticularCartManager
 
         order.setLineItems(mLineItems);
         order.setPrintService(mCurrentPrintService);
-        order.setStore(mCurrentStore);
         order.setAddress(mCurrentAddress);
         order.setCurrency(mCurrentPrintService.getDefaultCurrency());
+
+        if (mCurrentPrintService.getFulFillmentType() == PrintService.FulfillmentType.PICKUP)
+        {
+            order.setStore(mCurrentStore);
+        }
 
         return Observable.just(order);
     }

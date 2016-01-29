@@ -9,4 +9,5 @@
     <item name="printicular_primary_lightgrey" type="color">#FFDDDDDD</item>
     <item name="printicular_primary_grey" type="color">#FFbdc3c7</item>
     <item name="printicular_primary_darkgrey" type="color">#FF95a5a6</item>
+    <item name="material_design_bg_grey" type="color">#FFf5f6f7</item>
 </resources>

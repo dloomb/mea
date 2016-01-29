@@ -113,7 +113,7 @@ public class AddressEntryActivity extends CheckoutActivity implements GooglePlac
         mRelativeLayoutAutomaticSearch = (RelativeLayout) findViewById(R.id.relativeLayoutAutomaticSearch);
         mLinearLayoutManualSearch = (LinearLayout) findViewById(R.id.linearLayoutManualSearch);
 
-        mSearchView = new GooglePlacesSearchView(findViewById(R.id.includeSearchView), this, false /* Do not need Latitude and Longitude */);
+        mSearchView = new GooglePlacesSearchView(findViewById(R.id.includeSearchView), this);
 
         mViewAutomaticSelectionDetail = findViewById(R.id.viewAutomaticSelectionDetail);
         mViewManualSelectionDetail = findViewById(R.id.viewManualSelectionDetail);
@@ -156,16 +156,16 @@ public class AddressEntryActivity extends CheckoutActivity implements GooglePlac
     }
 
     @Override
-    public void onPlaceSelected(AutocompletePrediction prediction)
+    public void onPlaceSelected(android.location.Address place)
     {
         mSearchMode = SearchMode.MANUAL;
+        mEditTextAddressLine1.setText(place.getAddressLine(0));
+        mEditTextAddressLine2.setText(place.getAddressLine(1));
+        mEditTextCity.setText(place.getLocality());
+        mEditTextState.setText(place.getAdminArea());
+        mEditTextPostCode.setText(place.getPostalCode());
+        mEditTextCountry.setText(place.getCountryName());
         layoutForCurrentSearchMode();
-    }
-
-    @Override
-    public void onPlaceCoordinatesFound(AutocompletePrediction prediction, double latitude, double longitude)
-    {
-
     }
 
     @Override

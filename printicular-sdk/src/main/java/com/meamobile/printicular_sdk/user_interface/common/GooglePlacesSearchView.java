@@ -1,6 +1,8 @@
 package com.meamobile.printicular_sdk.user_interface.common;
 
 import android.app.Activity;
+import android.location.Address;
+import android.location.Geocoder;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Looper;
@@ -33,8 +35,10 @@ import com.meamobile.printicular_sdk.R;
 import com.meamobile.printicular_sdk.user_interface.ItemClickSupport;
 import com.meamobile.printicular_sdk.user_interface.UserInterfaceUtil;
 
+import java.io.IOException;
 import java.util.Date;
 import java.util.List;
+import java.util.Locale;
 
 public class GooglePlacesSearchView implements
         ItemClickSupport.OnItemClickListener,
@@ -49,8 +53,7 @@ public class GooglePlacesSearchView implements
     public interface GooglePlacesSearchViewListener
     {
         void onResultSetChanged();
-        void onPlaceSelected(AutocompletePrediction prediction);
-        void onPlaceCoordinatesFound(AutocompletePrediction prediction, double latitude, double longitude);
+        void onPlaceSelected(Address place);
         Activity getParentActvity();
     }
 
@@ -58,7 +61,6 @@ public class GooglePlacesSearchView implements
     private List<AutocompletePrediction> mAutocompletePredictions;
     private AutocompletePrediction mSelectedAutocompletePrediction;
 
-    private boolean mShouldRunLatLngSearch = false;
     private GooglePlacesSearchViewListener mListener;
     private GoogleApiClient mGoogleApiClient;
     private GooglePlacesPredictionsRecyclerViewAdapter mPlacesRecyclerAdapter;
@@ -67,12 +69,8 @@ public class GooglePlacesSearchView implements
     private RecyclerView mRecyclerView;
     private EditText mEditText;
 
-    public GooglePlacesSearchView(View view, GooglePlacesSearchViewListener listener)
-    {
-        this(view, listener, false);
-    }
 
-    public GooglePlacesSearchView(View view, GooglePlacesSearchViewListener listener, boolean needsLatitudeAndLongitude)
+    public GooglePlacesSearchView(View view, GooglePlacesSearchViewListener listener)
     {
         mListener = listener;
 
@@ -126,11 +124,7 @@ public class GooglePlacesSearchView implements
         mPlacesRecyclerAdapter.setGooglePlacesPredictions(null);
         UserInterfaceUtil.hideKeyboard(mEditText);
 
-        mListener.onPlaceSelected(mSelectedAutocompletePrediction);
-
-        if(mShouldRunLatLngSearch) {
-            getLatLngFromUserSelection(mSelectedAutocompletePrediction);
-        }
+        getLatLngFromUserSelection(mSelectedAutocompletePrediction);
     }
 
 
@@ -241,22 +235,18 @@ public class GooglePlacesSearchView implements
 
     protected void getLatLngFromUserSelection(AutocompletePrediction prediction)
     {
-        Places.GeoDataApi.getPlaceById(mGoogleApiClient, mSelectedAutocompletePrediction.getPlaceId())
-                .setResultCallback(places ->
-                {
-                    if (places.getStatus().isSuccess() && places.getCount() > 0)
-                    {
-                        final Place place = places.get(0);
-                        Log.i(TAG, "Place found: " + place.getName());
-                        LatLng latLng = place.getLatLng();
-                        mListener.onPlaceCoordinatesFound(prediction, latLng.latitude, latLng.longitude);
-                    }
-                    else
-                    {
-                        Log.e(TAG, "Place not found");
-                    }
-                    places.release();
-                });
+        Geocoder geo = new Geocoder(mListener.getParentActvity(), Locale.getDefault());
+        try
+        {
+            List<Address> addresses = null;
+            addresses = geo.getFromLocationName(prediction.getFullText(null).toString(), 1);
+
+            mListener.onPlaceSelected(addresses.get(0));
+        }
+        catch (Exception e)
+        {
+            e.printStackTrace();
+        }
     }
 
 
